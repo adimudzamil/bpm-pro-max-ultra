@@ -577,6 +577,14 @@
             text-transform: uppercase;
         }
         
+        /* NEW: Left-aligned seat numbers for empty seats */
+        .seat-empty .seat-cell {
+            align-items: flex-start;     /* Left align horizontally */
+            justify-content: center;     /* Keep vertical centering */
+            text-align: left;
+            padding-left: 4px;          /* Add some left padding */
+        }
+        
         /* DYNAMIC HEIGHT FOR BUSINESS CLASS */
         .seat-cell.business-class {
             justify-content: flex-start;
@@ -932,6 +940,14 @@
                 font-weight: bolder !important;
                 -webkit-print-color-adjust: exact;
                 color-adjust: exact;
+            }
+            
+            /* NEW: Left-aligned seat numbers for empty seats in print */
+            .seat-empty .seat-cell {
+                align-items: flex-start;     /* Left align horizontally */
+                justify-content: center;     /* Keep vertical centering */
+                text-align: left;
+                padding-left: 4px;          /* Add some left padding */
             }
             
             /* Let seat charts use dynamic font sizes from slider */
@@ -1297,33 +1313,35 @@ body.landscape-mode .tables-container td {
         <li>Business class passengers now show on multiple lines with better name display</li>
         <li><strong>737 Business Class</strong> now has blank lines for meals to write in standard meals</li>
         <li><strong>NEW:</strong> Toggle to show unassigned passengers in print view</li>
+        <li><strong>NEW:</strong> Empty seat numbers are now left-aligned for better readability</li>
     </ul>
 </div>
         
         <div id="versionContent" class="help-content">
      <h3>Version History - Complete Release Notes</h3>
-     <!-- NEW VERSION 3.8 -->
-<h4>🚀 Version 3.8 - Smart Aircraft Registration Detection</h4>
+     <!-- NEW VERSION 3.9 -->
+<h4>🚀 Version 3.9 - Left-Aligned Empty Seat Numbers</h4>
 <p><strong>Release Date:</strong> Current Version</p>
 <p><strong>New Features:</strong></p>
 <ul>
-    <li><strong>9MM Registration Auto-Detection</strong> - Automatically identifies aircraft type from registration numbers</li>
-    <li><strong>737NR Detection</strong> - Smart detection of extended business class (rows 1-4) when row 4 has J class passengers</li>
-    <li><strong>Widebody Port-Starboard Default</strong> - All widebody aircraft now default to port-starboard split layout</li>
-    <li><strong>Flight Number in Zone Headers</strong> - Flight number now displays on every zone header for easy identification</li>
-    <li><strong>Enhanced Configuration Mapping</strong> - Precise aircraft configuration based on registration patterns</li>
+    <li><strong>Left-Aligned Empty Seat Numbers</strong> - Empty seat numbers now left-aligned for better readability</li>
+    <li><strong>Clear Visual Distinction</strong> - Easier to distinguish between empty seats and occupied ones</li>
+    <li><strong>Professional Appearance</strong> - More consistent with airline operational documents</li>
 </ul>
-<p><strong>Aircraft Detection Patterns:</strong></p>
-<ul>
-    <li><strong>737</strong>: 9MM(X,L,V,F) + any letter</li>
-    <li><strong>A330-200</strong>: 9MM(T) + U-Z</li>
-    <li><strong>A330-300</strong>: 9MM(T) + A-S</li>
-    <li><strong>A330-900neo</strong>: 9MM(N) + any letter</li>
-    <li><strong>A350-900</strong>: 9MM(A) + A-G</li>
-    <li><strong>A350-MAH</strong>: 9MMAH (exact match)</li>
-</ul>
+
+     <h4>🚀 Version 3.8 - Smart Aircraft Registration Detection</h4>
+     <p><strong>Release Date:</strong> Previous Version</p>
+     <p><strong>New Features:</strong></p>
+     <ul>
+         <li><strong>9MM Registration Auto-Detection</strong> - Automatically identifies aircraft type from registration numbers</li>
+         <li><strong>737NR Detection</strong> - Smart detection of extended business class (rows 1-4) when row 4 has J class passengers</li>
+         <li><strong>Widebody Port-Starboard Default</strong> - All widebody aircraft now default to port-starboard split layout</li>
+         <li><strong>Flight Number in Zone Headers</strong> - Flight number now displays on every zone header for easy identification</li>
+         <li><strong>Enhanced Configuration Mapping</strong> - Precise aircraft configuration based on registration patterns</li>
+     </ul>
+     
      <h4>🚀 Version 3.7 - Show Unassigned Table in Print</h4>
-     <p><strong>Release Date:</strong> Current Version</p>
+     <p><strong>Release Date:</strong> Previous Version</p>
      <p><strong>New Features:</strong></p>
      <ul>
          <li><strong>Show Unassigned Table in Print</strong> - New toggle option to include unassigned passengers in print view</li>
@@ -1623,7 +1641,7 @@ body.landscape-mode .tables-container td {
             <p style="margin-top: 10px; font-style: italic; text-align: center;">Thank you all for your help during testing and for helping make this tool better for everyone! ✈️</p>
             
             <div class="version-info">
-                Version 3.7 | Show Unassigned Table in Print | Always Show Meal Line for Writing
+                Version 3.9 | Left-Aligned Empty Seat Numbers | Show Unassigned Table in Print | Always Show Meal Line for Writing
                 <br>Any bugs or feedback please contact Zayn Ikhlas when he is 21. I only do this when i'm babysitting Zayn or n/s lol XP
             </div>
         </div>
@@ -2844,7 +2862,7 @@ body.landscape-mode .tables-container td {
         }
         
         // UPDATED: Generate seat chart with optimized multi-line format for business class and 737 business class layout
-        // NOW WITH ALWAYS-SHOW MEAL LINE IN BUSINESS CLASS
+        // NOW WITH ALWAYS-SHOW MEAL LINE IN BUSINESS CLASS AND LEFT-ALIGNED EMPTY SEAT NUMBERS
         function generateSeatChart(passengers, zone, aircraftConfig) {
             const seatMap = SEAT_MAPS[aircraftConfig];
             if (!seatMap) {
