@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Complete Guide & Troubleshooting - Passenger Meal & Tier Report</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💺</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+        }
+        
+        h1 {
+            background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #1E3A8A;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: #2563EB;
+            transform: translateY(-2px);
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #F8FAFC;
+            border-radius: 8px;
+            border-left: 4px solid #2563EB;
+        }
+        
+        .section h2 {
+            color: #1E3A8A;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #E2E8F0;
+            font-size: 20px;
+        }
+        
+        .section h3 {
+            color: #334155;
+            margin: 25px 0 15px 0;
+            font-size: 18px;
+        }
+        
+        .step {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #10B981;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #10B981, #34D399);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .step-content h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #1E3A8A;
+            font-size: 18px;
+        }
+        
+        .step-content p {
+            margin-bottom: 10px;
+        }
+        
+        .step-content ol, .step-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .step-content li {
+            margin-bottom: 8px;
+        }
+        
+        .platform-guides {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .platform-card {
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #E2E8F0;
+        }
+        
+        .platform-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #1E3A8A;
+        }
+        
+        .platform-badge {
+            padding: 4px 12px;
+            background: #1E3A8A;
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .common-problems {
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%);
+            border: 1px solid #fed7d7;
+            border-left: 4px solid #c53030;
+        }
+        
+        .common-problems h2 {
+            color: #c53030;
+        }
+        
+        .problem {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #c53030;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .problem:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .problem strong {
+            color: #c53030;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .problem strong::after {
+            content: "▼";
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .problem.active strong::after {
+            transform: rotate(180deg);
+        }
+        
+        .solution {
+            margin-top: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+            border-radius: 6px;
+            border-left: 3px solid #38a169;
+            display: none;
+        }
+        
+        .solution strong {
+            color: #38a169;
+            font-size: 14px;
+        }
+        
+        .solution p {
+            margin-top: 5px;
+        }
+        
+        .problem.active .solution {
+            display: block;
+        }
+        
+        .quick-tips {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bee3f8;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .quick-tips h2 {
+            color: #0ea5e9;
+        }
+        
+        .what-you-get {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 1px solid #bbf7d0;
+            border-left: 4px solid #16a34a;
+        }
+        
+        .what-you-get h2 {
+            color: #16a34a;
+        }
+        
+        .tip-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .tip-item {
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .tip-item h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #334155;
+        }
+        
+        .tip-item p {
+            font-size: 14px;
+        }
+        
+        .video-guide {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px dashed #2563EB;
+        }
+        
+        .video-placeholder {
+            width: 100%;
+            max-width: 600px;
+            height: 200px;
+            background: linear-gradient(135deg, #1E3A8A, #2563EB);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            margin: 20px auto;
+        }
+        
+        .video-placeholder i {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .keyboard-shortcut {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #1E3A8A;
+            color: white;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 0 5px;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .feature-item {
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #E2E8F0;
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .note {
+            padding: 15px;
+            background: #FEF7CD;
+            border: 2px solid #D4AF37;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        
+        .note strong {
+            color: #1E3A8A;
+        }
+        
+        /* Iframe-specific styles */
+        body.iframe-mode .container {
+            padding: 15px;
+            max-width: 100%;
+        }
+        
+        body.iframe-mode h1 {
+            font-size: 18px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        body.iframe-mode .back-button {
+            display: none;
+        }
+        
+        body.iframe-mode .section {
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        body.iframe-mode .step {
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        body.iframe-mode .step-number {
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 20px;
+                padding: 15px;
+            }
+            
+            .step {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            
+            .platform-guides {
+                grid-template-columns: 1fr;
+            }
+            
+            .tip-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            body.iframe-mode .step {
+                flex-direction: row;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Main Tool</a>
+        
+        <h1>📚 Complete Guide & Troubleshooting</h1>
+        
+        <div class="section">
+            <h2>🚀 Quick Start Guide (4 Simple Steps)</h2>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>🖱️ Copy the Passenger List</h4>
+                    <p><strong>On a Computer (PC/Mac):</strong></p>
+                    <ol>
+                        <li>Open BPM and go to your flight</li>
+                        <li>Click anywhere in the passenger list</li>
+                        <li>Press <span class="keyboard-shortcut">Ctrl+A</span> (Cmd+A on Mac) to select everything</li>
+                        <li>Press <span class="keyboard-shortcut">Ctrl+C</span> (Cmd+C on Mac) to copy</li>
+                    </ol>
+                    
+                    <p><strong>On Your Phone:</strong></p>
+                    <ol>
+                        <li><strong>Android users:</strong> Install "XClipper" from Play Store first</li>
+                        <li>In BPM, tap and hold on the word "FLT NBR"</li>
+                        <li>Drag the blue handles to select everything from "FLT NBR" down to "Showing X entries"</li>
+                        <li>Tap "Copy" or use XClipper's copy button</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>📋 Paste Here</h4>
+                    <ol>
+                        <li>Click the big white box that says "Paste passenger manifest here..."</li>
+                        <li><strong>On Computer:</strong> Press <span class="keyboard-shortcut">Ctrl+V</span> (Cmd+V on Mac)</li>
+                        <li><strong>On Phone:</strong> Tap and hold in the box, then tap "Paste"</li>
+                        <li>You should see passenger names, seats, and meal codes appear</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>🔧 Generate Report</h4>
+                    <ol>
+                        <li>Click the red <strong>"Generate Report"</strong> button</li>
+                        <li>OR press <span class="keyboard-shortcut">Ctrl+Enter</span> (on computer) for quick shortcut</li>
+                        <li>Wait 2 seconds - the report will appear below</li>
+                        <li>You'll see a ✅ success message when done</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>🖨️ Print</h4>
+                    <ol>
+                        <li>Click the green <strong>"Print Report"</strong> button</li>
+                        <li>In the print window, check "All pages"</li>
+                        <li>Set "Scale" to "Fit to page" (important!)</li>
+                        <li>Click "Print"</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📱 Platform-Specific Guides</h2>
+            <div class="platform-guides">
+                <div class="platform-card">
+                    <h4><span class="platform-badge">ANDROID</span> Must use XClipper</h4>
+                    <p>Due to Android copy limit restrictions:</p>
+                    <ol>
+                        <li>Long press on "FLT NBR"</li>
+                        <li>Select all text by dragging handles</li>
+                        <li>Use "XCopy" from XClipper app</li>
+                        <li>Or drag to select all passenger data</li>
+                    </ol>
+                </div>
+                
+                <div class="platform-card">
+                    <h4><span class="platform-badge">iOS</span> Standard Selection</h4>
+                    <p>For iPhone/iPad users:</p>
+                    <ol>
+                        <li>Tap and hold on "FLT NBR"</li>
+                        <li>Drag selection handles to select from "FLT NBR" until "Showing X entries"</li>
+                        <li>Copy the selected text</li>
+                    </ol>
+                </div>
+                
+                <div class="platform-card">
+                    <h4><span class="platform-badge">WINDOWS/MAC</span> Keyboard & Mouse</h4>
+                    <p>For desktop computers:</p>
+                    <ol>
+                        <li>Click before "FLT NBR"</li>
+                        <li>Press <span class="keyboard-shortcut">Ctrl+A</span> (Cmd+A) to select all</li>
+                        <li>Press <span class="keyboard-shortcut">Ctrl+C</span> (Cmd+C) to copy</li>
+                        <li>Paste in the textbox with <span class="keyboard-shortcut">Ctrl+V</span> (Cmd+V)</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section common-problems">
+            <h2>❓ Common Problems & Solutions</h2>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Nothing happens when I click Generate"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Make sure you copied the ENTIRE passenger list from "FLT NBR" down to "Showing X entries". The tool needs the complete data to work.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"On Android, it says text is too long"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> You MUST install "XClipper" from Play Store. Android has a copy limit that XClipper fixes. This is the only way for Android to copy long manifests.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"The report is too small to read"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Click "Advanced Settings" → Increase "Font Size" to 12px or 14px → Click "Print Report with Current Settings".
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Business class meals don't show"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> This is normal! Business class has blank lines so you can write in the standard meals (chicken/beef/fish). The tool only shows special meals automatically.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Only shows 1-2 passengers but I know there are more special meals"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> The tool only shows passengers with <strong>special meals</strong> or <strong>PLAT/EMER status</strong>. Regular passengers without special meals/status won't appear.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Can't copy from BPM on iPhone"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> On iPhone, tap and hold on "FLT NBR", then slowly drag the blue selection handles down to the bottom. Be patient and precise - it takes practice!
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Seat chart doesn't look right"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Click "Advanced Settings" → Make sure the correct aircraft type is selected. For 737 choose "737NG", for A330 choose "A333", etc.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Print preview shows only 1 page but I have 200 passengers"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> In print preview, check if you're printing "All pages" not "Current page". The report creates multiple pages automatically.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"The report doesn't show infant meals (BBML)"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> BBML DOES show! It appears as "+BBML" below the parent's meal code in the list view. In seat chart, it shows as "MLCODE:BBML".
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"On PC, Ctrl+Enter doesn't work"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Make sure you click inside the text box first, then press Ctrl+Enter. If using Mac, use Cmd+Enter.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Report shows empty seat numbers (01A, 02B, etc.)"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> This is a FEATURE, not a bug! Empty seats show seat numbers so you can easily see which seats are available.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Colors don't print on my printer"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> In print settings, make sure "Print background colors and images" is checked. Or use the "Aft Perspective View" which uses black text only.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Need to print for multiple flights"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Clear the text box after each print (click "Clear" button), then paste the next flight's manifest and repeat.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Seat chart shows all seats as 'occupied'"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Uncheck "Show All Business Class Passengers" in Advanced Settings. This setting shows ALL business passengers (even without special meals).
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Can't download the offline version"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Some phones block downloads. Try on a computer, or save the webpage directly from your browser menu (3 dots → Save page).
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Report missing middle seats in business class"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> 737 business class has no B and E seats! This is correct - seats are A, C, D, F only in 737 business class.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Want to see the view from the back of the plane"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Check "Aft Perspective View" in Advanced Settings, then print. Turn the paper 180° for perfect back-to-front view!
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Report is cutting off on the right side when printing"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> In print settings, change "Scale" to "Fit to page" or reduce "Table Width" in Advanced Settings to 90%.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"Font is too big and the report is too many pages"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Use "Compact Print Mode" in Advanced Settings → Print Layout Options to reduce pages by 20-30%.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"The tool says 'No passengers found' but I pasted the manifest"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> You might have copied the wrong section. Make sure you copy from the actual passenger list, not the flight info header.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"I need to show regular business class passengers too"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Check "Show All Business Class Passengers" in Advanced Settings. This will show ALL business class passengers, not just special meals.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"The page reloads and I lose my data"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Use "Download Offline Version" button to save a local copy. Then you can use it without internet and your data won't be lost.
+                </div>
+            </div>
+            
+            <div class="problem" onclick="toggleSolution(this)">
+                <strong>"I accidentally changed settings and now it looks wrong"</strong>
+                <div class="solution">
+                    <strong>Fix:</strong> Click "Reset to Defaults" button in Advanced Settings to return to automatic settings.
+                </div>
+            </div>
+        </div>
+        
+        <div class="section quick-tips">
+            <h2>💡 Quick Tips for Best Results</h2>
+            <div class="tip-grid">
+                <div class="tip-item">
+                    <h4>✅ Keyboard Shortcut</h4>
+                    <p>After pasting, press <span class="keyboard-shortcut">Ctrl+Enter</span> (Cmd+Enter on Mac) for fastest results</p>
+                </div>
+                
+                <div class="tip-item">
+                    <h4>✅ Business Class</h4>
+                    <p>737 Business Class rows 1-3/4 have blank meal lines for writing standard meals</p>
+                </div>
+                
+                <div class="tip-item">
+                    <h4>✅ Widebody Aircraft</h4>
+                    <p>A330/A350 reports automatically split into Port/Starboard sides</p>
+                </div>
+                
+                <div class="tip-item">
+                    <h4>✅ Empty Seats</h4>
+                    <p>Empty seats show seat numbers - easier to spot available seats</p>
+                </div>
+                
+                <div class="tip-item">
+                    <h4>✅ Save Paper</h4>
+                    <p>Use "Compact Print Mode" for flights with 100+ passengers</p>
+                </div>
+                
+                <div class="tip-item">
+                    <h4>✅ Large Fonts</h4>
+                    <p>Use "Landscape Mode" when printing large fonts (12px+)</p>
+                </div>
+                
+                <div class="tip-item">
+                    <h4>✅ Offline Use</h4>
+                    <p>Download offline version once, use forever without internet</p>
+                </div>
+                
+                <div class="tip-item">
+                    <h4>✅ Share with Colleagues</h4>
+                    <p>Share downloaded file with colleagues who don't have internet access</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section what-you-get">
+            <h2>📋 What You'll Get in Your Report</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span class="feature-icon">✈️</span>
+                    Flight number, date, and aircraft type
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    Total special meals & PLAT/EMER count
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">🗺️</span>
+                    Visual seating chart
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">🔢</span>
+                    Empty seats clearly marked
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">👔</span>
+                    Business class multi-line display
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">❤️</span>
+                    Red hearts for PLAT members
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">🔴</span>
+                    Red dots for EMER members
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">👶</span>
+                    Infant meals (BBML) clearly marked
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🆘 Still Need Help?</h2>
+            <p>If you're still having problems after reading this guide:</p>
+            
+            <div class="note">
+                <strong>Ask a colleague:</strong> Find someone who has used this tool before - they can show you in 5 minutes!
+            </div>
+            
+            <div class="note">
+                <strong>Contact the creator:</strong> Zayn Ikhlas (when he's 21) or any crew member who helped test this tool
+            </div>
+            
+            <div class="note">
+                <strong>Practice with a test flight:</strong> Try with a small flight first to get familiar with the process
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #E2E8F0;">
+            <a href="index.html" class="back-button">← Back to Main Tool</a>
+            <p style="margin-top: 15px; font-size: 14px; color: #64748B;">Version 3.9 | Updated: Today</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleSolution(problemElement) {
+            problemElement.classList.toggle('active');
+        }
+        
+        // Check if we're in an iframe
+        if (window.self !== window.top) {
+            // We're in an iframe - apply iframe-mode styles
+            document.body.classList.add('iframe-mode');
+            
+            // Hide the back button when in iframe
+            const backButton = document.querySelector('.back-button');
+            if (backButton) {
+                backButton.style.display = 'none';
+            }
+            
+            // Notify parent that we're loaded
+            window.parent.postMessage('tutorialLoaded', '*');
+        }
+        
+        // Auto-expand first few problems
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstProblems = document.querySelectorAll('.problem:nth-child(-n+3)');
+            firstProblems.forEach(problem => {
+                problem.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
