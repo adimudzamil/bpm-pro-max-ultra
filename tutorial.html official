@@ -534,7 +534,7 @@
             </div>
             
             <div class="problem" onclick="toggleSolution(this)">
-                <strong>"On Android, it says text is too long" or "failed to copy"</strong>
+                <strong>"On Android, it says text is too long"</strong>
                 <div class="solution">
                     <strong>Fix:</strong> You MUST install "XClipper" from Play Store. Android has a copy limit that XClipper fixes. This is the only way for Android to copy long manifests.
                 </div>
@@ -543,7 +543,7 @@
             <div class="problem" onclick="toggleSolution(this)">
                 <strong>"The report is too small to read"</strong>
                 <div class="solution">
-                    <strong>Fix:</strong> Click "Advanced Settings" → Increase "Font Size" to 12px or 14px → Click "Print Report with Current Settings". ypu can also change the seat chart fonts using the seat chart font size slider.
+                    <strong>Fix:</strong> Click "Advanced Settings" → Increase "Font Size" to 12px or 14px → Click "Print Report with Current Settings".
                 </div>
             </div>
             
@@ -557,7 +557,7 @@
             <div class="problem" onclick="toggleSolution(this)">
                 <strong>"Only shows 1-2 passengers but I know there are more special meals"</strong>
                 <div class="solution">
-                    <strong>Fix:</strong> The tool only shows passengers with <strong>special meals</strong> or <strong>PLAT/EMER status</strong>. Regular passengers without special meals/status won't appear except for business class where you can choose the option to show all.business class passengers
+                    <strong>Fix:</strong> The tool only shows passengers with <strong>special meals</strong> or <strong>PLAT/EMER status</strong>. Regular passengers without special meals/status won't appear.
                 </div>
             </div>
             
@@ -578,7 +578,7 @@
             <div class="problem" onclick="toggleSolution(this)">
                 <strong>"Print preview shows only 1 page but I have 200 passengers"</strong>
                 <div class="solution">
-                    <strong>Fix:</strong> In print preview, check if you're printing "All pages" not "Current page". The report creates multiple pages automatically. You can choose which page to print or not to print in the print preview.
+                    <strong>Fix:</strong> In print preview, check if you're printing "All pages" not "Current page". The report creates multiple pages automatically.
                 </div>
             </div>
             
@@ -599,7 +599,7 @@
             <div class="problem" onclick="toggleSolution(this)">
                 <strong>"Report shows empty seat numbers (01A, 02B, etc.)"</strong>
                 <div class="solution">
-                    <strong>Fix:</strong> This is a FEATURE, not a bug! In business class you can choose wether to show all passengers  or just passengers with special meals and plat/emer tier. In Economy, seats with no special meals or plat/emer tier will only show seat number.
+                    <strong>Fix:</strong> This is a FEATURE, not a bug! Empty seats show seat numbers so you can easily see which seats are available.
                 </div>
             </div>
             
@@ -620,7 +620,7 @@
             <div class="problem" onclick="toggleSolution(this)">
                 <strong>"Seat chart shows all seats as 'occupied'"</strong>
                 <div class="solution">
-                    <strong>Fix:</strong> Uncheck "Show All Business Class Passengers" in Advanced Settings. This setting shows ALL business passengers (even without special meals). Economy doesnt have this feature.
+                    <strong>Fix:</strong> Uncheck "Show All Business Class Passengers" in Advanced Settings. This setting shows ALL business passengers (even without special meals).
                 </div>
             </div>
             
@@ -632,16 +632,16 @@
             </div>
             
             <div class="problem" onclick="toggleSolution(this)">
-                <strong>"Report missing seat row numbers or column headers when printing"</strong>
+                <strong>"Report missing middle seats in business class"</strong>
                 <div class="solution">
-                    <strong>Fix:</strong> Always check the margin options when printing due to different printers settings. always set minimum or custom to set your own margin in print preview before printing.
+                    <strong>Fix:</strong> 737 business class has no B and E seats! This is correct - seats are A, C, D, F only in 737 business class.
                 </div>
             </div>
             
             <div class="problem" onclick="toggleSolution(this)">
-                <strong>"Want to see the view or persepctive of a crew in the cabin during service?"</strong>
+                <strong>"Want to see the view from the back of the plane"</strong>
                 <div class="solution">
-                    <strong>Fix:</strong> Check "Aft Perspective View" in Advanced Settings, then print.
+                    <strong>Fix:</strong> Check "Aft Perspective View" in Advanced Settings, then print. Turn the paper 180° for perfect back-to-front view!
                 </div>
             </div>
             
@@ -708,7 +708,7 @@
                 
                 <div class="tip-item">
                     <h4>✅ Empty Seats</h4>
-                    <p>Empty seats show seat numbers - easier to spot no special requirement seats</p>
+                    <p>Empty seats show seat numbers - easier to spot available seats</p>
                 </div>
                 
                 <div class="tip-item">
@@ -753,7 +753,7 @@
                 
                 <div class="feature-item">
                     <span class="feature-icon">🔢</span>
-                    Passengers with no special meals or plat/emer tier clearly marked
+                    Empty seats clearly marked
                 </div>
                 
                 <div class="feature-item">

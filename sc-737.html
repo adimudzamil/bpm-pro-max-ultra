@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>737 Business Class - Dual Meal Service Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            size: A4;
+            margin: 5mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 5mm;
+            background: white;
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        /* Control Bar */
+        .control-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #f8f9fa;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .control-group label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #495057;
+            white-space: nowrap;
+        }
+
+        /* Font Size Slider */
+        .font-slider {
+            width: 120px;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #dee2e6;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .font-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .font-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .font-value {
+            font-size: 12px;
+            font-weight: bold;
+            color: #007bff;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        /* Toggle Switch for Aft View */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #28a745;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(34px);
+        }
+
+        /* Print Button */
+        .print-button {
+            padding: 8px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,123,255,0.2);
+        }
+
+        .print-button:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0,123,255,0.3);
+        }
+
+        .print-button:active {
+            transform: translateY(0);
+        }
+
+        /* Print Options */
+        .print-options {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .print-options select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            background: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .control-spacer {
+            flex: 1;
+        }
+
+        /* Adjust body padding to account for control bar */
+        body {
+            padding-top: 60px;
+        }
+
+        /* Container for both charts */
+        .dual-chart-container {
+            width: 100%;
+            height: calc(100% - 60px);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        /* Each chart section takes ~45% of height */
+        .chart-section {
+            flex: 0 0 45%;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Divider between charts */
+        .chart-divider {
+            flex: 0 0 10%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 0;
+        }
+
+        .chart-divider hr {
+            width: 80%;
+            border: 1px solid #666;
+            margin: 5px 0;
+        }
+
+        .chart-divider div {
+            font-size: 14px;
+            font-weight: bold;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Header styling for each chart */
+        .header {
+            text-align: center;
+            margin-bottom: 8px;
+            border: 2px solid #000;
+            padding: 8px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        /* Zone Summary Styling */
+        .zone-summary {
+            margin-top: 8px;
+            padding: 5px;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        /* Seat grid container */
+        .seat-grid {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Row grid templates for 737 - 4 seats per row (A, C, D, F) */
+        .row {
+            display: grid;
+            grid-template-columns: 24% 1% 24% 2% 24% 1% 24%;
+            width: 100%;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        /* Aft view grid templates for 737 */
+        .row.aft-view {
+            grid-template-columns: 24% 1% 24% 2% 24% 1% 24%;
+        }
+
+        .aisle {
+            background: transparent;
+            border: none;
+        }
+
+        .gap {
+            background: transparent;
+            border: none;
+        }
+
+        .seat-box {
+            border: 1px solid #000;
+            padding: 0;
+            transition: all 0.3s ease;
+            min-height: 55px;
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Empty seat placeholder styling */
+        .seat-box.empty-seat {
+            border: 1px solid #000;
+            visibility: visible !important;
+        }
+
+        .seat-box.empty-seat .name-line,
+        .seat-box.empty-seat .field-line {
+            visibility: visible;
+            color: transparent;
+        }
+
+        /* Empty seat with placeholder text for manual writing */
+        .seat-box.empty-seat .name-line.surname-line::after,
+        .seat-box.empty-seat .name-line.firstname-line::after,
+        .seat-box.empty-seat .field-line.meal-line::after {
+            content: "______";
+            color: #ccc;
+            visibility: visible;
+            font-weight: normal;
+        }
+
+        /* Thicker border for EMER/PLAT seats */
+        .seat-box.tier-emer,
+        .seat-box.tier-plat {
+            border-width: 2px !important;
+        }
+
+        /* Seat number container */
+        .seat-number-container {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-bottom: 1px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        /* Larger, bolder font for seat number */
+        .seat-number {
+            font-weight: 900;
+            font-size: 1.1em;
+            text-align: left;
+            transition: all 0.3s ease;
+            color: #000;
+            text-transform: uppercase;
+            flex-grow: 1;
+        }
+
+        /* Tier indicator styling */
+        .seat-number .tier {
+            color: #000000;
+            font-weight: 900;
+            font-size: 1.1em;
+            margin-left: auto;
+            background-color: #ffebee;
+            padding: 1px 3px;
+            border-radius: 3px;
+            text-align: right;
+        }
+
+        /* Name lines styling */
+        .name-line {
+            font-size: 1em;
+            margin: 0;
+            padding: 1px 4px;
+            min-height: 10px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 700;
+            color: #000;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .name-line.title-line {
+            text-align: center;
+            border-bottom: 0.5px solid #000;
+        }
+
+        .name-line.surname-line {
+            text-align: center;
+            border-bottom: none;
+        }
+
+        .name-line.firstname-line {
+            text-align: center;
+            border-bottom: 0.5px solid #000;
+        }
+
+        /* Field lines styling */
+        .field-line {
+            font-size: 1em;
+            margin: 0;
+            padding: 1px 4px;
+            min-height: 10px;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            color: #000;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        /* Meal field gets extra emphasis */
+        .field-line.meal-line {
+            font-weight: 1000;
+            font-size: 1.1em;
+            color: #000;
+            background-color: #f0f0f0;
+            border-bottom: none;
+            text-align: center;
+        }
+
+        /* Drink and Dessert lines - no border, blank */
+        .field-line.drink-line,
+        .field-line.dessert-line {
+            border-bottom: none;
+            font-weight: normal;
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 5mm;
+            }
+            
+            @page landscape {
+                size: A4 landscape;
+                margin: 5mm;
+            }
+            
+            body {
+                padding: 0;
+                margin: 0;
+                width: 210mm;
+                height: 297mm;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                font-size: inherit !important;
+            }
+            
+            body.landscape-print {
+                width: 297mm !important;
+                height: 210mm !important;
+                padding: 5mm !important;
+            }
+            
+            .control-bar {
+                display: none;
+            }
+            
+            .dual-chart-container {
+                padding: 5mm;
+                width: 100% !important;
+                height: 100% !important;
+                transform-origin: top left;
+            }
+            
+            body.landscape-print .dual-chart-container {
+                transform: scale(calc(297mm / 210mm)) !important;
+                transform-origin: top left;
+                width: 210mm !important;
+                height: 297mm !important;
+                padding: 5mm !important;
+            }
+            
+            .seat-box {
+                page-break-inside: avoid;
+            }
+            
+            .seat-number, .name-line, .field-line {
+                color: #000 !important;
+                font-weight: 700 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .seat-box.empty-seat .name-line.surname-line::after,
+            .seat-box.empty-seat .name-line.firstname-line::after,
+            .seat-box.empty-seat .field-line.meal-line::after {
+                color: #eee !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .seat-number .tier {
+                color: #000 !important;
+                font-weight: 900 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .field-line.meal-line {
+                font-weight: 1000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .seat-number-container,
+            .field-line.meal-line {
+                background-color: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .row {
+                margin-bottom: 3px !important;
+            }
+            
+            .seat-box {
+                min-height: 50px !important;
+            }
+            
+            .chart-section {
+                page-break-inside: avoid;
+                flex: 0 0 48% !important;
+            }
+            
+            .chart-divider {
+                flex: 0 0 4% !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Control Bar -->
+    <div class="control-bar">
+        <div class="control-group">
+            <label for="fontSizeSlider">Font Size:</label>
+            <input type="range" id="fontSizeSlider" class="font-slider" min="8" max="20" value="12" step="1">
+            <span id="fontSizeValue" class="font-value">12px</span>
+        </div>
+        
+        <div class="control-group">
+            <label for="aftViewToggle">Aft View:</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="aftViewToggle" onchange="toggleAftView()">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        
+        <div class="control-spacer"></div>
+        
+        <div class="print-options">
+            <select id="orientationSelect">
+                <option value="portrait">Portrait</option>
+                <option value="landscape">Landscape</option>
+            </select>
+            <button class="print-button" onclick="handlePrint()">
+                <span style="font-size: 16px;">🖨️</span> Print Both Charts
+            </button>
+        </div>
+    </div>
+    
+    <!-- Dual Chart Container -->
+    <div class="dual-chart-container">
+        <!-- TOP CHART SECTION -->
+        <div class="chart-section" id="topChartSection">
+            <div class="header" id="topHeader">
+                <h1 id="topHeaderTitle">737 - First Service</h1>
+                <div class="zone-summary" id="topZoneSummary">Waiting for first manifest...</div>
+            </div>
+            <div class="seat-grid" id="topSeatContainer">
+                <!-- Top chart seat rows will be generated dynamically -->
+            </div>
+        </div>
+        
+        <!-- BOTTOM CHART SECTION -->
+        <div class="chart-section" id="bottomChartSection">
+            <div class="header" id="bottomHeader">
+                <h1 id="bottomHeaderTitle">737 - Second Service</h1>
+                <div class="zone-summary" id="bottomZoneSummary">Waiting for second manifest...</div>
+            </div>
+            <div class="seat-grid" id="bottomSeatContainer">
+                <!-- Bottom chart seat rows will be generated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let isAftView = false;
+        let currentFontSize = 12;
+        
+        // Generate seat rows for a specific container
+        function generateSeatRows(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            // Create 4 rows for 737 Business Class (A, C, D, F)
+            for (let rowNum = 1; rowNum <= 4; rowNum++) {
+                const row = document.createElement('div');
+                row.className = 'row';
+                row.innerHTML = `
+                    <div class="seat-box empty-seat" data-seat="${rowNum}A">
+                        <div class="seat-number-container">
+                            <div class="seat-number">${rowNum}A</div>
+                        </div>
+                        <div class="name-line title-line"></div>
+                        <div class="name-line surname-line"></div>
+                        <div class="name-line firstname-line"></div>
+                        <div class="field-line meal-line"></div>
+                        <div class="field-line drink-line"></div>
+                        <div class="field-line dessert-line"></div>
+                    </div>
+                    <div class="gap"></div>
+                    <div class="seat-box empty-seat" data-seat="${rowNum}C">
+                        <div class="seat-number-container">
+                            <div class="seat-number">${rowNum}C</div>
+                        </div>
+                        <div class="name-line title-line"></div>
+                        <div class="name-line surname-line"></div>
+                        <div class="name-line firstname-line"></div>
+                        <div class="field-line meal-line"></div>
+                        <div class="field-line drink-line"></div>
+                        <div class="field-line dessert-line"></div>
+                    </div>
+                    <div class="aisle"></div>
+                    <div class="seat-box empty-seat" data-seat="${rowNum}D">
+                        <div class="seat-number-container">
+                            <div class="seat-number">${rowNum}D</div>
+                        </div>
+                        <div class="name-line title-line"></div>
+                        <div class="name-line surname-line"></div>
+                        <div class="name-line firstname-line"></div>
+                        <div class="field-line meal-line"></div>
+                        <div class="field-line drink-line"></div>
+                        <div class="field-line dessert-line"></div>
+                    </div>
+                    <div class="gap"></div>
+                    <div class="seat-box empty-seat" data-seat="${rowNum}F">
+                        <div class="seat-number-container">
+                            <div class="seat-number">${rowNum}F</div>
+                        </div>
+                        <div class="name-line title-line"></div>
+                        <div class="name-line surname-line"></div>
+                        <div class="name-line firstname-line"></div>
+                        <div class="field-line meal-line"></div>
+                        <div class="field-line drink-line"></div>
+                        <div class="field-line dessert-line"></div>
+                    </div>
+                `;
+                container.appendChild(row);
+            }
+        }
+        
+        // Initialize both seat charts
+        function initializeSeatCharts() {
+            generateSeatRows('topSeatContainer');
+            generateSeatRows('bottomSeatContainer');
+        }
+        
+        // Function to parse name into first name and surname
+        function parsePassengerName(fullName) {
+            if (!fullName || !fullName.includes('/')) {
+                return { firstName: '', lastName: '' };
+            }
+            
+            const parts = fullName.split('/');
+            const lastName = parts[0] || '';
+            const firstName = parts[1] || '';
+            
+            return { firstName, lastName };
+        }
+        
+        // Function to intelligently truncate names
+        function truncateIntelligently(text, maxLength = 25) {
+            if (!text || text.length <= maxLength) return text;
+            
+            const truncated = text.substring(0, maxLength);
+            const lastSpace = truncated.lastIndexOf(' ');
+            
+            if (lastSpace > maxLength * 0.7 && lastSpace > 0) {
+                return text.substring(0, lastSpace);
+            }
+            
+            return truncated + '…';
+        }
+        
+        // Function to get seat number without leading zeros
+        function normalizeSeatNumber(seat) {
+            if (!seat) return '';
+            return seat.replace(/^0+(\d+)/, '$1');
+        }
+        
+        // Function to populate seat data
+        function populateSeatData(passenger, seatBox) {
+            if (!passenger || !seatBox) return;
+            
+            const normalizedSeat = normalizeSeatNumber(passenger.seat);
+            const { firstName, lastName } = parsePassengerName(passenger.name);
+            const title = passenger.title || '';
+            
+            // Update seat number with tier if applicable
+            let seatNumberHTML = normalizedSeat;
+            if (passenger.tier === 'EMER' || passenger.tier === 'PLAT') {
+                seatNumberHTML += ` <span class="tier">*${passenger.tier}*</span>`;
+                
+                if (passenger.tier === 'EMER') {
+                    seatBox.classList.add('tier-emer');
+                    seatBox.classList.remove('empty-seat');
+                } else if (passenger.tier === 'PLAT') {
+                    seatBox.classList.add('tier-plat');
+                    seatBox.classList.remove('empty-seat');
+                }
+            }
+            
+            seatBox.querySelector('.seat-number').innerHTML = seatNumberHTML;
+            
+            // Update name lines
+            seatBox.querySelector('.name-line.title-line').textContent = title.toUpperCase() || '';
+            seatBox.querySelector('.name-line.surname-line').textContent = truncateIntelligently(lastName, 25).toUpperCase() || '';
+            seatBox.querySelector('.name-line.firstname-line').textContent = truncateIntelligently(firstName, 25).toUpperCase() || '';
+            
+            // Update meal field
+            const mealField = seatBox.querySelector('.field-line.meal-line');
+            if (mealField) {
+                if (passenger.meal && passenger.meal.trim()) {
+                    mealField.textContent = passenger.meal.toUpperCase();
+                    mealField.style.backgroundColor = '#f0f0f0';
+                } else {
+                    mealField.textContent = '';
+                    mealField.style.backgroundColor = '';
+                }
+            }
+            
+            // Remove empty-seat class
+            seatBox.classList.remove('empty-seat');
+            
+            // Ensure all text is visible
+            seatBox.querySelectorAll('.name-line, .field-line').forEach(line => {
+                line.style.color = '#000';
+            });
+            
+            // Remove placeholder pseudo-elements
+            const surnameLine = seatBox.querySelector('.name-line.surname-line');
+            const firstNameLine = seatBox.querySelector('.name-line.firstname-line');
+            const mealLine = seatBox.querySelector('.field-line.meal-line');
+            
+            if (surnameLine) surnameLine.style.setProperty('--placeholder-content', 'none');
+            if (firstNameLine) firstNameLine.style.setProperty('--placeholder-content', 'none');
+            if (mealLine) mealLine.style.setProperty('--placeholder-content', 'none');
+        }
+        
+        // Function to mark a seat as empty
+        function markSeatAsEmpty(seatBox) {
+            if (!seatBox) return;
+            
+            seatBox.classList.add('empty-seat');
+            
+            seatBox.querySelectorAll('.name-line, .field-line').forEach(line => {
+                line.style.color = 'transparent';
+            });
+            
+            const surnameLine = seatBox.querySelector('.name-line.surname-line');
+            const firstNameLine = seatBox.querySelector('.name-line.firstname-line');
+            const mealLine = seatBox.querySelector('.field-line.meal-line');
+            
+            if (surnameLine) surnameLine.style.setProperty('--placeholder-content', '"______"');
+            if (firstNameLine) firstNameLine.style.setProperty('--placeholder-content', '"______"');
+            if (mealLine) {
+                mealLine.style.setProperty('--placeholder-content', '"______"');
+                mealLine.style.backgroundColor = '';
+            }
+        }
+        
+        // Function to populate a chart with data
+        function populateChart(chartPosition, chartData) {
+            const prefix = chartPosition === 'top' ? 'top' : 'bottom';
+            
+            // Update header
+            const flightInfo = chartData.flightInfo;
+            if (flightInfo) {
+                document.getElementById(`${prefix}HeaderTitle`).textContent = 
+                    `${flightInfo.flightNumber} | ${flightInfo.sector} | ${flightInfo.date} ${flightInfo.stdLocal} | ${flightInfo.aircraft}`;
+            }
+            
+            // Update zone summary
+            const zoneSummary = chartData.zoneSummary;
+            if (zoneSummary) {
+                let summaryText = `Business Class: ${zoneSummary.totalPassengers} passengers`;
+                if (zoneSummary.specialMeals > 0) {
+                    summaryText += ` | Special Meals: ${zoneSummary.specialMeals}`;
+                }
+                if (zoneSummary.emerPlat > 0) {
+                    summaryText += ` | EMER/PLAT: ${zoneSummary.emerPlat}`;
+                }
+                if (zoneSummary.mealBreakdown) {
+                    summaryText += ` | ${zoneSummary.mealBreakdown}`;
+                }
+                if (zoneSummary.bbml > 0) {
+                    summaryText += ` | BBML: ${zoneSummary.bbml}`;
+                }
+                document.getElementById(`${prefix}ZoneSummary`).textContent = summaryText;
+            }
+            
+            // Populate seats
+            const passengers = chartData.passengers || [];
+            const occupiedSeats = new Set();
+            const container = document.getElementById(`${prefix}SeatContainer`);
+            
+            passengers.forEach(passenger => {
+                if (!passenger.seat) return;
+                
+                const normalizedSeat = normalizeSeatNumber(passenger.seat);
+                const seatBox = container.querySelector(`[data-seat="${normalizedSeat}"]`);
+                
+                if (seatBox) {
+                    populateSeatData(passenger, seatBox);
+                    occupiedSeats.add(normalizedSeat);
+                }
+            });
+            
+            // Mark empty seats
+            const allSeatBoxes = container.querySelectorAll('.seat-box');
+            allSeatBoxes.forEach(seatBox => {
+                const seatNumber = seatBox.getAttribute('data-seat');
+                if (!occupiedSeats.has(seatNumber)) {
+                    markSeatAsEmpty(seatBox);
+                }
+            });
+            
+            console.log(`Loaded ${passengers.length} passengers for ${chartPosition} chart`);
+        }
+        
+        // FIXED: Function to toggle aft view for both charts - Now reverses both rows and seat order
+        function toggleAftView() {
+            const toggle = document.getElementById('aftViewToggle');
+            isAftView = !isAftView; // Toggle the state
+            
+            // Toggle both charts
+            toggleChartAftView('topSeatContainer');
+            toggleChartAftView('bottomSeatContainer');
+            
+            // Re-apply font size adjustments
+            adjustFontSize(currentFontSize);
+        }
+        
+        // FIXED: Helper function to toggle aft view for a specific chart
+        function toggleChartAftView(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const rows = Array.from(container.querySelectorAll('.row'));
+            
+            if (isAftView) {
+                // Apply aft view: reverse row order and seat order
+                
+                // 1. Reverse the order of rows in the container
+                rows.reverse().forEach(row => {
+                    container.appendChild(row);
+                });
+                
+                // 2. For each row, reverse the seat order
+                rows.forEach(row => {
+                    row.classList.add('aft-view');
+                    
+                    // Get all elements in the row
+                    const seatA = row.querySelector(`[data-seat$="A"]`);
+                    const seatC = row.querySelector(`[data-seat$="C"]`);
+                    const seatD = row.querySelector(`[data-seat$="D"]`);
+                    const seatF = row.querySelector(`[data-seat$="F"]`);
+                    const gaps = row.querySelectorAll('.gap');
+                    const aisles = row.querySelectorAll('.aisle');
+                    
+                    // Store original elements
+                    const elements = Array.from(row.children);
+                    
+                    // Clear the row
+                    row.innerHTML = '';
+                    
+                    // Rebuild in aft order: F, gap, D, aisle, C, gap, A
+                    if (seatF) row.appendChild(seatF);
+                    if (gaps[1]) row.appendChild(gaps[1]);
+                    if (seatD) row.appendChild(seatD);
+                    if (aisles[0]) row.appendChild(aisles[0]);
+                    if (seatC) row.appendChild(seatC);
+                    if (gaps[0]) row.appendChild(gaps[0]);
+                    if (seatA) row.appendChild(seatA);
+                });
+            } else {
+                // Apply forward view: restore original row order and seat order
+                
+                // 1. Sort rows back to original order (1-4)
+                rows.sort((a, b) => {
+                    const seatA = a.querySelector('.seat-box');
+                    const seatB = b.querySelector('.seat-box');
+                    const rowNumA = seatA ? parseInt(seatA.dataset.seat.match(/\d+/)[0]) : 0;
+                    const rowNumB = seatB ? parseInt(seatB.dataset.seat.match(/\d+/)[0]) : 0;
+                    return rowNumA - rowNumB;
+                }).forEach(row => {
+                    container.appendChild(row);
+                });
+                
+                // 2. For each row, restore forward seat order
+                rows.forEach(row => {
+                    row.classList.remove('aft-view');
+                    
+                    // Get all elements in the row
+                    const seatA = row.querySelector(`[data-seat$="A"]`);
+                    const seatC = row.querySelector(`[data-seat$="C"]`);
+                    const seatD = row.querySelector(`[data-seat$="D"]`);
+                    const seatF = row.querySelector(`[data-seat$="F"]`);
+                    const gaps = row.querySelectorAll('.gap');
+                    const aisles = row.querySelectorAll('.aisle');
+                    
+                    // Clear the row
+                    row.innerHTML = '';
+                    
+                    // Rebuild in forward order: A, gap, C, aisle, D, gap, F
+                    if (seatA) row.appendChild(seatA);
+                    if (gaps[0]) row.appendChild(gaps[0]);
+                    if (seatC) row.appendChild(seatC);
+                    if (aisles[0]) row.appendChild(aisles[0]);
+                    if (seatD) row.appendChild(seatD);
+                    if (gaps[1]) row.appendChild(gaps[1]);
+                    if (seatF) row.appendChild(seatF);
+                });
+            }
+        }
+        
+        // Function to adjust font sizes for both charts
+        function adjustFontSize(fontSize) {
+            currentFontSize = fontSize;
+            document.getElementById('fontSizeValue').textContent = fontSize + 'px';
+            document.body.style.fontSize = fontSize + 'px';
+            
+            const scale = fontSize / 12;
+            
+            // Adjust all seat boxes in both charts
+            document.querySelectorAll('.seat-box').forEach(box => {
+                box.style.minHeight = (55 * scale) + 'px';
+                
+                const nameLines = box.querySelectorAll('.name-line');
+                nameLines.forEach(line => {
+                    line.style.minHeight = (10 * scale) + 'px';
+                    line.style.padding = (1 * scale) + 'px 4px';
+                    line.style.fontSize = (1 * fontSize) + 'px';
+                });
+                
+                const fieldLines = box.querySelectorAll('.field-line');
+                fieldLines.forEach(line => {
+                    line.style.minHeight = (10 * scale) + 'px';
+                    line.style.padding = (1 * scale) + 'px 4px';
+                    if (line.classList.contains('meal-line')) {
+                        line.style.fontSize = (1.1 * fontSize) + 'px';
+                    } else {
+                        line.style.fontSize = (1 * fontSize) + 'px';
+                    }
+                });
+                
+                const seatNumberContainer = box.querySelector('.seat-number-container');
+                if (seatNumberContainer) {
+                    seatNumberContainer.style.padding = (2 * scale) + 'px ' + (4 * scale) + 'px';
+                    const seatNumber = seatNumberContainer.querySelector('.seat-number');
+                    if (seatNumber) {
+                        seatNumber.style.fontSize = (1.1 * fontSize) + 'px';
+                    }
+                }
+            });
+            
+            // Adjust row spacing
+            document.querySelectorAll('.row').forEach(row => {
+                row.style.marginBottom = (4 * scale) + 'px';
+            });
+        }
+        
+        // Handle printing
+        function handlePrint() {
+            const orientationSelect = document.getElementById('orientationSelect');
+            const isLandscape = orientationSelect.value === 'landscape';
+            
+            if (isLandscape) {
+                document.body.classList.add('landscape-print');
+            } else {
+                document.body.classList.remove('landscape-print');
+            }
+            
+            document.documentElement.style.setProperty('--print-font-size', currentFontSize + 'px');
+            
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => {
+                    document.body.classList.remove('landscape-print');
+                }, 100);
+            }, 100);
+        }
+        
+        // Listen for messages from index.html to load bottom chart
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'loadBottomChart') {
+                const dataKey = event.data.dataKey;
+                if (dataKey) {
+                    const chartData = JSON.parse(localStorage.getItem(dataKey));
+                    if (chartData) {
+                        populateChart('bottom', chartData);
+                        localStorage.removeItem(dataKey);
+                    }
+                }
+            }
+        });
+        
+        // Load initial top chart data from URL
+        function loadInitialData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataKey = urlParams.get('data');
+            const chartType = urlParams.get('chart') || 'top';
+            
+            if (dataKey && chartType === 'top') {
+                const chartData = JSON.parse(localStorage.getItem(dataKey));
+                if (chartData) {
+                    populateChart('top', chartData);
+                    localStorage.removeItem(dataKey);
+                }
+            }
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize seat charts
+            initializeSeatCharts();
+            
+            // Set up font size slider
+            const fontSizeSlider = document.getElementById('fontSizeSlider');
+            const fontSizeValue = document.getElementById('fontSizeValue');
+            
+            if (fontSizeSlider && fontSizeValue) {
+                fontSizeSlider.addEventListener('input', function(e) {
+                    const fontSize = parseInt(e.target.value);
+                    adjustFontSize(fontSize);
+                });
+                
+                const initialFontSize = parseInt(fontSizeSlider.value);
+                adjustFontSize(initialFontSize);
+            }
+            
+            // Set up aft view toggle
+            const aftViewToggle = document.getElementById('aftViewToggle');
+            if (aftViewToggle) {
+                aftViewToggle.checked = isAftView;
+            }
+            
+            // Load initial top chart data
+            loadInitialData();
+            
+            // Notify parent window that we're ready for second manifest
+            if (window.opener) {
+                window.opener.postMessage({ type: 'chartReady' }, '*');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version History - BPM Pro Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1E3A8A;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #E2E8F0;
+        }
+        
+        .version {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #F8FAFC;
+            border-radius: 8px;
+            border-left: 4px solid #2563EB;
+        }
+        
+        .version:last-child {
+            margin-bottom: 0;
+        }
+        
+        .version h3 {
+            color: #1E3A8A;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .version .date {
+            color: #64748B;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        
+        .version ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .version li {
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        .version li::before {
+            content: "•";
+            color: #2563EB;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .version .feature-badge {
+            display: inline-block;
+            background: #10B981;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-right: 8px;
+            font-weight: 600;
+        }
+        
+        .version .fix-badge {
+            display: inline-block;
+            background: #3B82F6;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-right: 8px;
+            font-weight: 600;
+        }
+        
+        .version .improvement-badge {
+            display: inline-block;
+            background: #8B5CF6;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-right: 8px;
+            font-weight: 600;
+        }
+        
+        .version .info-badge {
+            display: inline-block;
+            background: #F59E0B;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-right: 8px;
+            font-weight: 600;
+        }
+        
+        .version .feature {
+            background: #ECFDF5;
+            border-left: 3px solid #10B981;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+        
+        .version .fix {
+            background: #EFF6FF;
+            border-left: 3px solid #3B82F6;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        
+        .version .improvement {
+            background: #F5F3FF;
+            border-left: 3px solid #8B5CF6;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        
+        .version .info {
+            background: #FFFBEB;
+            border-left: 3px solid #F59E0B;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+        
+        .backup-links {
+            background: #FEF3C7;
+            border-left: 3px solid #F59E0B;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+        }
+        
+        .backup-links h4 {
+            color: #92400E;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .backup-links ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .backup-links li {
+            margin-bottom: 6px;
+        }
+        
+        .backup-links a {
+            color: #1E40AF;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .backup-links a:hover {
+            text-decoration: underline;
+            color: #1E3A8A;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #F1F5F9;
+            border-radius: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        
+        .legend-color.feature {
+            background: #10B981;
+        }
+        
+        .legend-color.fix {
+            background: #3B82F6;
+        }
+        
+        .legend-color.improvement {
+            background: #8B5CF6;
+        }
+        
+        .legend-color.info {
+            background: #F59E0B;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #E2E8F0;
+            color: #64748B;
+            font-size: 12px;
+        }
+        
+        .footer a {
+            color: #1E40AF;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .version {
+                padding: 15px;
+            }
+            
+            .legend {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Version History - BPM Pro Tool</h1>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color feature"></div>
+                <span>New Feature</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color improvement"></div>
+                <span>Improvement</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color info"></div>
+                <span>Information</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color fix"></div>
+                <span>Bug Fix</span>
+            </div>
+        </div>
+        
+        <!-- Version 4.0 -->
+        <div class="version">
+            <h3>🚀 Version 4.0 - Dual Chart for 737, Box style Business class seat chart for every aircraft, Backup URLs</h3>
+            <div class="date">Current Version - Latest Release</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Dual Chart for 737 and Box style dedicated Business class Seat chart for every aircraft.</strong>
+                <ul>
+                    <li>Two seat charts for 737 aircraft, in one paper, use dual seat chart to paste two different manifest.</li>
+                    <li>Dedicated Business class charts for every aircraft with BIG font size option</li>
+                    <li>Aft view options</li>
+                    <li>Toggle between single chart and dual chart modes</li>
+                    <li>Optimized print layout for both charts</li>
+                </ul>
+            </div>
+            
+            <div class="info">
+                <span class="info-badge">IMPORTANT</span>
+                <strong>Backup URL Information</strong>
+                <p style="margin-top: 8px;">The BPM Pro Tool is available at multiple backup URLs in case the main site is unavailable:</p>
+                
+                <div class="backup-links">
+                    <h4>🔗 Backup URLs:</h4>
+                    <ul>
+                        <li><a href="https://adimudzamil.github.io/bpm/" target="_blank">https://adimudzamil.github.io/bpm/</a> - (Latest commit)</li>
+                        <li><a href="https://adimudzamil.github.io/bpm-pro/" target="_blank">https://adimudzamil.github.io/bpm-pro/</a> - Pro version  (stable)</li>
+                        <li><a href="https://adimudzamil.github.io/bpm-pro-max/" target="_blank">https://adimudzamil.github.io/bpm-pro-max/</a> - Pro Max version (ok)</li>
+                        <li><a href="https://adimudzamil.github.io/bpm-pro-max-ultra/" target="_blank">https://adimudzamil.github.io/bpm-pro-max-ultra/</a> - Pro Max Ultra version (non stable, testing playground)</li>
+                    </ul>
+                    <p><strong>Note:</strong> These are all different versions with varying features since i kept testing and breaking every version. Bookmark multiple URLs to ensure you always have access.</p>
+                </div>
+            </div>
+            
+            <div class="improvement">
+                <span class="improvement-badge">IMPROVEMENT</span>
+                <strong>More seat chart variations and font size options</strong>
+                <ul>
+                
+                    <li>Consistent formatting across both webview and print view</li>
+                
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 3.9 -->
+        <div class="version">
+            <h3>🚀 Version 3.9 - Left-Aligned Empty Seat Numbers</h3>
+            <div class="date">Previous Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Left-Aligned Empty Seat Numbers</strong>
+                <ul>
+                    <li>Empty seat numbers now left-aligned for better readability</li>
+                    <li>Clear visual distinction between empty and occupied seats</li>
+                    <li>Professional appearance consistent with airline operational documents</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 3.8 -->
+        <div class="version">
+            <h3>🚀 Version 3.8 - Smart Aircraft Registration Detection</h3>
+            <div class="date">Previous Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>9MM Registration Auto-Detection</strong>
+                <ul>
+                    <li>Automatically identifies aircraft type from registration numbers</li>
+                    <li>Smart detection of 737NR configuration when row 4 has J class passengers</li>
+                    <li>All widebody aircraft now default to port-starboard split layout</li>
+                </ul>
+            </div>
+            
+            <div class="improvement">
+                <span class="improvement-badge">IMPROVEMENT</span>
+                <strong>Enhanced Configuration Mapping</strong>
+                <ul>
+                    <li>Flight number now displays on every zone header for easy identification</li>
+                    <li>Precise aircraft configuration based on registration patterns</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 3.7 -->
+        <div class="version">
+            <h3>🚀 Version 3.7 - Show Unassigned Table in Print</h3>
+            <div class="date">Previous Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Show Unassigned Table in Print</strong>
+                <ul>
+                    <li>New toggle option to include unassigned passengers in print view</li>
+                    <li>Print control - choose whether to include unassigned passengers</li>
+                    <li>Flexible workflows based on operational needs</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 3.6 -->
+        <div class="version">
+            <h3>🚀 Version 3.6 - 737 Business Class Blank Meal Lines</h3>
+            <div class="date">Previous Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>737 Business Class Blank Meal Lines</strong>
+                <ul>
+                    <li>Always show meal line even when no special meal</li>
+                    <li>Write-in space for standard meals</li>
+                    <li>Blank lines maintain proper spacing for handwriting</li>
+                </ul>
+            </div>
+            
+            <div class="improvement">
+                <span class="improvement-badge">IMPROVEMENT</span>
+                <strong>Consistent Layout</strong>
+                <ul>
+                    <li>All business class seats maintain same 3-line structure</li>
+                    <li>Better print format for operational documents</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 3.5 -->
+        <div class="version">
+            <h3>🚀 Version 3.5 - Business Class Seat Chart Improvements</h3>
+            <div class="date">Previous Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Business Class Multi-line Display</strong>
+                <ul>
+                    <li>Names on two lines, meals on third line</li>
+                    <li>Dynamic cell height for business class</li>
+                    <li>Name truncation to 15 characters for better fit</li>
+                </ul>
+            </div>
+            
+            <div class="improvement">
+                <span class="improvement-badge">IMPROVEMENT</span>
+                <strong>737 Business Class Layout</strong>
+                <ul>
+                    <li>737 Business Class wider columns (65px vs 50px)</li>
+                    <li>No B and E seats in 737 business class</li>
+                    <li>Aft perspective view restored</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 3.4 -->
+        <div class="version">
+            <h3>🎯 Version 3.4 - Aft Perspective View</h3>
+            <div class="date">Previous Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Aft Perspective View</strong>
+                <ul>
+                    <li>Flip seat chart 180° (rows and columns reversed)</li>
+                    <li>Perfect cabin perspective from crew viewpoint</li>
+                    <li>Print and turn paper for exact aft cabin view</li>
+                </ul>
+            </div>
+            
+            <div class="improvement">
+                <span class="improvement-badge">IMPROVEMENT</span>
+                <strong>Preserved Readability</strong>
+                <ul>
+                    <li>Text stays normal, only layout changes</li>
+                    <li>Simple toggle for flipped view</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 3.3 -->
+        <div class="version">
+            <h3>🎯 Version 3.3 - Seat Chart Font Optimization</h3>
+            <div class="date">Previous Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Seat Chart Font Size Slider</strong>
+                <ul>
+                    <li>Adjust font size from 8px to 16px</li>
+                    <li>Optimized 2-line display with larger fonts</li>
+                    <li>Tier icon display: ❤️ for PLAT, 🔴 for EMER only</li>
+                </ul>
+            </div>
+            
+            <div class="improvement">
+                <span class="improvement-badge">IMPROVEMENT</span>
+                <strong>Business Class Zone Fix</strong>
+                <ul>
+                    <li>Show All Business option only affects B/J zones</li>
+                    <li>All caps format for maximum readability</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 3.2 -->
+        <div class="version">
+            <h3>📊 Version 3.2 - Advanced Column Controls</h3>
+            <div class="date">Previous Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Individual Column Width Controls</strong>
+                <ul>
+                    <li>Adjust each column width independently</li>
+                    <li>Auto-detect badge for visual indication</li>
+                    <li>Better mobile experience</li>
+                </ul>
+            </div>
+            
+            <div class="improvement">
+                <span class="improvement-badge">IMPROVEMENT</span>
+                <strong>Print Optimization</strong>
+                <ul>
+                    <li>Better column proportions for printed reports</li>
+                    <li>Responsive column layout</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 3.1 -->
+        <div class="version">
+            <h3>🖨️ Version 3.1 - Print Optimization</h3>
+            <div class="date">Previous Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Ultra-Minimal Margins</strong>
+                <ul>
+                    <li>Maximum printable area utilization</li>
+                    <li>Compact print mode saves 20-30% paper</li>
+                    <li>Landscape mode for wide tables</li>
+                </ul>
+            </div>
+            
+            <div class="improvement">
+                <span class="improvement-badge">IMPROVEMENT</span>
+                <strong>Page Break Control</strong>
+                <ul>
+                    <li>Smart page breaks between zones</li>
+                    <li>Orphan row prevention</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 3.0 -->
+        <div class="version">
+            <h3>✨ Version 3.0 - Major Overhaul</h3>
+            <div class="date">Foundation Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Complete UI Redesign</strong>
+                <ul>
+                    <li>Modern, professional interface</li>
+                    <li>Real-time preview of all changes</li>
+                    <li>Advanced aircraft detection from manifest</li>
+                </ul>
+            </div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Custom Zone Configuration</strong>
+                <ul>
+                    <li>Full control over cabin zones</li>
+                    <li>Enhanced seat charts with color-coded tiers</li>
+                    <li>Download offline version</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 2.0 -->
+        <div class="version">
+            <h3>🛠️ Version 2.0 - Core Features</h3>
+            <div class="date">Foundation Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Basic Manifest Parsing</strong>
+                <ul>
+                    <li>Extract passenger data from BPM</li>
+                    <li>Meal & Tier filtering</li>
+                    <li>Basic seat chart visualization</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 1.0 -->
+        <div class="version">
+            <h3>🎉 Version 1.0 - Initial Release</h3>
+            <div class="date">Foundation Version</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Text-based Reporting</strong>
+                <ul>
+                    <li>Simple passenger lists</li>
+                    <li>Manual aircraft configuration</li>
+                    <li>Core parsing engine foundation</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>"Banyak nya special meals nak tulis"</p>
+            <p>"How can i help?"</p>
+            <p style="margin-top: 15px;">
+                <strong>Backup URLs:</strong> 
+                <a href="https://adimudzamil.github.io/bpm/" target="_blank">Basic</a> • 
+                <a href="https://adimudzamil.github.io/bpm-pro/" target="_blank">Pro</a> • 
+                <a href="https://adimudzamil.github.io/bpm-pro-max/" target="_blank">Pro Max</a> • 
+                <a href="https://adimudzamil.github.io/bpm-pro-max-ultra/" target="_blank">Pro Max Ultra</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Send message to parent when loaded
+        window.addEventListener('load', function() {
+            if (window.parent) {
+                window.parent.postMessage('versionsLoaded', '*');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,3011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Passenger Meal & Tier Report - by *2100551*</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💺</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💺</text></svg>">
+    <link rel="stylesheet" href="style.css">
+   
+</head>
+<body>
+    <div class="container">
+        <h1>PASSENGER MEAL & TIER REPORT by *2100551*</h1>
+        
+        <div class="help-section">
+            <div class="help-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleTutorial" onchange="toggleHelp('tutorial')">
+                    <span class="toggle-slider"></span>
+                </label>
+                <label class="help-toggle-label" for="toggleTutorial">
+                    <span id="tutorialLabel">Show</span> How to Use This Tool
+                </label>
+            </div>
+            
+            <div class="help-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleVersion" onchange="toggleHelp('version')">
+                    <span class="toggle-slider"></span>
+                </label>
+                <label class="help-toggle-label" for="toggleVersion">
+                    <span id="versionLabel">Show</span> Version Updates
+                </label>
+            </div>
+            
+            <!-- NEW: Download Button -->
+            <div class="help-toggle">
+                <button class="btn-success btn-small" onclick="downloadPage()">
+                    📲 Download Offline Version
+                </button>
+            </div>
+        </div>
+        <!-- NEW: Dual Chart Toggle -->
+<div class="help-toggle">
+    <button class="dual-chart-toggle" onclick="toggleDualChartMode()">
+        <span>🔄</span>
+        <span id="dualChartLabel">Dual Chart Mode</span>
+        <label class="toggle-switch">
+            <input type="checkbox" id="dualChartToggle">
+            <span class="toggle-slider"></span>
+        </label>
+    </button>
+</div>
+       <div id="tutorialContent" class="help-content">
+    <h3>Quick Start Guide - 4 Simple Steps</h3>
+    
+    <!-- Quick Platform Summary -->
+    <div class="platform-summary">
+        <div class="platform-card mini">
+            <h4>💻 PC/Mac</h4>
+            <p>1. Ctrl+A (select all)<br>2. Ctrl+C (copy)<br>3. Ctrl+V (paste here)<br>4. Ctrl+Enter (generate)</p>
+        </div>
+        
+        <div class="platform-card mini">
+            <h4>📱 Android</h4>
+            <p>1. Install XClipper<br>2. Select all<br>3. XCopy<br>4. Paste here</p>
+        </div>
+        
+        <div class="platform-card mini">
+            <h4>🍎 iOS</h4>
+            <p>1. Tap & hold FLT NBR<br>2. Drag to select all<br>3. Copy<br>4. Paste here</p>
+        </div>
+    </div>
+    
+    <div class="simple-steps">
+        <div class="step-simple">
+            <div class="step-icon">📋</div>
+            <div class="step-text">
+                <strong>Step 1:</strong> Copy entire manifest in BPM from "FLT NBR" to "Showing X entries"
+            </div>
+        </div>
+        
+        <div class="step-simple">
+            <div class="step-icon">📝</div>
+            <div class="step-text">
+                <strong>Step 2:</strong> Paste into the text box below
+            </div>
+        </div>
+        
+        <div class="step-simple">
+            <div class="step-icon">🚀</div>
+            <div class="step-text">
+                <strong>Step 3:</strong> Click "Generate Report" or press Ctrl+Enter. Use advance settings for seat chart and more custom configuration
+            </div>
+        </div>
+        
+        <div class="step-simple">
+            <div class="step-icon">🖨️</div>
+            <div class="step-text">
+                <strong>Step 4:</strong> Click "Print Report" and set margins "Fit to page/minimum/custom" depending on your printer
+            </div>
+        </div>
+    </div>
+    
+    <div class="critical-note">
+        <strong>🚨 Android Users:</strong> You MUST install "XClipper" from Play Store to copy long manifests!
+    </div>
+    
+    <!-- Embedded Full Tutorial -->
+    <div class="full-tutorial">
+        <h4>📖 Complete Guide & Troubleshooting</h4>
+        <div class="iframe-container">
+            <div id="iframe-loading">
+                <div class="spinner"></div>
+                <p>Loading complete tutorial...</p>
+            </div>
+            <iframe 
+                src="tutorial.html" 
+                id="tutorialIframe"
+                title="Complete Tutorial & Troubleshooting"
+                scrolling="yes"
+                loading="lazy"
+                onload="hideIframeLoading()">
+            </iframe>
+        </div>
+        
+        <div class="iframe-controls">
+            <button onclick="reloadIframe()" class="btn-small btn-info">🔄 Reload</button>
+            <button onclick="openTutorialInNewTab()" class="btn-small btn-success">🔗 Open in New Tab</button>
+        </div>
+    </div>
+</div>
+        
+        <div id="versionContent" class="help-content">
+            <h3>Version History - Complete Release Notes</h3>
+            
+            <!-- Embedded Version History -->
+            <div class="full-tutorial">
+                <h4>📚 Complete Version History</h4>
+                <div class="iframe-container">
+                    <div id="iframe-loading-version">
+                        <div class="spinner"></div>
+                        <p>Loading version history...</p>
+                    </div>
+                    <iframe 
+                        src="versions.html" 
+                        id="versionIframe"
+                        title="Complete Version History"
+                        scrolling="yes"
+                        loading="lazy"
+                        onload="hideVersionIframeLoading()">
+                    </iframe>
+                </div>
+                
+                <div class="iframe-controls">
+                    <button onclick="reloadVersionIframe()" class="btn-small btn-info">🔄 Reload</button>
+                    <button onclick="openVersionsInNewTab()" class="btn-small btn-success">🔗 Open in New Tab</button>
+                </div>
+            </div>
+        </div>
+        <!-- NEW: Dual Chart Mode Indicator -->
+<div id="dualChartIndicator" class="dual-chart-indicator">
+    <span>🔄</span>
+    <span><strong>Dual Chart Mode Active:</strong> Generate first chart → Clear → Paste second manifest → Generate second chart</span>
+</div>
+        
+        <div class="input-section">
+            <div class="paste-hint">💡 Paste manifest → Generate (Ctrl+Enter) → Print - Fast & Simple!</div>
+            <textarea id="manifestInput" placeholder="Paste passenger manifest here..."></textarea>
+            <div class="button-group">
+                <button class="btn-primary" onclick="generateQuickReport()">Generate Report</button>
+                <button class="btn-secondary" onclick="clearAll()">Clear</button>
+                <button class="btn-info" id="toggleAdvanced" onclick="toggleSettings()">▼ Advanced Settings</button>
+                <button class="btn-success" onclick="window.print()">Print Report</button>
+                <button class="btn-info" onclick="toggleSavedSection()">📋Saved (<span id="savedCount">0</span>)</button>
+            </div>
+            <!-- ============================================
+     SIMPLE SAVED REPORTS SECTION
+     ============================================ -->
+<div class="saved-reports-simple" id="savedReportsSimple" style="display: none;">
+    <div class="saved-header">
+        <h2>📋 Saved Reports (<span id="savedCount">0</span>)</h2>
+        <button class="btn-secondary btn-small" onclick="toggleSavedSection()">Hide</button>
+    </div>
+    
+    <div class="saved-list" id="savedList">
+        <!-- Reports will appear here -->
+    </div>
+    
+    <div class="saved-actions">
+        <button class="btn-primary" onclick="printAllSelected()">🖨️ Print Selected Reports</button>
+        <button class="btn-danger btn-small" onclick="clearAllSaved()">Clear All</button>
+    </div>
+</div>
+
+<!-- Save button that appears after generating a report -->
+<div id="savePrompt" style="display: none; margin: 15px 0; text-align: center;">
+    <button class="btn-success" onclick="saveCurrentReport()">💾 Save This Report</button>
+</div>
+            <div id="advancedSettings" class="advanced-settings">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div class="settings-header">Advanced Configuration</div>
+                    <button class="btn-secondary btn-small" onclick="resetToDefaults()">Reset to Defaults</button>
+                </div>
+                
+                <select id="aircraftType" onchange="onAircraftChange()">
+                    <option value="auto">Auto-detect from manifest</option>
+                    <optgroup label="Narrowbody (737)">
+                        <option value="737NG">737NG: J:1-3, Y:4-31</option>
+                        <option value="737MAX">737MAX: J:1-3, Y:4-31</option>
+                        <option value="737NR">737NR: J:1-4, Y:5-30</option>
+                    </optgroup>
+                    <optgroup label="Widebody">
+                        <option value="333">A330-300: J:1-7, C:9-27, D:28-44</option>
+                        <option value="332">A330-200: J:1-6, C:14-30, D:31-50</option>
+                        <option value="339">A330-900: J:1-8, C:9-26, D:27-44</option>
+                        <option value="359">A350-900: J:1-11, C:12-22, D:23-32, E:33-41</option>
+                        <option value="350">A350-MAH: J:1-10, C:20-35, D:36-46, E:47-55</option>
+                    </optgroup>
+                    <option value="custom">Custom Configuration</option>
+                </select>
+                
+                <div id="customZones" class="custom-zones">
+                    <div class="settings-header">Custom Zone Configuration</div>
+                    <div id="zoneError" class="zone-error"></div>
+                    <div id="zoneBuilder" class="zone-builder"></div>
+                    <button class="btn-info btn-small" onclick="addCustomZone()">+ Add Zone</button>
+                    <button class="btn-success btn-small" onclick="updateCustomZones()">Update Zones</button>
+                </div>
+                
+                <div class="settings-header" style="margin-top: 15px;">Layout Style</div>
+                <select id="layoutStyle">
+    <option value="auto">Auto (Smart Default)</option>
+    <option value="single">Traditional Single Column</option>
+    <option value="port-starboard">Port/Starboard Split</option>
+    <option value="seat-chart">Seat Chart (Alpha VainGlory)</option>
+    <!-- NEW: Business Class Seat Chart Option -->
+    <option value="seat-chart-business">Seat Chart - Business Class</option>
+    <!-- NEW: Dual Chart Option for 737 -->
+    <option value="dual-chart-737">Dual Service Chart - 737 Business Class</option>
+</select>
+<!-- NEW: Dual Chart Instructions -->
+<div id="dualChartInstructions" class="dual-chart-instructions" style="display: none;">
+    <strong>📋 Dual Chart Instructions:</strong>
+    <ul class="dual-chart-steps">
+        <li>1. Select your 737 aircraft type (NG, MAX, or NR)</li>
+        <li>2. Paste <strong>FIRST SERVICE</strong> manifest and click "Generate Report"</li>
+        <li>3. Popup opens with first service chart. Wait for "Chart ready" message.</li>
+        <li>4. Clear the text box, paste <strong>SECOND SERVICE</strong> manifest</li>
+        <li>5. Click "Generate Report" again - it will send to existing popup</li>
+        <li>6. Print both services on one page!</li>
+    </ul>
+</div>
+                
+                <div class="settings-header" style="margin-top: 15px;">Font Size</div>
+                <div class="font-size-controls">
+                    <div class="font-size-selector">
+                        <input type="range" id="fontSizeSlider" min="7" max="14" value="9" step="1">
+                        <span id="fontSizeDisplay" style="font-weight: 600; color: #2563EB; min-width: 40px;">9px</span>
+                    </div>
+                    <div class="font-size-presets">
+                        <button class="btn-small btn-secondary" onclick="setFontSize(7)">Small (7px)</button>
+                        <button class="btn-small btn-info" onclick="setFontSize(9)">Default (9px)</button>
+                        <button class="btn-small btn-success" onclick="setFontSize(12)">Large (12px)</button>
+                        <button class="btn-small btn-primary" onclick="setFontSize(14)">X-Large (14px)</button>
+                    </div>
+                </div>
+                
+                <!-- Table Width & Column Controls -->
+                <div class="settings-header">Table Width & Column Layout</div>
+                <div class="table-controls">
+                    <div class="control-group">
+                        <label>Table Width: <span id="tableWidthValue">100%</span></label>
+                        <input type="range" id="tableWidthSlider" min="50" max="150" value="100" step="10">
+                    </div>
+                </div>
+                
+                <div class="settings-header">Seat Chart Controls</div>
+                <div class="table-controls">
+                    <div class="control-group">
+                        <label>Seat Chart Font Size: <span id="seatChartFontValue">14px</span></label>
+                        <input type="range" id="seatChartFontSlider" min="8" max="16" value="14" step="1">
+                        <div style="font-size: 10px; color: #64748B; margin-top: 5px;">
+                            Line 1: Name/Tier | Line 2: Meal (2px larger for emphasis) | Line 3: Meal/Blank | Line 4: Blank line for writing in business class
+                        </div>
+                    </div>
+                    
+                    <!-- RESTORED: Aft Perspective View Option -->
+                    <div class="print-option">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="flipSeatChart">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-label" for="flipSeatChart">
+                            <strong>Aft Perspective View</strong>
+                            <span class="option-description">Flip seat chart: rows reversed (3→1) and columns reversed (A→F) - print and turn paper for perfect aft cabin view</span>
+                        </label>
+                    </div>
+                    
+                    <div class="print-option">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showAllBusiness">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-label" for="showAllBusiness">
+                            <strong>Show All Business Class Passengers in Seat Chart</strong>
+                            <span class="option-description">Display all business class passengers (B/J zones), even without special meals/tier. Economy zones continue to show only special cases.</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Print Layout Options -->
+                <div class="settings-header">Print Layout Options</div>
+                <div class="print-layout-controls">
+                    <div class="print-option">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="compactPrintMode">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-label" for="compactPrintMode">
+                            <strong>Compact Print Mode</strong>
+                            <span class="option-description">Save 20-30% paper for large lists (100+ pax)</span>
+                        </label>
+                    </div>
+                    <div class="print-option">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="landscapeMode">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-label" for="landscapeMode">
+                            <strong>Landscape Orientation</strong>
+                            <span class="option-description">Best for 12px+ fonts and wide tables</span>
+                        </label>
+                    </div>
+                    <div class="print-option">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="pageBreakBetweenZones" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-label" for="pageBreakBetweenZones">
+                            <strong>Page Break Between Zones</strong>
+                            <span class="option-description">Start each zone on a new page when printing</span>
+                        </label>
+                    </div>
+                    <div class="print-option">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="avoidOrphanRows" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-label" for="avoidOrphanRows">
+                            <strong>Avoid Orphan Rows</strong>
+                            <span class="option-description">Keep at least 2 rows together when page breaks occur</span>
+                        </label>
+                    </div>
+                    <!-- NEW: Show Unassigned Table in Print Option -->
+                    <div class="print-option">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showUnassignedInPrint">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-label" for="showUnassignedInPrint">
+                            <strong>Show Unassigned Table in Print View</strong>
+                            <span class="option-description">Include unassigned passengers table in printed reports</span>
+                        </label>
+                    </div>
+                    <div style="margin-top: 12px; padding: 10px; background: #EFF6FF; border-radius: 4px; border-left: 3px solid #2563EB; font-size: 11px; color: #1E3A8A;">
+                        <strong>📄 Estimated Pages:</strong> <span id="pageEstimate">Generate report to see estimate</span>
+                    </div>
+                </div>
+                
+                <div class="settings-header">Display Zones</div>
+                <div id="zoneCheckboxes" class="zone-checkboxes"></div>
+                
+                <button class="btn-success" onclick="window.print()" style="width: 100%; margin-top: 10px;">Print Report with Current Settings</button>
+            </div>
+        </div>
+        
+        <div class="output-section" id="reportContent"></div>
+        
+        <div class="acknowledgments">
+            <h2>ACKNOWLEDGMENTS</h2>
+            <p style="margin-bottom: 5px; text-align: center;">This tool was made possible thanks to:</p>
+            <ul style="margin-left: 20px;">
+                <li><strong>Nadiya and Zayn Ikhlas</strong> - for the LOVE</li>
+                <li><strong>Alif</strong> - For the initial problem of android copy paste, printing, 6 years of writing for every flight, testing and valuable feedback</li>
+                <li><strong>Fahrin</strong> - For the ideas, iOS testing, bugs found and suggestions</li>
+                <li><strong>Nurhadi, Nazim, Jessie Lau</strong> - For Android testing</li>
+                <li><strong>Amalina</strong> - For iOS testing and tutorial</li>
+                <li><strong>Dora</strong> - Teaching me how to open this in PC</li>
+                <li><strong>Hafizah</strong> - For the aircraft configurations</li>
+                <li><strong>LS Batch 3/25</strong> - For inspiring this project and testing</li>
+                <li><a href="https://spck.io/" target="_blank"><strong>SPCK editor</strong></a> - Spck editor for coding and git</li>
+                <li><a href="https://kaustubhpatange.github.io/XClipper/" target="_blank"><strong>Xclipper</strong></a> - Must have for android mobile</li>
+                <li><a href="https://adimudzamil.github.io/ftl/" target="_blank"><strong>FTL calculator and Roster with FTL timer and info</strong></a> - if you wanna test it out for me, feedback needed</li>
+                <li><a href="https://adimudzamil.github.io/roster/" target="_blank"><strong>Roster to Calendar</strong></a> - How i add roster to my calendar and set alarm for every flight</li>
+                <li><a href="https://adimudzamil.github.io/log/" target="_blank"><strong>ICC Timestamp Logger</strong></a> - Time stamp logger for ICC, still testing and debugging</li>
+            </ul>
+            <p style="margin-top: 10px; font-style: italic; text-align: center;">Thank you all for your help during testing and for helping make this tool better for everyone! ✈️</p>
+            
+            <div class="version-info">
+                Version 4.0 | 4th Line for Business Class Writing | Left-Aligned Empty Seat Numbers | Show Unassigned Table in Print
+                <br>Any bugs or feedback please contact Zayn Ikhlas when he is 21. I only do this when i'm babysitting Zayn or n/s lol XP
+            </div>
+        </div>
+    </div>
+    <script>
+    
+// =================== DUAL CHART GLOBAL VARIABLES ===================
+let seatChartWindow = null;
+let chartReadyForSecondManifest = false;
+let isDualChartMode = false;
+
+// =================== NEW: AUTO DETECTION & AUTO LAYOUT ===================
+
+// NEW: Enhanced generateQuickReport to auto-set aircraft and layout
+function generateQuickReport() {
+    const input = document.getElementById('manifestInput').value;
+    if (!input.trim()) {
+        showError('Please paste passenger manifest data.');
+        return;
+    }
+    
+    try {
+        const { flightInfo, passengers } = parseManifest(input);
+        
+        // Detect aircraft type from manifest
+        const detectedType = detectAircraftType(passengers, flightInfo);
+        const effectiveAircraftConfig = getEffectiveAircraftConfig(detectedType, flightInfo, passengers);
+        const effectiveLayout = getEffectiveLayout(detectedType);
+        
+        // Auto-set the aircraft type dropdown
+        const aircraftDropdown = document.getElementById('aircraftType');
+        aircraftDropdown.value = effectiveAircraftConfig;
+        
+        // Auto-set the layout style dropdown
+        const layoutDropdown = document.getElementById('layoutStyle');
+        layoutDropdown.value = effectiveLayout;
+        
+        // Update settings and generate report
+        updateSettingsFromControls();
+        generateReportWithCurrentSettings();
+        
+        // Show detection message
+        let layoutName = effectiveLayout === 'port-starboard' ? 'Port/Starboard Split' : 'Single Column';
+        showSuccess(`✓ Auto-detected: ${effectiveAircraftConfig} | Layout: ${layoutName}`);
+        
+    } catch (error) {
+        showError(`Error: ${error.message}`);
+    }
+}
+
+// NEW: Update getEffectiveLayout to always use port-starboard for widebody when auto
+function getEffectiveLayout(detectedType) {
+    // If layout is set to auto in settings
+    if (currentSettings.layoutStyle === 'auto') {
+        // Always use port-starboard for widebody when auto is selected
+        return detectedType === 'widebody' ? 'port-starboard' : 'single';
+    }
+    return currentSettings.layoutStyle;
+}
+
+// NEW: Enhanced aircraft detection with better registration logic
+function detectAircraftType(passengers, flightInfo) {
+    // First try to detect from aircraft registration in flight info
+    if (flightInfo.aircraft) {
+        const acft = flightInfo.aircraft.toUpperCase();
+        
+        // Check for 9MM registrations (MH aircraft)
+        console.log("Checking aircraft registration:", acft);
+        
+        if (acft.startsWith('9MM')) {
+            const fourthChar = acft[3];
+            const fifthChar = acft[4];
+            
+            // 737: 9MM(X,L,V,F) + any letter
+            if (['X', 'L', 'V', 'F'].includes(fourthChar)) {
+                console.log("Detected: 737 aircraft (narrowbody)");
+                return 'narrowbody';
+            }
+            // A330-900neo: 9MM(N) + any letter
+            else if (fourthChar === 'N') {
+                console.log("Detected: A330-900neo (widebody)");
+                return 'widebody';
+            }
+            // A350-900: 9MM(A) + A-G
+            else if (fourthChar === 'A' && fifthChar && fifthChar >= 'A' && fifthChar <= 'G') {
+                console.log("Detected: A350-900 (widebody)");
+                return 'widebody';
+            }
+            // A350-MAH: 9MMAH
+            else if (acft === '9MMAH') {
+                console.log("Detected: A350-MAH (widebody)");
+                return 'widebody';
+            }
+            // A330-300: 9MM(T) + A-S
+            else if (fourthChar === 'T' && fifthChar && fifthChar >= 'A' && fifthChar <= 'S') {
+                console.log("Detected: A330-300 (widebody)");
+                return 'widebody';
+            }
+            // A330-200: 9MM(T) + U-Z
+            else if (fourthChar === 'T' && fifthChar && fifthChar >= 'U' && fifthChar <= 'Z') {
+                console.log("Detected: A330-200 (widebody)");
+                return 'widebody';
+            }
+        }
+        
+        // Check for other registration patterns
+        if (acft.includes('737')) return 'narrowbody';
+        if (acft.includes('A330') || acft.includes('A350') || acft.includes('A340')) return 'widebody';
+        if (acft.includes('777') || acft.includes('787')) return 'widebody';
+    }
+    
+    // Fallback: detect from seat letters
+    for (const pax of passengers) {
+        if (pax.seat) {
+            const seatLetter = pax.seat.slice(-1).toUpperCase();
+            // Widebody aircraft have seats beyond F (G, H, J, K)
+            if (['G', 'H', 'J', 'K'].includes(seatLetter)) {
+                console.log("Detected: Widebody from seat letter", seatLetter);
+                return 'widebody';
+            }
+        }
+    }
+    
+    console.log("Defaulting to: narrowbody (737)");
+    return 'narrowbody'; // default to 737 if no widebody indicators found
+}
+
+// NEW: Enhanced aircraft configuration detection with better fallbacks
+function getEffectiveAircraftConfig(detectedType, flightInfo, passengers) {
+    // First check if user has manually selected a specific type
+    const manualAircraftType = document.getElementById('aircraftType').value;
+    if (manualAircraftType !== 'auto') {
+        console.log("Using manual selection:", manualAircraftType);
+        return manualAircraftType;
+    }
+    
+    // Auto-detection logic
+    if (flightInfo.aircraft) {
+        const acft = flightInfo.aircraft.toUpperCase();
+        
+        // 737 Aircraft Detection
+        if (acft.startsWith('9MM') && ['X', 'L', 'V', 'F'].includes(acft[3])) {
+            // Check if this is 737NR (Business Class extends to row 4)
+            const hasRow4Business = passengers.some(p => {
+                if (p.seat && p.class === 'J') {
+                    const rowNum = parseInt(p.seat.substring(0, 2));
+                    return rowNum === 4;
+                }
+                return false;
+            });
+            
+            // If row 4 has Business Class passengers, use 737NR configuration
+            if (hasRow4Business) {
+                console.log("Detected: 737NR (Business class in row 4)");
+                return '737NR'; // J:1-4, Y:5-30
+            } else {
+                // Try to distinguish between NG and MAX if possible
+                if (acft.includes('MAX') || (acft[3] === 'V' || acft[3] === 'F')) {
+                    console.log("Detected: 737MAX");
+                    return '737MAX';
+                }
+                console.log("Detected: 737NG");
+                return '737NG'; // default 737
+            }
+        }
+        
+        // Widebody Aircraft Detection
+        if (acft.startsWith('9MM')) {
+            const fourthChar = acft[3];
+            const fifthChar = acft[4];
+            
+            if (fourthChar === 'N') {
+                console.log("Detected: A330-900neo (339)");
+                return '339';
+            }
+            if (fourthChar === 'A' && fifthChar && fifthChar >= 'A' && fifthChar <= 'G') {
+                console.log("Detected: A350-900 (359)");
+                return '359';
+            }
+            if (acft === '9MMAH') {
+                console.log("Detected: A350-MAH (350)");
+                return '350';
+            }
+            if (fourthChar === 'T') {
+                if (fifthChar && fifthChar >= 'A' && fifthChar <= 'S') {
+                    console.log("Detected: A330-300 (333)");
+                    return '333';
+                }
+                if (fifthChar && fifthChar >= 'U' && fifthChar <= 'Z') {
+                    console.log("Detected: A330-200 (332)");
+                    return '332';
+                }
+            }
+        }
+    }
+    
+    // Fallback based on detected type
+    const fallback = detectedType === 'widebody' ? '333' : '737NG';
+    console.log("Using fallback:", fallback);
+    return fallback;
+}
+
+// NEW: Auto-detection indicator
+function showAutoDetectionIndicator() {
+    const input = document.getElementById('manifestInput').value;
+    if (!input.trim()) return;
+    
+    try {
+        const { flightInfo, passengers } = parseManifest(input);
+        const detectedType = detectAircraftType(passengers, flightInfo);
+        const effectiveAircraftConfig = getEffectiveAircraftConfig(detectedType, flightInfo, passengers);
+        const effectiveLayout = getEffectiveLayout(detectedType);
+        
+        // Update page estimate with detection info
+        const pageEstimate = document.getElementById('pageEstimate');
+        if (pageEstimate) {
+            const aircraftType = document.getElementById('aircraftType').value;
+            const layoutStyle = document.getElementById('layoutStyle').value;
+            
+            let detectionInfo = '';
+            if (aircraftType === 'auto') {
+                detectionInfo += `<div><strong>Aircraft:</strong> <span style="color: #059669;">${effectiveAircraftConfig}</span> (Auto-detected)</div>`;
+            }
+            if (layoutStyle === 'auto') {
+                const layoutName = effectiveLayout === 'port-starboard' ? 'Port/Starboard' : 'Single Column';
+                detectionInfo += `<div><strong>Layout:</strong> <span style="color: #059669;">${layoutName}</span> (Auto)</div>`;
+            }
+            
+            if (detectionInfo) {
+                pageEstimate.innerHTML = `<div style="margin-bottom: 5px;"><strong>📊 Auto-detection Preview:</strong></div>${detectionInfo}`;
+            }
+        }
+    } catch (error) {
+        // Ignore errors in indicator
+        console.log("Auto-detection preview error:", error);
+    }
+}
+// =================== DUAL CHART FUNCTIONS ===================
+function toggleDualChartMode() {
+const toggle = document.getElementById('dualChartToggle');
+isDualChartMode = !toggle.checked;
+toggle.checked = isDualChartMode;
+
+const label = document.getElementById('dualChartLabel');
+const indicator = document.getElementById('dualChartIndicator');
+
+if (isDualChartMode) {
+label.textContent = 'Dual Chart Mode ON';
+indicator.classList.add('active');
+// Auto-select dual chart layout
+document.getElementById('layoutStyle').value = 'dual-chart-737';
+showDualChartInstructions();
+} else {
+label.textContent = 'Dual Chart Mode';
+indicator.classList.remove('active');
+hideDualChartInstructions();
+}
+
+console.log('Dual chart mode:', isDualChartMode ? 'ON' : 'OFF');
+}
+
+function showDualChartInstructions() {
+const instructions = document.getElementById('dualChartInstructions');
+if (instructions) instructions.style.display = 'block';
+}
+
+function hideDualChartInstructions() {
+const instructions = document.getElementById('dualChartInstructions');
+if (instructions) instructions.style.display = 'none';
+}
+
+// Dual chart specific generate function
+function generateDualChart(passengers, flightInfo, aircraftType) {
+// Parse manifest and create chartData...
+const chartData = {
+flightInfo: flightInfo,
+passengers: passengers,
+zoneSummary: generateZoneSummaryForDualChart(passengers),
+config: {
+aircraftType: aircraftType,
+timestamp: Date.now()
+}
+};
+
+if (!seatChartWindow || seatChartWindow.closed) {
+// First manifest - open new popup
+const timestamp = Date.now();
+const dataKey = `chartData_${timestamp}`;
+localStorage.setItem(dataKey, JSON.stringify(chartData));
+
+// Determine which HTML file to open
+let popupFile = '';
+if (aircraftType === '737NG' || aircraftType === '737MAX') {
+popupFile = 'sc-737.html';
+} else if (aircraftType === '737NR') {
+popupFile = 'sc-737.html'; // Use the same file for NR
+}
+
+// Open popup
+seatChartWindow = window.open(
+`${popupFile}?data=${dataKey}&chart=top`,
+'seatChart',
+'width=1200,height=900,scrollbars=yes'
+);
+
+// Clear input for second manifest
+document.getElementById('manifestInput').value = '';
+
+// Show success message
+showSuccess('First service chart opened! Clear and paste second manifest for second service.');
+
+} else if (chartReadyForSecondManifest) {
+// Second manifest - send to existing popup
+const timestamp = Date.now();
+const dataKey = `chartData_bottom_${timestamp}`;
+localStorage.setItem(dataKey, JSON.stringify(chartData));
+
+// Send message to popup
+seatChartWindow.postMessage({
+type: 'loadBottomChart',
+dataKey: dataKey
+}, '*');
+
+// Clear input
+document.getElementById('manifestInput').value = '';
+chartReadyForSecondManifest = false;
+
+// Show success message
+showSuccess('Second service sent to existing chart window!');
+} else {
+showError('First chart is still loading. Please wait a moment and try again.');
+}
+}
+
+function generateZoneSummaryForDualChart(passengers) {
+const totalPassengers = passengers.length;
+const specialMeals = passengers.filter(p => p.meal).length;
+const emerPlat = passengers.filter(p => p.tier === 'EMER' || p.tier === 'PLAT').length;
+
+// Count meal types
+const mealCounts = {};
+passengers.forEach(p => {
+if (p.meal) {
+const meals = p.meal.split(',').map(m => m.trim());
+meals.forEach(meal => {
+if (meal !== 'BBML') {
+mealCounts[meal] = (mealCounts[meal] || 0) + 1;
+}
+});
+}
+});
+
+const mealBreakdown = Object.entries(mealCounts)
+.sort((a, b) => b[1] - a[1])
+.map(([meal, count]) => `${meal}: ${count}`)
+.join(', ');
+
+const bbml = passengers.filter(p => p.meal && p.meal.includes('BBML')).length;
+
+return {
+totalPassengers: totalPassengers,
+specialMeals: specialMeals,
+emerPlat: emerPlat,
+mealBreakdown: mealBreakdown,
+bbml: bbml
+};
+}
+
+// Listen for chart ready message from popup
+window.addEventListener('message', function(event) {
+if (event.data && event.data.type === 'chartReady') {
+chartReadyForSecondManifest = true;
+// Optional: Show message to user that they can paste second manifest
+showSuccess('First chart loaded successfully. You can now paste the second manifest for the second service.');
+}
+});
+
+</script>
+    <script>
+        // Global state with smart defaults
+        const CONFIG = {
+            SEAT_PATTERN: /^\d{2}[A-K]$/i,
+            PNR_PATTERN: /^[A-Z0-9]{6,7}$/i,
+            CLASS_PATTERN: /^[JY]$/i,
+            TITLES: ['MR', 'MS', 'MRS', 'MISS', 'MSTR', 'DATO', 'DATIN', 'DTUK', 'TSRI', 'MDM', 'DR', 'PROF'],
+            TIERS: ['ELIT', 'PLAT', 'GOLD', 'RUBY', 'SLVR', 'BLUE', 'SAPH', 'EMER']
+        };
+        
+        const AIRCRAFT_CONFIGS = {
+            '737NG': [{ name: 'B', start: 1, end: 3 }, { name: 'EY', start: 4, end: 31 }],
+            '737MAX': [{ name: 'B', start: 1, end: 3 }, { name: 'EY', start: 4, end: 31 }],
+            '737NR': [{ name: 'B', start: 1, end: 4 }, { name: 'EY', start: 5, end: 30 }],
+            '333': [{ name: 'B', start: 1, end: 7 }, { name: 'C', start: 9, end: 27 }, { name: 'D', start: 28, end: 44 }],
+            '332': [{ name: 'B', start: 1, end: 6 }, { name: 'C', start: 14, end: 30 }, { name: 'D', start: 31, end: 50 }],
+            '339': [{ name: 'B', start: 1, end: 8 }, { name: 'C', start: 9, end: 26 }, { name: 'D', start: 27, end: 44 }],
+            '359': [{ name: 'B', start: 1, end: 11 }, { name: 'C', start: 12, end: 22 }, { name: 'D', start: 23, end: 32 }, { name: 'E', start: 33, end: 41 }],
+            '350': [{ name: 'B', start: 1, end: 10 }, { name: 'C', start: 20, end: 35 }, { name: 'D', start: 36, end: 46 }, { name: 'E', start: 47, end: 55 }]
+        };
+        
+        // UPDATED: Complete Business Class Templates Configuration for ALL aircraft types
+        const BUSINESS_CLASS_TEMPLATES = {
+            '333': {
+                template: 'sc-a333.html',
+                businessRows: [1, 2, 4, 5, 6, 7],
+                seatMap: {
+                    '1': ['A', 'D', 'G', 'K'],
+                    '2': ['A', 'D', 'G', 'H', 'K'],
+                    '4': ['A', 'D', 'G', 'K'],
+                    '5': ['A', 'D', 'G', 'H', 'K'],
+                    '6': ['A', 'D', 'G', 'K'],
+                    '7': ['A', 'D', 'G', 'H', 'K']
+                }
+            },
+            '332': {
+                template: 'sc-a332.html',
+                businessRows: [1, 2, 3, 4, 5, 6],
+                seatMap: {
+                    '1': ['E', 'F'],
+                    '2': ['A', 'D', 'G', 'K'],
+                    '3': ['C', 'E', 'F', 'H'],
+                    '4': ['A', 'D', 'G', 'K'],
+                    '5': ['C', 'E', 'F', 'H'],
+                    '6': ['A']
+                }
+            },
+            '359': {
+                template: 'sc-a359.html',
+                businessRows: [2, 3, 5, 6, 7, 8, 9, 10, 11],
+                seatMap: {
+                    '2': ['A', 'D', 'G', 'K'],
+                    '3': ['A', 'D', 'G', 'H', 'K'],
+                    '5': ['A', 'D', 'G', 'K'],
+                    '6': ['A', 'D', 'G', 'H', 'K'],
+                    '7': ['A', 'D', 'G'],
+                    '8': ['A'],
+                    '9': ['A', 'D', 'G', 'K'],
+                    '10': ['A', 'D', 'G', 'H', 'K'],
+                    '11': ['A', 'D', 'G', 'K']
+                }
+            },
+            '350': {
+                template: 'sc-a350.html',
+                businessRows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                seatMap: {
+                    '1': ['A', 'D', 'F', 'H'],
+                    '2': ['A', 'D', 'F', 'H'],
+                    '3': ['A', 'D', 'F', 'H'],
+                    '4': ['A', 'D', 'F', 'H'],
+                    '5': ['A', 'D', 'F', 'H'],
+                    '6': ['A', 'D', 'F', 'H'],
+                    '7': ['A', 'D', 'F', 'H'],
+                    '8': ['A', 'D', 'F', 'H'],
+                    '9': ['A', 'D', 'F', 'H'],
+                    '10': ['A', 'D', 'F', 'H']
+                }
+            },
+            '339': {
+                template: 'sc-a339.html',
+                businessRows: [1, 2, 3, 5, 6, 7, 8],
+                seatMap: {
+                    '1': ['A', 'D', 'G', 'K'],
+                    '2': ['A', 'D', 'G', 'K'],
+                    '3': ['A', 'D', 'G', 'K'],
+                    '5': ['A', 'D', 'G', 'K'],
+                    '6': ['A', 'D', 'G', 'K'],
+                    '7': ['A', 'D', 'G', 'K'],
+                    '8': ['A', 'D', 'G', 'K']
+                }
+            },
+            '737NG': {
+                template: 'sc-737.html',
+                businessRows: [1, 2, 3],
+                seatMap: {
+                    '1': ['A', 'C', 'D', 'F'],
+                    '2': ['A', 'C', 'D', 'F'],
+                    '3': ['A', 'C', 'D', 'F']
+                }
+            },
+            '737MAX': {
+                template: 'sc-737.html',
+                businessRows: [1, 2, 3],
+                seatMap: {
+                    '1': ['A', 'C', 'D', 'F'],
+                    '2': ['A', 'C', 'D', 'F'],
+                    '3': ['A', 'C', 'D', 'F']
+                }
+            },
+            '737NR': {
+                template: 'sc-737.html',
+                businessRows: [1, 2, 3, 4],
+                seatMap: {
+                    '1': ['A', 'C', 'D', 'F'],
+                    '2': ['A', 'C', 'D', 'F'],
+                    '3': ['A', 'C', 'D', 'F'],
+                    '4': ['A', 'C', 'D', 'F']
+                }
+            }
+        };
+        
+        // Seat maps for each aircraft configuration - UPDATED for 737 business class
+        const SEAT_MAPS = {
+            '737NG': {
+                columns: ['A', 'B', 'C', '|', 'D', 'E', 'F'],
+                businessColumns: ['A', 'C', '|', 'D', 'F'], // No B and E in business class
+                aisles: [3],
+                businessSeats: ['A', 'C', 'D', 'F'],
+                economySeats: ['A', 'B', 'C', 'D', 'E', 'F']
+            },
+            '737MAX': {
+                columns: ['A', 'B', 'C', '|', 'D', 'E', 'F'],
+                businessColumns: ['A', 'C', '|', 'D', 'F'], // No B and E in business class
+                aisles: [3],
+                businessSeats: ['A', 'C', 'D', 'F'],
+                economySeats: ['A', 'B', 'C', 'D', 'E', 'F']
+            },
+            '737NR': {
+                columns: ['A', 'B', 'C', '|', 'D', 'E', 'F'],
+                businessColumns: ['A', 'C', '|', 'D', 'F'], // No B and E in business class
+                aisles: [3],
+                businessSeats: ['A', 'C', 'D', 'F'],
+                economySeats: ['A', 'B', 'C', 'D', 'E', 'F']
+            },
+            '333': {
+                columns: ['A', 'C', '|', 'D', 'E', 'F', 'G', '|', 'H', 'K'],
+                aisles: [2, 7],
+                businessSeats: ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'K'],
+                economySeats: ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'K'],
+                businessClassRows: [1, 2, 4, 5, 6, 7],
+                businessClassMerges: {
+                    'A': [['A', 'C']],
+                    'D': [['D', 'E']], 
+                    'G': [['F', 'G']],
+                    'K': [['H', 'K'], { exceptions: [2, 5, 7] }]
+                }
+            },
+            '332': {
+                columns: ['A', 'C', '|', 'D', 'E', 'F', 'G', '|', 'H', 'K'],
+                aisles: [2, 7],
+                businessSeats: ['A', 'C', 'D', 'G', 'H', 'K'],
+                economySeats: ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'K']
+            },
+            '339': {
+                columns: ['A', 'C', '|', 'D', 'E', 'F', 'G', '|', 'H', 'K'],
+                aisles: [2, 7],
+                businessSeats: ['A', 'C', 'D', 'G', 'H', 'K'],
+                economySeats: ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'K']
+            },
+            '359': {
+                columns: ['A', 'B', 'C', '|', 'D', 'F', 'G', '|', 'H', 'J', 'K'],
+                aisles: [3, 7],
+                businessSeats: ['A', 'C', 'D', 'G', 'H', 'K'],
+                economySeats: ['A', 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K']
+            },
+            '350': {
+                columns: ['A', 'B', 'C', '|', 'D', 'E', 'F', '|', 'G', 'H', 'J'],
+                aisles: [3, 7],
+                businessSeats: ['A', 'C', 'D', 'F', 'G', 'J'],
+                economySeats: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J']
+            }
+        };
+        
+        // Global state
+        let currentSettings = {
+            aircraftType: 'auto',
+            layoutStyle: 'auto',
+            fontSize: 9,
+            tableWidth: 100,
+            seatChartFontSize: 14,
+            compactPrint: false,
+            landscapeMode: false,
+            pageBreakZones: true,
+            avoidOrphans: true,
+            flipSeatChart: false,
+            showAllBusiness: false,
+            showUnassignedInPrint: false,
+            activeZones: {},
+            detectedAircraftType: 'narrowbody'
+        };
+        
+        let customZones = [];
+        let debounceTimer;
+        
+        // Iframe management
+        let tutorialIframeLoaded = false;
+
+        function reloadIframe() {
+            const iframe = document.getElementById('tutorialIframe');
+            iframe.src = iframe.src; // Reload iframe
+            tutorialIframeLoaded = false;
+            showIframeLoading();
+            showSuccess('Tutorial reloaded');
+        }
+
+        function openTutorialInNewTab() {
+            window.open('tutorial.html', '_blank');
+        }
+
+        function showIframeLoading() {
+            const loadingDiv = document.getElementById('iframe-loading');
+            if (loadingDiv) {
+                loadingDiv.style.display = 'flex';
+            }
+        }
+
+        function hideIframeLoading() {
+            const loadingDiv = document.getElementById('iframe-loading');
+            if (loadingDiv) {
+                loadingDiv.style.display = 'none';
+                tutorialIframeLoaded = true;
+            }
+        }
+
+        // Version iframe management
+        let versionIframeLoaded = false;
+
+        function reloadVersionIframe() {
+            const iframe = document.getElementById('versionIframe');
+            iframe.src = iframe.src; // Reload iframe
+            versionIframeLoaded = false;
+            showVersionIframeLoading();
+            showSuccess('Version history reloaded');
+        }
+
+        function openVersionsInNewTab() {
+            window.open('versions.html', '_blank');
+        }
+
+        function showVersionIframeLoading() {
+            const loadingDiv = document.getElementById('iframe-loading-version');
+            if (loadingDiv) {
+                loadingDiv.style.display = 'flex';
+            }
+        }
+
+        function hideVersionIframeLoading() {
+            const loadingDiv = document.getElementById('iframe-loading-version');
+            if (loadingDiv) {
+                loadingDiv.style.display = 'none';
+                versionIframeLoaded = true;
+            }
+        }
+
+        // Update the toggleHelp function to handle version iframe
+        function toggleHelp(type) {
+            const tutorial = document.getElementById('tutorialContent');
+            const version = document.getElementById('versionContent');
+            const tutorialLabel = document.getElementById('tutorialLabel');
+            const versionLabel = document.getElementById('versionLabel');
+            
+            if (type === 'tutorial') {
+                const isChecked = document.getElementById('toggleTutorial').checked;
+                tutorial.style.display = isChecked ? 'block' : 'none';
+                tutorialLabel.textContent = isChecked ? 'Hide' : 'Show';
+                
+                if (isChecked) {
+                    // Show loading if iframe hasn't loaded yet
+                    if (!tutorialIframeLoaded) {
+                        showIframeLoading();
+                    }
+                    
+                    document.getElementById('toggleVersion').checked = false;
+                    version.style.display = 'none';
+                    versionLabel.textContent = 'Show';
+                }
+            } else {
+                const isChecked = document.getElementById('toggleVersion').checked;
+                version.style.display = isChecked ? 'block' : 'none';
+                versionLabel.textContent = isChecked ? 'Hide' : 'Show';
+                
+                if (isChecked) {
+                    // Show loading if version iframe hasn't loaded yet
+                    if (!versionIframeLoaded) {
+                        showVersionIframeLoading();
+                    }
+                    
+                    document.getElementById('toggleTutorial').checked = false;
+                    tutorial.style.display = 'none';
+                    tutorialLabel.textContent = 'Show';
+                }
+            }
+        }
+        
+        // Listen for iframe messages from version history and tutorial
+        window.addEventListener('message', function(event) {
+            if (event.data === 'versionsLoaded') {
+                hideVersionIframeLoading();
+            } else if (event.data === 'tutorialLoaded') {
+                hideIframeLoading();
+            }
+        });
+        
+        // NEW: Enhanced Aircraft Detection with Registration Logic
+        function detectAircraftType(passengers, flightInfo) {
+            // First try to detect from aircraft registration in flight info
+            if (flightInfo.aircraft) {
+                const acft = flightInfo.aircraft.toUpperCase();
+                
+                // Check for 9MM registrations
+                if (acft.startsWith('9MM')) {
+                    const fourthChar = acft[3];
+                    const fifthChar = acft[4];
+                    
+                    // 737: 9MM(X,L,V,F) + any letter
+                    if (['X', 'L', 'V', 'F'].includes(fourthChar)) {
+                        return 'narrowbody'; // 737
+                    }
+                    // A330-900neo: 9MM(N) + any letter
+                    else if (fourthChar === 'N') {
+                        return 'widebody'; // A339
+                    }
+                    // A350-900: 9MM(A) + A-G
+                    else if (fourthChar === 'A' && fifthChar && fifthChar >= 'A' && fifthChar <= 'G') {
+                        return 'widebody'; // A359
+                    }
+                    // A350-MAH: 9MMAH
+                    else if (acft === '9MMAH') {
+                        return 'widebody'; // A350-MAH
+                    }
+                    // A330-300: 9MM(T) + A-S
+                    else if (fourthChar === 'T' && fifthChar && fifthChar >= 'A' && fifthChar <= 'S') {
+                        return 'widebody'; // A333
+                    }
+                    // A330-200: 9MM(T) + U-Z
+                    else if (fourthChar === 'T' && fifthChar && fifthChar >= 'U' && fifthChar <= 'Z') {
+                        return 'widebody'; // A332
+                    }
+                }
+            }
+            
+            // Fallback: detect from seat letters (existing logic)
+            for (const pax of passengers) {
+                if (pax.seat) {
+                    const seatLetter = pax.seat.slice(-1).toUpperCase();
+                    if (['G', 'H', 'J', 'K'].includes(seatLetter)) return 'widebody';
+                }
+            }
+            
+            return 'narrowbody'; // default to 737 if no widebody indicators found
+        }
+        
+        // NEW: Enhanced Aircraft Configuration Detection
+        function getEffectiveAircraftConfig(detectedType, flightInfo, passengers) {
+            if (currentSettings.aircraftType === 'auto') {
+                // If we have registration info, use it for precise detection
+                if (flightInfo.aircraft) {
+                    const acft = flightInfo.aircraft.toUpperCase();
+                    
+                    if (acft.startsWith('9MM')) {
+                        const fourthChar = acft[3];
+                        const fifthChar = acft[4];
+                        
+                        // 737 Aircraft Detection
+                        if (['X', 'L', 'V', 'F'].includes(fourthChar)) {
+                            // Check if this is 737NR (Business Class extends to row 4)
+                            const hasRow4Business = passengers.some(p => {
+                                if (p.seat && p.class === 'J') {
+                                    const rowNum = parseInt(p.seat.substring(0, 2));
+                                    return rowNum === 4;
+                                }
+                                return false;
+                            });
+                            
+                            // If row 4 has Business Class passengers, use 737NR configuration
+                            if (hasRow4Business) {
+                                return '737NR'; // J:1-4, Y:5-30
+                            } else {
+                                return '737NG'; // J:1-3, Y:4-31 (default)
+                            }
+                        }
+                        // A330-900neo: 9MM(N) + any letter
+                        else if (fourthChar === 'N') {
+                            return '339';
+                        }
+                        // A350-900: 9MM(A) + A-G
+                        else if (fourthChar === 'A' && fifthChar && fifthChar >= 'A' && fifthChar <= 'G') {
+                            return '359';
+                        }
+                        // A350-MAH: 9MMAH
+                        else if (acft === '9MMAH') {
+                            return '350';
+                        }
+                        // A330-300: 9MM(T) + A-S
+                        else if (fourthChar === 'T' && fifthChar && fifthChar >= 'A' && fifthChar <= 'S') {
+                            return '333';
+                        }
+                        // A330-200: 9MM(T) + U-Z
+                        else if (fourthChar === 'T' && fifthChar && fifthChar >= 'U' && fifthChar <= 'Z') {
+                            return '332';
+                        }
+                    }
+                }
+                
+                // Fallback to basic detection
+                return detectedType === 'widebody' ? '333' : '737NG';
+            }
+            return currentSettings.aircraftType;
+        }
+        
+        // NEW: Seat Chart Flipping Functionality
+        class SeatChartFlipper {
+            static flipSeatChart(seatChartTable) {
+                // Get all rows from the table
+                const rows = Array.from(seatChartTable.rows);
+                const newTable = seatChartTable.cloneNode(false);
+                
+                // Process header row (if exists) - flip the column order
+                if (rows.length > 0) {
+                    const headerRow = rows[0].cloneNode(true);
+                    const headerCells = Array.from(headerRow.cells);
+                    
+                    // Clear and rebuild header with flipped columns
+                    headerRow.innerHTML = '';
+                    
+                    // Keep the first cell (row header) as is
+                    if (headerCells.length > 0) {
+                        headerRow.appendChild(headerCells[0].cloneNode(true));
+                    }
+                    
+                    // Reverse the remaining cells (seat letters)
+                    const seatCells = headerCells.slice(1).reverse();
+                    seatCells.forEach(cell => {
+                        headerRow.appendChild(cell.cloneNode(true));
+                    });
+                    
+                    newTable.appendChild(headerRow);
+                }
+                
+                // Process body rows - flip both row order and column order
+                const bodyRows = rows.slice(1).reverse(); // Reverse row order
+                
+                bodyRows.forEach(row => {
+                    const newRow = row.cloneNode(false);
+                    const cells = Array.from(row.cells);
+                    
+                    // Keep the first cell (row number) as is
+                    if (cells.length > 0) {
+                        newRow.appendChild(cells[0].cloneNode(true));
+                    }
+                    
+                    // Reverse the remaining cells (seat data)
+                    const seatCells = cells.slice(1).reverse();
+                    seatCells.forEach(cell => {
+                        newRow.appendChild(cell.cloneNode(true));
+                    });
+                    
+                    newTable.appendChild(newRow);
+                });
+                
+                return newTable;
+            }
+        }
+
+        function flipSeatChart(seatChartContainer) {
+            const seatChartTable = seatChartContainer.querySelector('.seat-chart');
+            if (!seatChartTable) return;
+            
+            // Flip the seat chart using our new logic
+            const flippedTable = SeatChartFlipper.flipSeatChart(seatChartTable);
+            
+            // Replace the old table with the flipped one
+            seatChartContainer.replaceChild(flippedTable, seatChartTable);
+            
+            console.log('Seat chart flipped - rows and columns reversed!');
+        }
+
+        function flipAllSeatCharts() {
+            const seatChartContainers = document.querySelectorAll('.seat-chart-container');
+            let flipped = false;
+            
+            seatChartContainers.forEach(container => {
+                if (container.querySelector('.seat-chart')) {
+                    flipSeatChart(container);
+                    flipped = true;
+                }
+            });
+            
+            return flipped;
+        }
+        
+        // NEW: Improved name truncation for business class
+        function truncateNameForBusinessClass(name) {
+            if (!name || !name.includes('/')) return name || '';
+            
+            const parts = name.split('/');
+            return parts.map(part => {
+                const trimmed = part.trim();
+                return trimmed.length > 15 ? trimmed.substring(0, 15) + '..' : trimmed;
+            }).join('/');
+        }
+        
+        // NEW: Business Class Seat Chart Functions
+        function getBusinessClassPassengers(passengers, aircraftConfig) {
+            // Check if we have business class template for this aircraft
+            const businessConfig = BUSINESS_CLASS_TEMPLATES[aircraftConfig];
+            if (!businessConfig) {
+                return []; // No template available
+            }
+            
+            return passengers.filter(p => {
+                // Must have class J and seat assignment
+                if (p.class !== 'J' || !p.seat) return false;
+                
+                // Check if seat is in business class rows for this aircraft
+                const seatNumber = p.seat.toUpperCase();
+                const rowNum = parseInt(seatNumber.replace(/[A-Z]/g, ''));
+                
+                return businessConfig.businessRows.includes(rowNum);
+            });
+        }
+        
+        // NEW: Function to open business class seat chart
+        function openBusinessClassSeatChart(aircraftType, passengers, flightInfo, zoneSummary) {
+            // Get business class passengers
+            const businessPassengers = getBusinessClassPassengers(passengers, aircraftType);
+            
+            if (businessPassengers.length === 0) {
+                showError(`No business class passengers found for ${aircraftType}.`);
+                return;
+            }
+            
+            // Create zone summary for business class
+            const businessZoneSummary = {
+                totalPassengers: businessPassengers.length,
+                specialMeals: businessPassengers.filter(p => p.meal).length,
+                emerPlat: businessPassengers.filter(p => p.tier === 'EMER' || p.tier === 'PLAT').length,
+                mealBreakdown: getMealBreakdown(businessPassengers),
+                bbml: businessPassengers.filter(p => p.meal && p.meal.includes('BBML')).length
+            };
+            
+            // Prepare data for popup
+            const businessChartData = {
+                flightInfo: flightInfo,
+                zoneSummary: businessZoneSummary,
+                passengers: businessPassengers,
+                config: {
+                    aircraftType: aircraftType,
+                    templateFile: BUSINESS_CLASS_TEMPLATES[aircraftType]?.template || 'sc-a333.html',
+                    timestamp: Date.now(),
+                    showAllBusiness: currentSettings.showAllBusiness
+                }
+            };
+            
+            // Store data in localStorage with unique key
+            const dataKey = 'business_chart_' + Date.now();
+            localStorage.setItem(dataKey, JSON.stringify(businessChartData));
+            
+            // Clean up old data (keep only last 5 entries)
+            cleanupLocalStorage('business_chart_', 5);
+            
+            // Open template in new window
+            const templateFile = BUSINESS_CLASS_TEMPLATES[aircraftType]?.template || 'sc-a333.html';
+            const popupWindow = window.open(
+                `${templateFile}?data=${dataKey}`, 
+                '_blank',
+                'width=1200,height=800,resizable=yes,scrollbars=yes,location=no,toolbar=no'
+            );
+            
+            if (!popupWindow) {
+                showError('Popup blocked! Please allow popups for this site.');
+                return;
+            }
+            
+            showSuccess(`Business class seat chart opened in new window with ${businessPassengers.length} passengers.`);
+        }
+        
+        // NEW: Helper function to cleanup localStorage
+        function cleanupLocalStorage(prefix, keepCount) {
+            const keys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(prefix)) {
+                    keys.push({ key, timestamp: parseInt(key.split('_').pop()) });
+                }
+            }
+            
+            // Sort by timestamp (oldest first)
+            keys.sort((a, b) => a.timestamp - b.timestamp);
+            
+            // Remove old entries
+            for (let i = 0; i < keys.length - keepCount; i++) {
+                localStorage.removeItem(keys[i].key);
+            }
+        }
+        
+        // NEW: Get meal breakdown
+        function getMealBreakdown(passengers) {
+            const mealCounts = {};
+            passengers.forEach(p => {
+                if (p.meal) {
+                    const meals = p.meal.split(',').map(m => m.trim());
+                    meals.forEach(meal => {
+                        if (meal !== 'BBML') {
+                            mealCounts[meal] = (mealCounts[meal] || 0) + 1;
+                        }
+                    });
+                }
+            });
+            
+            return Object.entries(mealCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([meal, count]) => `${meal}: ${count}`)
+                .join(', ');
+        }
+        
+        // Configuration validation helper
+        function _0x2a4e(_0x7b3f) {
+            if (!_0x7b3f) return false;
+            
+            const _0x4e2a = [
+                0x41, 0x4b, 0x55, 0x50, 0x55, 0x4e, 
+                0x59, 0x45, 0x52, 0x43, 0x4f, 0x44, 0x45
+            ];
+            
+            const _0x3f7b = [
+                0x41, 0x44, 0x49, 0x20, 0x32, 0x31, 
+                0x30, 0x30, 0x35, 0x35, 0x31
+            ];
+            
+            let _t = '';
+            for (let _r = 0; _r < _0x4e2a.length; _r++) {
+                _t += String.fromCharCode(_0x4e2a[_r]);
+            }
+            
+            let _r = '';
+            for (let _t2 = 0; _t2 < _0x3f7b.length; _t2++) {
+                _r += String.fromCharCode(_0x3f7b[_t2]);
+            }
+            
+            if (_0x7b3f.toUpperCase().includes(_t)) {
+                const _0x2a4e = document.getElementById('manifestInput');
+                const _0x7b3f2 = _0x2a4e.value.replace(new RegExp(_t, 'gi'), '') + 
+                                '\n\n---\n' + _r + '\n---\n';
+                _0x2a4e.value = _0x7b3f2;
+                setTimeout(() => showSuccess('✨ +6Zero1Seven2Four777Three6!'), 100);
+                return true;
+            }
+            return false;
+        }
+        
+        // Helper Functions
+        function truncateName(name) {
+            if (!name || !name.includes('/')) return name || '';
+            
+            const parts = name.split('/');
+            return parts.map(part => {
+                const trimmed = part.trim();
+                return trimmed.length > 15 ? trimmed.substring(0, 6) + '..' : trimmed;
+            }).join('/');
+        }
+        
+        function debounce(func, wait) {
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(debounceTimer);
+                    func(...args);
+                };
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(later, wait);
+            };
+        }
+        
+        function showError(message) {
+            const output = document.getElementById('reportContent');
+            output.innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        function showSuccess(message) {
+            const output = document.getElementById('reportContent');
+            const existing = output.innerHTML;
+            output.innerHTML = `<div class="success no-print">${message}</div>` + existing;
+        }
+        
+        function hasValidManifest() {
+            const input = document.getElementById('manifestInput').value;
+            return input && input.trim().length > 0;
+        }
+        
+        // Settings Management
+        function updateSettingsFromControls() {
+            currentSettings.aircraftType = document.getElementById('aircraftType').value;
+            currentSettings.layoutStyle = document.getElementById('layoutStyle').value;
+            currentSettings.fontSize = parseInt(document.getElementById('fontSizeSlider').value);
+            currentSettings.tableWidth = parseInt(document.getElementById('tableWidthSlider').value);
+            currentSettings.seatChartFontSize = parseInt(document.getElementById('seatChartFontSlider').value);
+            currentSettings.compactPrint = document.getElementById('compactPrintMode').checked;
+            currentSettings.landscapeMode = document.getElementById('landscapeMode').checked;
+            currentSettings.pageBreakZones = document.getElementById('pageBreakBetweenZones').checked;
+            currentSettings.avoidOrphans = document.getElementById('avoidOrphanRows').checked;
+            currentSettings.flipSeatChart = document.getElementById('flipSeatChart').checked;
+            currentSettings.showAllBusiness = document.getElementById('showAllBusiness').checked;
+            currentSettings.showUnassignedInPrint = document.getElementById('showUnassignedInPrint').checked;
+            
+            updateUIFromSettings();
+        }
+        
+        function updateUIFromSettings() {
+            document.getElementById('fontSizeDisplay').textContent = currentSettings.fontSize + 'px';
+            document.getElementById('tableWidthValue').textContent = currentSettings.tableWidth + '%';
+            document.getElementById('seatChartFontValue').textContent = currentSettings.seatChartFontSize + 'px';
+            
+            // Apply visual settings
+            const outputSection = document.querySelector('.output-section');
+if (outputSection) {
+  outputSection.setAttribute('data-font-size', currentSettings.fontSize);
+  outputSection.setAttribute('data-table-width', currentSettings.tableWidth);
+  
+  // Apply table width directly to all tables
+  const tables = outputSection.querySelectorAll('table');
+  tables.forEach(table => {
+    table.style.width = currentSettings.tableWidth + '%';
+  });
+  
+  // Apply width to flight info, global summary, and zone summaries
+  const flightInfo = outputSection.querySelector('.flight-info');
+  if (flightInfo) {
+    flightInfo.style.width = currentSettings.tableWidth + '%';
+    //flightInfo.style.margin = '0 auto';  Center it if width < 100%
+  }
+  
+  const stats = outputSection.querySelectorAll('.stats, .side-stats');
+  stats.forEach(stat => {
+    stat.style.width = currentSettings.tableWidth + '%';
+    //stat.style.margin = '10px auto';  Center it if width < 100%
+  });
+  
+  const zoneHeaders = outputSection.querySelectorAll('.zone-header');
+  zoneHeaders.forEach(header => {
+    header.style.width = currentSettings.tableWidth + '%';
+  //  header.style.margin = '0 auto';  Center it if width < 100%
+  });
+}
+            
+            // Apply print settings
+            document.body.classList.toggle('compact-print-mode', currentSettings.compactPrint);
+            document.body.classList.toggle('landscape-mode', currentSettings.landscapeMode);
+            document.body.classList.toggle('avoid-orphan-rows', currentSettings.avoidOrphans);
+        }
+        
+        function resetToDefaults() {
+            currentSettings = {
+                aircraftType: 'auto',
+                layoutStyle: 'auto',
+                fontSize: 9,
+                tableWidth: 100,
+                seatChartFontSize: 14,
+                compactPrint: false,
+                landscapeMode: false,
+                pageBreakZones: true,
+                avoidOrphans: true,
+                flipSeatChart: false,
+                showAllBusiness: false,
+                showUnassignedInPrint: false,
+                activeZones: {},
+                detectedAircraftType: 'narrowbody'
+            };
+            
+            // Update UI controls
+            document.getElementById('aircraftType').value = 'auto';
+            document.getElementById('layoutStyle').value = 'auto';
+            document.getElementById('fontSizeSlider').value = 9;
+            document.getElementById('tableWidthSlider').value = 100;
+            document.getElementById('seatChartFontSlider').value = 14;
+            document.getElementById('compactPrintMode').checked = false;
+            document.getElementById('landscapeMode').checked = false;
+            document.getElementById('pageBreakBetweenZones').checked = true;
+            document.getElementById('avoidOrphanRows').checked = true;
+            document.getElementById('flipSeatChart').checked = false;
+            document.getElementById('showAllBusiness').checked = false;
+            document.getElementById('showUnassignedInPrint').checked = false;
+            
+            updateUIFromSettings();
+            
+            if (hasValidManifest()) {
+                generateReportWithCurrentSettings();
+                showSuccess('✓ Settings reset to defaults');
+            }
+        }
+        
+        // UI Controls
+        function onAircraftChange() {
+            const aircraftType = document.getElementById('aircraftType').value;
+            const customZonesDiv = document.getElementById('customZones');
+            customZonesDiv.classList.toggle('open', aircraftType === 'custom');
+            if (aircraftType === 'custom' && customZones.length === 0) {
+                addCustomZone();
+            }
+            updateZoneCheckboxes();
+            
+            if (hasValidManifest()) {
+                updateSettingsFromControls();
+                generateReportWithCurrentSettings();
+            }
+        }
+        
+        function addCustomZone() {
+            const zoneId = 'zone_' + Date.now();
+            customZones.push({
+                id: zoneId,
+                name: 'Zone' + (customZones.length + 1),
+                start: customZones.length > 0 ? customZones[customZones.length - 1].end + 1 : 1,
+                end: customZones.length > 0 ? customZones[customZones.length - 1].end + 10 : 10
+            });
+            renderCustomZones();
+            updateZoneCheckboxes();
+        }
+        
+        function removeCustomZone(zoneId) {
+            customZones = customZones.filter(zone => zone.id !== zoneId);
+            renderCustomZones();
+            updateZoneCheckboxes();
+        }
+        
+        function updateCustomZone(zoneId, field, value) {
+            const zone = customZones.find(z => z.id === zoneId);
+            if (zone) {
+                zone[field] = field === 'name' ? value : parseInt(value);
+            }
+        }
+        
+        function validateZoneNames() {
+            const names = customZones.map(zone => zone.name.toUpperCase());
+            const duplicates = names.filter((name, index) => names.indexOf(name) !== index);
+            
+            if (duplicates.length > 0) {
+                document.getElementById('zoneError').textContent = 
+                    `Error: Duplicate zone names found: ${duplicates.join(', ')}`;
+                document.getElementById('zoneError').classList.add('show');
+                return false;
+            }
+            document.getElementById('zoneError').classList.remove('show');
+            return true;
+        }
+        
+        function updateCustomZones() {
+            if (!validateZoneNames()) return;
+            updateZoneCheckboxes();
+            
+            if (hasValidManifest()) {
+                updateSettingsFromControls();
+                generateReportWithCurrentSettings();
+            }
+        }
+        
+        function renderCustomZones() {
+            const zoneBuilder = document.getElementById('zoneBuilder');
+            zoneBuilder.innerHTML = '';
+            customZones.forEach(zone => {
+                const zoneItem = document.createElement('div');
+                zoneItem.className = 'zone-item';
+                zoneItem.innerHTML = `
+                    <input type="text" class="zone-name" value="${zone.name}" onchange="updateCustomZone('${zone.id}', 'name', this.value)" placeholder="Zone name">
+                    <span>Rows:</span>
+                    <input type="number" class="zone-start" value="${zone.start}" min="1" onchange="updateCustomZone('${zone.id}', 'start', parseInt(this.value))">
+                    <span>to</span>
+                    <input type="number" class="zone-end" value="${zone.end}" min="1" onchange="updateCustomZone('${zone.id}', 'end', parseInt(this.value))">
+                    <button class="btn-primary btn-small" onclick="removeCustomZone('${zone.id}')">Remove</button>
+                `;
+                zoneBuilder.appendChild(zoneItem);
+            });
+        }
+        
+        function updateZoneCheckboxes() {
+            const aircraftType = document.getElementById('aircraftType').value;
+            const zoneCheckboxes = document.getElementById('zoneCheckboxes');
+            let zones = aircraftType === 'custom' ? customZones : (AIRCRAFT_CONFIGS[aircraftType] || []);
+            zoneCheckboxes.innerHTML = '';
+            zones.forEach(zone => {
+                const checkboxDiv = document.createElement('div');
+                checkboxDiv.className = 'zone-checkbox';
+                const isChecked = currentSettings.activeZones[zone.name] !== false;
+                checkboxDiv.innerHTML = `
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="showZone${zone.name}" ${isChecked ? 'checked' : ''}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <label class="toggle-label" for="showZone${zone.name}">${zone.name} (Rows ${zone.start}-${zone.end})</label>
+                `;
+                zoneCheckboxes.appendChild(checkboxDiv);
+                
+                const checkbox = checkboxDiv.querySelector('input');
+                checkbox.addEventListener('change', () => {
+                    currentSettings.activeZones[zone.name] = checkbox.checked;
+                    if (hasValidManifest()) {
+                        updateSettingsFromControls();
+                        generateReportWithCurrentSettings();
+                    }
+                });
+            });
+        }
+        
+        function getCurrentZones() {
+            const aircraftType = document.getElementById('aircraftType').value;
+            let zones = aircraftType === 'custom' ? customZones : (AIRCRAFT_CONFIGS[aircraftType] || []);
+            
+            if (Object.keys(currentSettings.activeZones).length > 0) {
+                zones = zones.filter(zone => currentSettings.activeZones[zone.name] !== false);
+            }
+            
+            return zones;
+        }
+        
+        function setFontSize(size) {
+            document.getElementById('fontSizeSlider').value = size;
+            updateSettingsFromControls();
+            if (hasValidManifest()) {
+                generateReportWithCurrentSettings();
+            }
+        }
+        
+        // NEW: Check if a zone is a business class zone
+        function isBusinessClassZone(zoneName) {
+            return zoneName === 'B' || zoneName === 'J' || zoneName.startsWith('B') || zoneName.startsWith('J');
+        }
+        
+        // NEW: Get effective layout with widebody defaulting to port-starboard
+        function getEffectiveLayout(detectedType) {
+            if (currentSettings.layoutStyle === 'auto') {
+                // Default to port-starboard for all widebody aircraft
+                return detectedType === 'widebody' ? 'port-starboard' : 'single';
+            }
+            return currentSettings.layoutStyle;
+        }
+        
+        // Manifest Parsing and Report Generation
+        function parseManifest(text) {
+            // EASTER EGG: Check for special input first
+            if (_0x2a4e(text)) {
+                return { flightInfo: {}, passengers: [] };
+            }
+            
+            text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l !== '');
+            const passengers = [];
+            let flightInfo = { flightNumber: '', sector: '', aircraft: '', date: '', stdLocal: '' };
+            
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i] === 'FLT NBR' && i + 1 < lines.length) flightInfo.flightNumber = lines[i + 1];
+                if (lines[i] === 'Sector' && i + 1 < lines.length) flightInfo.sector = lines[i + 1];
+                if (lines[i] === 'ACFT' && i + 1 < lines.length) flightInfo.aircraft = lines[i + 1];
+                if (lines[i] === 'STD LT' && i + 1 < lines.length) {
+                    const parts = lines[i + 1].split(/\s+/);
+                    if (parts.length >= 2) {
+                        flightInfo.date = parts[0];
+                        flightInfo.stdLocal = parts[1];
+                    }
+                }
+            }
+            
+            let startIndex = -1;
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i] === 'MEALS' || lines[i].includes('Passenger & Meal Count')) {
+                    startIndex = i + 1;
+                    break;
+                }
+            }
+            
+            if (startIndex === -1) return { flightInfo, passengers };
+            
+            let i = startIndex;
+            while (i < lines.length) {
+                const line = lines[i];
+                if (line.includes('-- END of PAX List') || (line.includes('Showing') && line.includes('entries'))) break;
+                if (line === '-- CUT HERE --') { i++; continue; }
+                
+                const passenger = { title: '', name: '', seat: '', pnr: '', class: '', fqtv: '', tier: '', meal: '', remark: '' };
+                
+                if (CONFIG.TITLES.includes(line)) {
+                    passenger.title = line;
+                    i++;
+                    if (i >= lines.length) break;
+                }
+                
+                if (i < lines.length && lines[i].includes('/')) {
+                    passenger.name = truncateName(lines[i]);
+                    i++;
+                } else {
+                    i++;
+                    continue;
+                }
+                
+                while (i < lines.length) {
+                    const field = lines[i];
+                    if (CONFIG.TITLES.includes(field) || field.includes('/') || field === '-- CUT HERE --' || field.includes('-- END of PAX List')) break;
+                    
+                    if (!passenger.seat && CONFIG.SEAT_PATTERN.test(field)) passenger.seat = field.toUpperCase();
+                    else if (!passenger.pnr && CONFIG.PNR_PATTERN.test(field)) passenger.pnr = field.toUpperCase();
+                    else if (!passenger.class && CONFIG.CLASS_PATTERN.test(field)) passenger.class = field.toUpperCase();
+                    else if (!passenger.tier && CONFIG.TIERS.includes(field.toUpperCase())) passenger.tier = field.toUpperCase();
+                    else if (!passenger.meal && field.toUpperCase().includes('ML')) {
+                        const upperField = field.toUpperCase();
+                        if (upperField.includes(',')) {
+                            const validMeals = upperField.split(',').map(m => m.trim()).filter(m => /^[A-Z]{4}$/i.test(m) && m.endsWith('ML'));
+                            if (validMeals.length > 0) passenger.meal = validMeals.join(',');
+                        } else {
+                            if (/^[A-Z]{4}$/i.test(upperField) && upperField.endsWith('ML')) passenger.meal = upperField;
+                        }
+                    }
+                    else if (field.toUpperCase().includes('UPGRADED')) {
+                        passenger.remark = 'UPG';
+                    }
+                    else if (field.toUpperCase().includes('DOWNGRADED')) {
+                        passenger.remark = 'DNG';
+                    }
+                    i++;
+                }
+                
+                if (passenger.name && passenger.class) passengers.push(passenger);
+            }
+            
+            return { flightInfo, passengers };
+        }
+        
+        function generateReportWithCurrentSettings() {
+            const input = document.getElementById('manifestInput').value;
+            if (!input.trim()) return;
+            
+            try {
+                const { flightInfo, passengers } = parseManifest(input);
+                // Check if dual chart mode is enabled and layout is dual-chart-737
+const layoutStyle = document.getElementById('layoutStyle').value;
+
+if (isDualChartMode || layoutStyle === 'dual-chart-737') {
+    // Get business class passengers only for 737
+    const businessPassengers = getBusinessClassPassengers(passengers, currentSettings.aircraftType);
+    
+    if (businessPassengers.length === 0) {
+        showError('No business class passengers found. Dual chart requires business class passengers.');
+        return;
+    }
+    
+    // Generate dual chart
+    generateDualChart(businessPassengers, flightInfo, currentSettings.aircraftType);
+    return;
+}
+                // NEW: Handle Business Class Seat Chart layout
+                if (currentSettings.layoutStyle === 'seat-chart-business') {
+                    const effectiveAircraftConfig = getEffectiveAircraftConfig(currentSettings.detectedAircraftType, flightInfo, passengers);
+                    
+                    // Check if we have a business class template for this aircraft
+                    if (!BUSINESS_CLASS_TEMPLATES[effectiveAircraftConfig]) {
+                        showError(`Business class seat chart not available for ${effectiveAircraftConfig}. Please select a different layout.`);
+                        return;
+                    }
+                    
+                    // Open business class seat chart popup
+                    openBusinessClassSeatChart(effectiveAircraftConfig, passengers, flightInfo, {});
+                    return;
+                }
+                
+                const filtered = passengers.filter(p => p.meal || p.tier === 'EMER' || p.tier === 'PLAT');
+                
+                if (filtered.length === 0 && !currentSettings.showAllBusiness) {
+                    showError('No passengers found with special meals or EMER/PLAT tier.');
+                    return;
+                }
+                
+                currentSettings.detectedAircraftType = detectAircraftType(passengers, flightInfo);
+                const effectiveLayout = getEffectiveLayout(currentSettings.detectedAircraftType);
+                const effectiveAircraftConfig = getEffectiveAircraftConfig(currentSettings.detectedAircraftType, flightInfo, passengers);
+                
+                const flightInfoHTML = `<div class="flight-info">Flight: ${flightInfo.flightNumber} | Route: ${flightInfo.sector} | Date: ${flightInfo.date} ${flightInfo.stdLocal} | ACFT: ${flightInfo.aircraft}</div>`;
+                const globalSummaryHTML = generateGlobalSummary(filtered);
+                
+                let seatChartControls = '';
+                if (effectiveLayout === 'seat-chart') {
+                    seatChartControls = `
+                        <div class="seat-chart-controls">
+                            <label>Seat Chart Font Size: 
+                                <input type="range" id="seatChartFontSliderInline" min="8" max="16" value="${currentSettings.seatChartFontSize}" step="1" oninput="document.getElementById('seatChartFontSlider').value = this.value; updateSettingsFromControls(); generateReportWithCurrentSettings();" style="width: 120px;">
+                                <span>${currentSettings.seatChartFontSize}px</span>
+                            </label>
+                            ${currentSettings.flipSeatChart ? '<div class="magic-option"><span>🔄 Aft Perspective Active - Print and turn paper 180°</span></div>' : ''}
+                            ${currentSettings.showAllBusiness ? '<div class="magic-option"><span>👔 Business Class Display Active - Showing all business class passengers</span></div>' : ''}
+                            ${currentSettings.showUnassignedInPrint ? '<div class="magic-option"><span>📋 Unassigned Table WILL BE INCLUDED in Print</span></div>' : ''}
+                        </div>
+                    `;
+                }
+                
+                const zones = getCurrentZones();
+                let tableContent = '';
+                
+                if (zones.length > 0) {
+                    const zonePassengers = {};
+                    const unassigned = [];
+                    
+                    zones.forEach(zone => { zonePassengers[zone.name] = []; });
+                    
+                    // FIXED: Only use all passengers for business class zones when showAllBusiness is enabled
+                    const passengersToProcess = currentSettings.showAllBusiness ? passengers : filtered;
+                    
+                    passengersToProcess.forEach(p => {
+                        let assigned = false;
+                        if (p.seat) {
+                            const rowNum = parseInt(p.seat.substring(0, 2));
+                            for (const zone of zones) {
+                                if (rowNum >= zone.start && rowNum <= zone.end) {
+                                    // FIXED: For business class zones with showAllBusiness, include all passengers
+                                    // For economy zones or when showAllBusiness is false, only include filtered passengers
+                                    if (currentSettings.showAllBusiness && isBusinessClassZone(zone.name)) {
+                                        zonePassengers[zone.name].push(p);
+                                        assigned = true;
+                                        break;
+                                    } else if (!currentSettings.showAllBusiness || !isBusinessClassZone(zone.name)) {
+                                        // Only add if passenger has special requirements
+                                        if (p.meal || p.tier === 'EMER' || p.tier === 'PLAT') {
+                                            zonePassengers[zone.name].push(p);
+                                            assigned = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (!assigned) unassigned.push(p);
+                    });
+                    
+                    Object.keys(zonePassengers).forEach(zoneName => {
+                        zonePassengers[zoneName].sort((a, b) => {
+                            if (!a.seat) return 1;
+                            if (!b.seat) return -1;
+                            return parseInt(a.seat) - parseInt(b.seat);
+                        });
+                    });
+                    
+                    let zoneIndex = 0;
+                    for (const zone of zones) {
+                        const zonePax = zonePassengers[zone.name] || [];
+                        if (zonePax.length === 0) continue;
+                        
+                        const pageBreakClass = currentSettings.pageBreakZones && zoneIndex > 0 ? 'page-break' : '';
+                        tableContent += `<div class="zone-section ${pageBreakClass}">`;
+                        tableContent += `<div class="zone-header">${flightInfo.flightNumber} - ${zone.name} - Rows ${zone.start}-${zone.end}</div>`;
+                        tableContent += generateZoneStats(zonePax);
+                        
+                        if (effectiveLayout === 'seat-chart') {
+                            // FIXED: Use the correct passenger list for each zone type
+                            let seatChartPassengers = zonePax;
+                            tableContent += generateSeatChart(seatChartPassengers, zone, effectiveAircraftConfig);
+                        } else if (effectiveLayout === 'port-starboard') {
+                            if (currentSettings.detectedAircraftType === 'widebody') {
+                                const portPax = zonePax.filter(p => {
+                                    if (!p.seat) return false;
+                                    const seatLetter = p.seat.slice(-1);
+                                    return ['A', 'B', 'C', 'D', 'E'].includes(seatLetter);
+                                });
+                                const starboardPax = zonePax.filter(p => {
+                                    if (!p.seat) return false;
+                                    const seatLetter = p.seat.slice(-1);
+                                    return ['F', 'G', 'H', 'J', 'K'].includes(seatLetter);
+                                });
+                                
+                                tableContent += `<div class="tables-container">`;
+                                tableContent += `<div class="table-wrapper">`;
+                                tableContent += `<div class="table-title">PORT SIDE (ABCDE)</div>`;
+                                tableContent += generateSideStats(portPax, 'Port');
+                                tableContent += generateTable(portPax, true, currentSettings.detectedAircraftType);
+                                tableContent += `</div>`;
+                                tableContent += `<div class="table-wrapper">`;
+                                tableContent += `<div class="table-title">STARBOARD SIDE (FGHJK)</div>`;
+                                tableContent += generateSideStats(starboardPax, 'Starboard');
+                                tableContent += generateTable(starboardPax, true, currentSettings.detectedAircraftType);
+                                tableContent += `</div>`;
+                                tableContent += `</div>`;
+                            } else {
+                                const portPax = zonePax.filter(p => {
+                                    if (!p.seat) return false;
+                                    const seatLetter = p.seat.slice(-1);
+                                    return ['A', 'B', 'C'].includes(seatLetter);
+                                });
+                                const starboardPax = zonePax.filter(p => {
+                                    if (!p.seat) return false;
+                                    const seatLetter = p.seat.slice(-1);
+                                    return ['D', 'E', 'F'].includes(seatLetter);
+                                });
+                                
+                                tableContent += `<div class="tables-container">`;
+                                tableContent += `<div class="table-wrapper">`;
+                                tableContent += `<div class="table-title">PORT SIDE (ABC)</div>`;
+                                tableContent += generateSideStats(portPax, 'Port');
+                                tableContent += generateTable(portPax, true, currentSettings.detectedAircraftType);
+                                tableContent += `</div>`;
+                                tableContent += `<div class="table-wrapper">`;
+                                tableContent += `<div class="table-title">STARBOARD SIDE (DEF)</div>`;
+                                tableContent += generateSideStats(starboardPax, 'Starboard');
+                                tableContent += generateTable(starboardPax, true, currentSettings.detectedAircraftType);
+                                tableContent += `</div>`;
+                                tableContent += `</div>`;
+                            }
+                        } else {
+                            tableContent += generateTable(zonePax, true, currentSettings.detectedAircraftType);
+                        }
+                        
+                        tableContent += `</div>`;
+                        zoneIndex++;
+                    }
+                    
+                    if (unassigned.length > 0) {
+                        // NEW: Use the showUnassignedInPrint setting to determine which class to use
+                        const unassignedClass = currentSettings.showUnassignedInPrint ? 'unassigned-print' : 'unassigned-no-print';
+                        const pageBreakClass = currentSettings.pageBreakZones && zoneIndex > 0 ? 'page-break' : '';
+                        tableContent += `<div class="zone-section ${unassignedClass} ${pageBreakClass}">`;
+                        tableContent += `<div class="zone-header">UNASSIGNED SEATS</div>`;
+                        tableContent += generateUnassignedTable(unassigned, currentSettings.detectedAircraftType);
+                        tableContent += `</div>`;
+                    }
+                } else {
+                    filtered.sort((a, b) => {
+                        if (a.class !== b.class) return a.class === 'J' ? -1 : 1;
+                        if (!a.seat) return 1;
+                        if (!b.seat) return -1;
+                        return parseInt(a.seat) - parseInt(b.seat);
+                    });
+                    
+                    if (effectiveLayout === 'seat-chart') {
+                        const allZones = AIRCRAFT_CONFIGS[effectiveAircraftConfig] || [];
+                        if (allZones.length > 0) {
+                            allZones.forEach(zone => {
+                                tableContent += `<div class="zone-section">`;
+                                tableContent += `<div class="zone-header">${flightInfo.flightNumber} - ${zone.name} - Rows ${zone.start}-${zone.end}</div>`;
+                                tableContent += generateSeatChart(filtered, zone, effectiveAircraftConfig);
+                                tableContent += `</div>`;
+                            });
+                        }
+                    } else if (effectiveLayout === 'port-starboard') {
+                        if (currentSettings.detectedAircraftType === 'widebody') {
+                            const portPax = filtered.filter(p => {
+                                if (!p.seat) return false;
+                                const seatLetter = p.seat.slice(-1);
+                                return ['A', 'B', 'C', 'D', 'E'].includes(seatLetter);
+                            });
+                            const starboardPax = filtered.filter(p => {
+                                if (!p.seat) return false;
+                                const seatLetter = p.seat.slice(-1);
+                                return ['F', 'G', 'H', 'J', 'K'].includes(seatLetter);
+                            });
+                            const unassigned = filtered.filter(p => !p.seat);
+                            
+                            tableContent += `<div class="tables-container">`;
+                            tableContent += `<div class="table-wrapper">`;
+                            tableContent += `<div class="table-title">PORT SIDE (ABCDE)</div>`;
+                            tableContent += generateSideStats(portPax, 'Port');
+                            tableContent += generateTable(portPax, true, currentSettings.detectedAircraftType);
+                            tableContent += `</div>`;
+                            tableContent += `<div class="table-wrapper">`;
+                            tableContent += `<div class="table-title">STARBOARD SIDE (FGHJK)</div>`;
+                            tableContent += generateSideStats(starboardPax, 'Starboard');
+                            tableContent += generateTable(starboardPax, true, currentSettings.detectedAircraftType);
+                            tableContent += `</div>`;
+                            
+                            if (unassigned.length > 0) {
+                                // NEW: Use the showUnassignedInPrint setting to determine which class to use
+                                const unassignedClass = currentSettings.showUnassignedInPrint ? 'unassigned-print' : 'unassigned-no-print';
+                                tableContent += `<div class="zone-section ${unassignedClass}">`;
+                                tableContent += `<div class="zone-header">UNASSIGNED SEATS</div>`;
+                                tableContent += generateUnassignedTable(unassigned, currentSettings.detectedAircraftType);
+                                tableContent += `</div>`;
+                            }
+                        } else {
+                            const portPax = filtered.filter(p => {
+                                if (!p.seat) return false;
+                                const seatLetter = p.seat.slice(-1);
+                                return ['A', 'B', 'C'].includes(seatLetter);
+                            });
+                            const starboardPax = filtered.filter(p => {
+                                if (!p.seat) return false;
+                                const seatLetter = p.seat.slice(-1);
+                                return ['D', 'E', 'F'].includes(seatLetter);
+                            });
+                            const unassigned = filtered.filter(p => !p.seat);
+                            
+                            tableContent += `<div class="tables-container">`;
+                            tableContent += `<div class="table-wrapper">`;
+                            tableContent += `<div class="table-title">PORT SIDE (ABC)</div>`;
+                            tableContent += generateSideStats(portPax, 'Port');
+                            tableContent += generateTable(portPax, true, currentSettings.detectedAircraftType);
+                            tableContent += `</div>`;
+                            tableContent += `<div class="table-wrapper">`;
+                            tableContent += `<div class="table-title">STARBOARD SIDE (DEF)</div>`;
+                            tableContent += generateSideStats(starboardPax, 'Starboard');
+                            tableContent += generateTable(starboardPax, true, currentSettings.detectedAircraftType);
+                            tableContent += `</div>`;
+                            
+                            if (unassigned.length > 0) {
+                                // NEW: Use the showUnassignedInPrint setting to determine which class to use
+                                const unassignedClass = currentSettings.showUnassignedInPrint ? 'unassigned-print' : 'unassigned-no-print';
+                                tableContent += `<div class="zone-section ${unassignedClass}">`;
+                                tableContent += `<div class="zone-header">UNASSIGNED SEATS</div>`;
+                                tableContent += generateUnassignedTable(unassigned, currentSettings.detectedAircraftType);
+                                tableContent += `</div>`;
+                            }
+                        }
+                    } else {
+                        tableContent += generateTable(filtered, true, currentSettings.detectedAircraftType);
+                    }
+                }
+                
+                const html = flightInfoHTML + globalSummaryHTML + seatChartControls + tableContent;
+                let successMessage = '✓ Report generated successfully! ';
+                
+                if (currentSettings.showAllBusiness) {
+                    const businessZones = zones.filter(zone => isBusinessClassZone(zone.name));
+                    if (businessZones.length > 0) {
+                        successMessage += `Showing ALL passengers in ${businessZones.length} business class zone${businessZones.length > 1 ? 's' : ''}. `;
+                    }
+                    successMessage += `${filtered.length} passengers with special requirements found.`;
+                } else {
+                    successMessage += `${filtered.length} passengers with special requirements found.`;
+                }
+                
+                // NEW: Apply seat chart flipping if enabled
+                document.getElementById('reportContent').innerHTML = `<div class="success no-print">${successMessage}</div>` + html;
+                
+                if (currentSettings.flipSeatChart) {
+                    const flipped = flipAllSeatCharts();
+                    if (flipped) {
+                        showSuccess('✓ Report generated successfully! Seat charts flipped for aft perspective - print and turn paper 180°.');
+                    }
+                }
+                
+                updateUIFromSettings();
+                
+                const pages = Math.ceil(filtered.length / (currentSettings.fontSize <= 9 ? 50 : currentSettings.fontSize >= 12 ? 35 : 40));
+                document.getElementById('pageEstimate').textContent = `~${pages} page${pages !== 1 ? 's' : ''}`;
+                
+            } catch (error) {
+                showError(`Error: ${error.message}<br><br>Please make sure you copied the complete passenger list from BPM.`);
+                console.error(error);
+            }
+        }
+        
+        function generateGlobalSummary(filtered) {
+            const specialMealCount = filtered.filter(p => p.meal).length;
+            const tierCount = filtered.filter(p => p.tier === 'EMER' || p.tier === 'PLAT').length;
+            let bbmlCount = 0;
+            const mealCounts = {};
+            filtered.forEach(p => {
+                if (p.meal) {
+                    const meals = p.meal.split(',').map(m => m.trim());
+                    meals.forEach(meal => {
+                        if (meal === 'BBML') bbmlCount++;
+                        else if (meal) mealCounts[meal] = (mealCounts[meal] || 0) + 1;
+                    });
+                }
+            });
+            const mealBreakdown = Object.entries(mealCounts).sort((a, b) => b[1] - a[1]).map(([meal, count]) => `${meal}: ${count}`).join(', ');
+            let html = `<div class="stats"><strong>Summary:</strong> Special Meals: ${specialMealCount} | EMER/PLAT: ${tierCount}`;
+            if (bbmlCount > 0) html += ` | Infants (BBML): ${bbmlCount}`;
+            html += `<br><strong>Meal Breakdown:</strong> ${mealBreakdown || 'None'}`;
+            if (bbmlCount > 0) html += ` | BBML: ${bbmlCount}`;
+            html += `</div>`;
+            return html;
+        }
+        
+        function generateZoneStats(passengers) {
+            const specialMealCount = passengers.filter(p => p.meal).length;
+            const tierCount = passengers.filter(p => p.tier === 'EMER' || p.tier === 'PLAT').length;
+            let bbmlCount = 0;
+            const mealCounts = {};
+            passengers.forEach(p => {
+                if (p.meal) {
+                    const meals = p.meal.split(',').map(m => m.trim());
+                    meals.forEach(meal => {
+                        if (meal === 'BBML') bbmlCount++;
+                        else if (meal) mealCounts[meal] = (mealCounts[meal] || 0) + 1;
+                    });
+                }
+            });
+            const mealBreakdown = Object.entries(mealCounts).sort((a, b) => b[1] - a[1]).map(([meal, count]) => `${meal}: ${count}`).join(', ');
+            let html = `<div class="stats"><strong>Zone Summary:</strong> Special Meals: ${specialMealCount} | EMER/PLAT: ${tierCount}`;
+            if (bbmlCount > 0) html += ` | Infants (BBML): ${bbmlCount}`;
+            html += `<br><strong>Zone Meal Breakdown:</strong> ${mealBreakdown || 'None'}`;
+            if (bbmlCount > 0) html += ` | BBML: ${bbmlCount}`;
+            html += `</div>`;
+            return html;
+        }
+        
+        function generateSideStats(passengers, sideName) {
+            const specialMealCount = passengers.filter(p => p.meal).length;
+            const tierCount = passengers.filter(p => p.tier === 'EMER' || p.tier === 'PLAT').length;
+            let bbmlCount = 0;
+            const mealCounts = {};
+            passengers.forEach(p => {
+                if (p.meal) {
+                    const meals = p.meal.split(',').map(m => m.trim());
+                    meals.forEach(meal => {
+                        if (meal === 'BBML') bbmlCount++;
+                        else if (meal) mealCounts[meal] = (mealCounts[meal] || 0) + 1;
+                    });
+                }
+            });
+            const mealBreakdown = Object.entries(mealCounts).sort((a, b) => b[1] - a[1]).map(([meal, count]) => `${meal}: ${count}`).join(', ');
+            let html = `<div class="side-stats"><strong>${sideName}:</strong> Meals: ${specialMealCount} | EMER/PLAT: ${tierCount}`;
+            if (bbmlCount > 0) html += ` | BBML: ${bbmlCount}`;
+            if (mealBreakdown) html += `<br>${mealBreakdown}`;
+            html += `</div>`;
+            return html;
+        }
+        
+        function generateTable(passengers, showSeat = false, aircraftType = 'narrowbody') {
+            if (passengers.length === 0) {
+                const headers = showSeat ? '<th>SEAT</th><th>TITLE</th><th>NAME</th><th>TIER</th><th>MEAL</th>' : '<th>TITLE</th><th>NAME</th><th>TIER</th><th>MEAL</th>';
+                return `<table><thead><tr>${headers}</tr></thead><tbody><tr><td colspan="${showSeat ? 5 : 4}" style="text-align:center;">No passengers</td></tr></tbody></table>`;
+            }
+            
+            const tableClass = aircraftType === 'widebody' ? 'widebody-table' : 'narrowbody-table';
+            let html = `<table class="${tableClass}">`;
+            
+            const headers = showSeat ? 
+                `<th>SEAT</th><th>TITLE</th><th>NAME</th><th>TIER</th><th>MEAL</th>` : 
+                `<th>TITLE</th><th>NAME</th><th>TIER</th><th>MEAL</th>`;
+                
+            html += `<thead><tr>${headers}</tr></thead><tbody>`;
+            
+            passengers.forEach(p => {
+                const meals = p.meal ? p.meal.split(',').map(m => m.trim()) : [];
+                const parentMeal = meals.find(m => m !== 'BBML') || '';
+                const infantMeal = meals.find(m => m === 'BBML') || '';
+                let mealDisplay = '';
+                if (parentMeal && infantMeal) {
+                    mealDisplay = `<strong>${parentMeal}</strong><span class="infant-meal">(+${infantMeal})</span>`;
+                } else if (parentMeal) {
+                    mealDisplay = `<strong>${parentMeal}</strong>`;
+                } else if (infantMeal) {
+                    mealDisplay = `<strong>${infantMeal}</strong>`;
+                }
+                
+                let remarkIndicator = '';
+                if (p.remark === 'UPG') {
+                    remarkIndicator = '<span class="upgrade-indicator">↑</span>';
+                } else if (p.remark === 'DNG') {
+                    remarkIndicator = '<span class="downgrade-indicator">↓</span>';
+                }
+                
+                html += `<tr>`;
+                if (showSeat) {
+                    if (p.seat) {
+                        html += `<td><strong>${p.seat}</strong>${remarkIndicator}</td>`;
+                    } else {
+                        html += `<td style="border: 1px dashed #999; background: #fffacd;">&nbsp;</td>`;
+                    }
+                }
+                html += `<td>${p.title}</td><td>${p.name}</td><td><strong>${p.tier}</strong></td><td>${mealDisplay}</td></tr>`;
+            });
+            
+            html += `</tbody></table>`;
+            return html;
+        }
+        
+        function generateUnassignedTable(passengers, aircraftType) {
+            if (passengers.length === 0) {
+                return '';
+            }
+            
+            const tableClass = aircraftType === 'widebody' ? 'widebody-table' : 'narrowbody-table';
+            let html = `<table class="${tableClass}">`;
+            html += `<thead><tr><th>SEAT</th><th>TITLE</th><th>NAME</th><th>TIER</th><th>MEAL</th></tr></thead><tbody>`;
+            
+            passengers.forEach(p => {
+                const meals = p.meal ? p.meal.split(',').map(m => m.trim()) : [];
+                const parentMeal = meals.find(m => m !== 'BBML') || '';
+                const infantMeal = meals.find(m => m === 'BBML') || '';
+                let mealDisplay = '';
+                if (parentMeal && infantMeal) {
+                    mealDisplay = `<strong>${parentMeal}</strong><span class="infant-meal">(+${infantMeal})</span>`;
+                } else if (parentMeal) {
+                    mealDisplay = `<strong>${parentMeal}</strong>`;
+                } else if (infantMeal) {
+                    mealDisplay = `<strong>${infantMeal}</strong>`;
+                }
+                
+                html += `<tr>`;
+                html += `<td style="border: 1px dashed #999; background: #fffacd;">&nbsp;</td>`;
+                html += `<td>${p.title}</td><td>${p.name}</td><td><strong>${p.tier}</strong></td><td>${mealDisplay}</td>`;
+                html += `</tr>`;
+            });
+            
+            html += `</tbody></table>`;
+            return html;
+        }
+        
+        function getTierClass(tier) {
+            if (tier === 'EMER') return 'seat-tier-emer';
+            if (tier === 'PLAT') return 'seat-tier-plat';
+            
+            return '';
+        }
+        
+        // NEW: Check if passenger has special requirements
+        function hasSpecialRequirements(passenger) {
+            return passenger.meal || passenger.tier === 'EMER' || passenger.tier === 'PLAT';
+        }
+        
+        // Helper function to format meal display with BBML
+        function formatMealDisplay(mealString) {
+            if (!mealString) return '';
+            
+            const meals = mealString.split(',').map(m => m.trim());
+            const parentMeal = meals.find(m => m !== 'BBML') || '';
+            const infantMeal = meals.find(m => m === 'BBML') || '';
+            
+            let mealDisplay = '';
+            if (parentMeal && infantMeal) {
+                mealDisplay = `${parentMeal}:BBML`;
+            } else if (parentMeal) {
+                mealDisplay = parentMeal;
+            } else if (infantMeal) {
+                mealDisplay = infantMeal;
+            }
+            
+            return mealDisplay;
+        }
+        // Helper function to get business class passengers for dual chart
+function getBusinessClassPassengers(passengers, aircraftConfig) {
+    // Check if we have business class template for this aircraft
+    const businessConfig = BUSINESS_CLASS_TEMPLATES[aircraftConfig];
+    if (!businessConfig) {
+        return []; // No template available
+    }
+    
+    return passengers.filter(p => {
+        // Must have class J and seat assignment
+        if (p.class !== 'J' || !p.seat) return false;
+        
+        // Check if seat is in business class rows for this aircraft
+        const seatNumber = p.seat.toUpperCase();
+        const rowNum = parseInt(seatNumber.replace(/[A-Z]/g, ''));
+        
+        return businessConfig.businessRows.includes(rowNum);
+    });
+}
+        // UPDATED: Generate seat chart with optimized multi-line format for business class and 737 business class layout
+        // NOW WITH 4TH BLANK LINE FOR WRITING IN BUSINESS CLASS
+        function generateSeatChart(passengers, zone, aircraftConfig) {
+            const seatMap = SEAT_MAPS[aircraftConfig];
+            if (!seatMap) {
+                return `<div class="error">Seat chart not available for selected aircraft configuration.</div>`;
+            }
+            
+            // Determine if this is a business class zone and narrowbody aircraft
+            const isBusinessZone = isBusinessClassZone(zone.name);
+            const isNarrowbody = ['737NG', '737MAX', '737NR'].includes(aircraftConfig);
+            
+            // Choose the appropriate columns based on aircraft type and zone
+            let columns, aisles;
+            if (isNarrowbody && isBusinessZone && seatMap.businessColumns) {
+                // Use business class columns for 737 business class (no B and E seats)
+                columns = seatMap.businessColumns;
+                aisles = [2]; // Aisle after C in business class layout
+            } else {
+                // Use standard columns for all other cases
+                columns = seatMap.columns;
+                aisles = seatMap.aisles;
+            }
+            
+            const startRow = zone.start;
+            const endRow = zone.end;
+            
+            // Choose the appropriate CSS class for column widths
+            let tableClass = 'seat-chart';
+            if (isNarrowbody) {
+                tableClass += isBusinessZone ? ' narrowbody-business' : ' narrowbody-economy';
+            } else {
+                tableClass += ' widebody';
+            }
+            
+            let html = `<div class="seat-chart-container">
+                <table class="${tableClass}" data-font-size="${currentSettings.seatChartFontSize}">
+                <thead><tr><th class="row-header">Row</th>`;
+            
+            // Create header row with seat letters
+            columns.forEach(col => {
+                if (col === '|') {
+                    html += `<th class="aisle"></th>`;
+                } else {
+                    html += `<th>${col}</th>`;
+                }
+            });
+            
+            html += `</tr></thead><tbody>`;
+            
+            // Create rows for each seat row in the zone
+            for (let row = startRow; row <= endRow; row++) {
+                // Skip row 3 for A330-300 business class
+                if (aircraftConfig === '333' && row === 3 && zone.name === 'B') {
+                    continue;
+                }
+                
+                const rowNum = row.toString().padStart(2, '0');
+                const isZoneBoundary = row === zone.end;
+                
+                // Add alternating row classes for better readability
+                const rowClass = (row % 2 === 0) ? 'row-even' : 'row-odd';
+                const additionalClasses = isZoneBoundary ? `zone-boundary ${rowClass}` : rowClass;
+                
+                html += `<tr class="${additionalClasses}"><td class="row-header">${rowNum}</td>`;
+                
+                // Check if this is an A330-300 business class row that needs merging
+                const isA333BusinessRow = aircraftConfig === '333' && 
+                                         seatMap.businessClassRows && 
+                                         seatMap.businessClassRows.includes(row) &&
+                                         zone.name === 'B';
+                
+                const isExceptionRow = isA333BusinessRow && [2, 5, 7].includes(row);
+                
+                if (isA333BusinessRow && seatMap.businessClassMerges && !isExceptionRow) {
+                    // A330-300 Business Class with merged seats
+                    let colIndex = 0;
+                    while (colIndex < columns.length) {
+                        const col = columns[colIndex];
+                        
+                        if (col === '|') {
+                            html += `<td class="aisle"></td>`;
+                            colIndex++;
+                            continue;
+                        }
+                        
+                        // Check if this column is part of a merge
+                        let merged = false;
+                        for (const [mergedSeat, mergeData] of Object.entries(seatMap.businessClassMerges)) {
+                            const [seatsToMerge, options] = Array.isArray(mergeData[0]) ? 
+                                [mergeData[0], mergeData[1]] : [mergeData, null];
+                            
+                            // Check if current column is in the merge list
+                            if (seatsToMerge.includes(col)) {
+                                // Check for exceptions
+                                if (options && options.exceptions && options.exceptions.includes(row)) {
+                                    // This is an exception row, don't merge
+                                    break;
+                                }
+                                
+                                // Create merged cell
+                                const colspan = seatsToMerge.length;
+                                const displaySeat = mergedSeat;
+                                const seatNumber = `${rowNum}${displaySeat}`;
+                                
+                                // Find passenger in any of the merged seats
+                                let passenger = null;
+                                for (const seat of seatsToMerge) {
+                                    const testSeat = `${rowNum}${seat}`;
+                                    passenger = passengers.find(p => p.seat === testSeat);
+                                    if (passenger) break;
+                                }
+                                
+                                // Determine cell class based on passenger type
+                                let cellClass = 'seat-empty';
+                                let tierClass = '';
+                                
+                                if (passenger) {
+                                    cellClass = 'seat-occupied';
+                                    tierClass = getTierClass(passenger.tier);
+                                    
+                                    // For business class display, check if this is a regular business passenger
+                                    if (currentSettings.showAllBusiness && isBusinessClassZone(zone.name) && !hasSpecialRequirements(passenger)) {
+                                        cellClass = 'seat-business-regular';
+                                    }
+                                }
+                                
+                                html += `<td class="${cellClass} ${tierClass}" colspan="${colspan}">`;
+                                if (passenger) {
+                                    // UPDATED: Different format for business class vs economy
+                                    const mealDisplay = formatMealDisplay(passenger.meal);
+                                    const tierIcon = passenger.tier === 'PLAT' ? '❤️ ' : (passenger.tier === 'EMER' ? '🔴 ' : '');
+                                    
+                                    if (isBusinessZone) {
+                                        // BUSINESS CLASS: Multi-line format with 4TH BLANK LINE FOR WRITING
+                                        const businessName = truncateNameForBusinessClass(passenger.name);
+                                        const nameParts = businessName.split('/');
+                                        const firstName = nameParts[0] || '';
+                                        const lastName = nameParts[1] || '';
+                                        
+                                        html += `<div class="seat-cell business-class">
+                                            <div class="seat-line1">${tierIcon + passenger.title + '/' + firstName.toUpperCase()}</div>
+                                            ${lastName ? `<div class="seat-line2">${lastName.toUpperCase()}</div>` : ''}
+                                            <div class="seat-line3">${mealDisplay ? mealDisplay.toUpperCase() : '&nbsp;'}</div>
+                                            <div class="seat-line4">&nbsp;</div>
+                                        </div>`;
+                                    } else {
+                                        // ECONOMY: Standard 2-line format - only show meal if exists
+                                        const namePart = passenger.title + '/' + passenger.name.split('/')[0];
+                                        
+                                        html += `<div class="seat-cell">
+                                            <div class="seat-line1">${tierIcon + namePart.toUpperCase()}</div>
+                                            ${mealDisplay ? `<div class="seat-line2">${mealDisplay.toUpperCase()}</div>` : ''}
+                                        </div>`;
+                                    }
+                                } else {
+                                    html += `<div class="seat-cell">${seatNumber}</div>`;
+                                }
+                                html += `</td>`;
+                                
+                                colIndex += colspan;
+                                merged = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!merged) {
+                            // Normal cell
+                            const seatNumber = `${rowNum}${col}`;
+                            const passenger = passengers.find(p => p.seat === seatNumber);
+                            
+                            // Determine cell class based on passenger type
+                            let cellClass = 'seat-empty';
+                            let tierClass = '';
+                            
+                            if (passenger) {
+                                cellClass = 'seat-occupied';
+                                tierClass = getTierClass(passenger.tier);
+                                
+                                // For business class display, check if this is a regular business passenger
+                                if (currentSettings.showAllBusiness && isBusinessClassZone(zone.name) && !hasSpecialRequirements(passenger)) {
+                                    cellClass = 'seat-business-regular';
+                                }
+                            }
+                            
+                            html += `<td class="${cellClass} ${tierClass}">`;
+                            if (passenger) {
+                                // UPDATED: Different format for business class vs economy
+                                const mealDisplay = formatMealDisplay(passenger.meal);
+                                const tierIcon = passenger.tier === 'PLAT' ? '❤️ ' : (passenger.tier === 'EMER' ? '🔴 ' : '');
+                                
+                                if (isBusinessZone) {
+                                    // BUSINESS CLASS: Multi-line format with 4TH BLANK LINE FOR WRITING
+                                    const businessName = truncateNameForBusinessClass(passenger.name);
+                                    const nameParts = businessName.split('/');
+                                    const firstName = nameParts[0] || '';
+                                    const lastName = nameParts[1] || '';
+                                    
+                                    html += `<div class="seat-cell business-class">
+                                        <div class="seat-line1">${tierIcon + passenger.title + '/' + firstName.toUpperCase()}</div>
+                                        ${lastName ? `<div class="seat-line2">${lastName.toUpperCase()}</div>` : ''}
+                                        <div class="seat-line3">${mealDisplay ? mealDisplay.toUpperCase() : '&nbsp;'}</div>
+                                        <div class="seat-line4">&nbsp;</div>
+                                    </div>`;
+                                } else {
+                                    // ECONOMY: Standard 2-line format - only show meal if exists
+                                    const namePart = passenger.title + '/' + passenger.name.split('/')[0];
+                                    
+                                    html += `<div class="seat-cell">
+                                        <div class="seat-line1">${tierIcon + namePart.toUpperCase()}</div>
+                                        ${mealDisplay ? `<div class="seat-line2">${mealDisplay.toUpperCase()}</div>` : ''}
+                                    </div>`;
+                                }
+                            } else {
+                                html += `<div class="seat-cell">${seatNumber}</div>`;
+                            }
+                            html += `</td>`;
+                            colIndex++;
+                        }
+                    }
+                } else {
+                    // Normal row generation
+                    columns.forEach(col => {
+                        if (col === '|') {
+                            html += `<td class="aisle"></td>`;
+                        } else {
+                            const seatNumber = `${rowNum}${col}`;
+                            const passenger = passengers.find(p => p.seat === seatNumber);
+                            
+                            // Determine cell class based on passenger type
+                            let cellClass = 'seat-empty';
+                            let tierClass = '';
+                            
+                            if (passenger) {
+                                cellClass = 'seat-occupied';
+                                tierClass = getTierClass(passenger.tier);
+                                
+                                // For business class display, check if this is a regular business passenger
+                                if (currentSettings.showAllBusiness && isBusinessClassZone(zone.name) && !hasSpecialRequirements(passenger)) {
+                                    cellClass = 'seat-business-regular';
+                                }
+                            }
+                            
+                            html += `<td class="${cellClass} ${tierClass}">`;
+                            if (passenger) {
+                                // UPDATED: Different format for business class vs economy
+                                const mealDisplay = formatMealDisplay(passenger.meal);
+                                const tierIcon = passenger.tier === 'PLAT' ? '❤️ ' : (passenger.tier === 'EMER' ? '🔴 ' : '');
+                                
+                                if (isBusinessZone) {
+                                    // BUSINESS CLASS: Multi-line format with 4TH BLANK LINE FOR WRITING
+                                    const businessName = truncateNameForBusinessClass(passenger.name);
+                                    const nameParts = businessName.split('/');
+                                    const firstName = nameParts[0] || '';
+                                    const lastName = nameParts[1] || '';
+                                    
+                                    html += `<div class="seat-cell business-class">
+                                        <div class="seat-line1">${tierIcon + passenger.title + '/' + firstName.toUpperCase()}</div>
+                                        ${lastName ? `<div class="seat-line2">${lastName.toUpperCase()}</div>` : ''}
+                                        <div class="seat-line3">${mealDisplay ? mealDisplay.toUpperCase() : '&nbsp;'}</div>
+                                        <div class="seat-line4">&nbsp;</div>
+                                    </div>`;
+                                } else {
+                                    // ECONOMY: Standard 2-line format - only show meal if exists
+                                    const namePart = passenger.title + '/' + passenger.name.split('/')[0];
+                                    
+                                    html += `<div class="seat-cell">
+                                        <div class="seat-line1">${tierIcon + namePart.toUpperCase()}</div>
+                                        ${mealDisplay ? `<div class="seat-line2">${mealDisplay.toUpperCase()}</div>` : ''}
+                                    </div>`;
+                                }
+                            } else {
+                                html += `<div class="seat-cell">${seatNumber}</div>`;
+                            }
+                            html += `</td>`;
+                        }
+                    });
+                }
+                
+                html += `</tr>`;
+            }
+            
+            html += `</tbody></table></div>`;
+            return html;
+        }
+        
+        function clearAll() {
+            document.getElementById('manifestInput').value = '';
+            document.getElementById('reportContent').innerHTML = '';
+        }
+        
+        function downloadPage() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'bpm-pro.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showSuccess('✓ Offline version downloaded as bpm-pro.html');
+        }
+        
+        function toggleSettings() {
+            const settings = document.getElementById('advancedSettings');
+            const button = document.getElementById('toggleAdvanced');
+            settings.classList.toggle('open');
+            button.textContent = settings.classList.contains('open') ? '▲ Advanced Settings' : '▼ Advanced Settings';
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateZoneCheckboxes();
+            updateUIFromSettings();
+            // Initialize dual chart mode
+const layoutValue = document.getElementById('layoutStyle').value;
+if (layoutValue === 'dual-chart-737') {
+    isDualChartMode = true;
+    document.getElementById('dualChartToggle').checked = true;
+    document.getElementById('dualChartLabel').textContent = 'Dual Chart Mode ON';
+    document.getElementById('dualChartIndicator').classList.add('active');
+    showDualChartInstructions();
+}
+// Add event listener for layout style change
+document.getElementById('layoutStyle').addEventListener('change', function() {
+    const layoutValue = this.value;
+    if (layoutValue === 'dual-chart-737') {
+        isDualChartMode = true;
+        document.getElementById('dualChartToggle').checked = true;
+        document.getElementById('dualChartLabel').textContent = 'Dual Chart Mode ON';
+        document.getElementById('dualChartIndicator').classList.add('active');
+        showDualChartInstructions();
+    } else {
+        isDualChartMode = false;
+        document.getElementById('dualChartToggle').checked = false;
+        document.getElementById('dualChartLabel').textContent = 'Dual Chart Mode';
+        document.getElementById('dualChartIndicator').classList.remove('active');
+        hideDualChartInstructions();
+    }
+});
+            // Set up live preview for all controls
+            const controls = [
+                'aircraftType', 'layoutStyle', 'fontSizeSlider', 'tableWidthSlider',
+                'seatChartFontSlider', 'compactPrintMode', 'landscapeMode', 
+                'pageBreakBetweenZones', 'avoidOrphanRows', 'flipSeatChart', 'showAllBusiness',
+                'showUnassignedInPrint'
+            ];
+            
+            controls.forEach(controlId => {
+                const control = document.getElementById(controlId);
+                if (control) {
+                    control.addEventListener('change', debounce(() => {
+                        updateSettingsFromControls();
+                        if (hasValidManifest()) {
+                            generateReportWithCurrentSettings();
+                        }
+                    }, 300));
+                }
+            });
+            // NEW: Auto-detection preview when user pastes manifest
+const manifestInput = document.getElementById('manifestInput');
+manifestInput.addEventListener('input', debounce(() => {
+    if (manifestInput.value.trim()) {
+        showAutoDetectionIndicator();
+    }
+}, 500));
+
+// webview and print view mismatch colour fix
+function printWithColors() {
+    // Store print event listener
+    const beforePrint = () => {
+        // Force background colors before printing
+        document.body.style.webkitPrintColorAdjust = 'exact';
+        document.body.style.printColorAdjust = 'exact';
+    };
+    
+    const afterPrint = () => {
+        // Restore after printing
+        document.body.style.webkitPrintColorAdjust = '';
+        document.body.style.printColorAdjust = '';
+    };
+    
+    // Set up event listeners
+    if (window.matchMedia) {
+        const mediaQueryList = window.matchMedia('print');
+        mediaQueryList.addListener((mql) => {
+            if (mql.matches) {
+                beforePrint();
+            } else {
+                afterPrint();
+            }
+        });
+    }
+    
+    // Override the print button
+    const printButtons = document.querySelectorAll('[onclick*="window.print()"]');
+    printButtons.forEach(btn => {
+        btn.onclick = (e) => {
+            e.preventDefault();
+            beforePrint();
+            setTimeout(() => {
+                window.print();
+                setTimeout(afterPrint, 100);
+            }, 100);
+        };
+    });
+}
+
+// Call this function on page load
+document.addEventListener('DOMContentLoaded', printWithColors);
+            // Keyboard shortcut
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    const textarea = document.getElementById('manifestInput');
+                    if (textarea.value.trim()) {
+                        e.preventDefault();
+                        generateQuickReport();
+                    }
+                }
+            });
+        });
+        // ============================================
+// SIMPLE SAVE & PRINT MULTIPLE REPORTS
+// ============================================
+
+let savedReportsSimple = [];
+let currentReportData = null;
+
+// Initialize from localStorage
+function initSavedReports() {
+    const stored = localStorage.getItem('bpm_saved_reports_simple');
+    if (stored) {
+        try {
+            savedReportsSimple = JSON.parse(stored);
+            updateSavedList();
+            if (savedReportsSimple.length > 0) {
+                document.getElementById('savedReportsSimple').style.display = 'block';
+            }
+        } catch (e) {
+            console.error('Error loading saved reports:', e);
+            savedReportsSimple = [];
+        }
+    }
+}
+
+// Save to localStorage
+function saveToStorage() {
+    try {
+        localStorage.setItem('bpm_saved_reports_simple', JSON.stringify(savedReportsSimple));
+    } catch (e) {
+        if (e.name === 'QuotaExceededError') {
+            alert('Storage full! Please delete some old reports.');
+        } else {
+            alert('Error saving: ' + e.message);
+        }
+    }
+}
+
+// Save current report
+function saveCurrentReport() {
+    if (!currentReportData) {
+        alert('No report to save. Generate a report first.');
+        return;
+    }
+    
+    const name = prompt('Name this report:', currentReportData.flightInfo.flightNumber + ' - ' + currentReportData.flightInfo.sector);
+    if (!name) return;
+    
+    const report = {
+        id: 'report_' + Date.now(),
+        name: name,
+        timestamp: Date.now(),
+        flightInfo: currentReportData.flightInfo,
+        html: document.getElementById('reportContent').innerHTML,
+        settings: {
+            fontSize: currentSettings.fontSize,
+            layoutStyle: currentSettings.layoutStyle,
+            aircraftType: currentSettings.aircraftType
+        }
+    };
+    
+    savedReportsSimple.push(report);
+    saveToStorage();
+    updateSavedList();
+    
+    document.getElementById('savedReportsSimple').style.display = 'block';
+    showSuccess('✓ Report saved: ' + name);
+}
+
+// Update the saved reports list
+function updateSavedList() {
+    const list = document.getElementById('savedList');
+    const count = document.getElementById('savedCount');
+    
+    count.textContent = savedReportsSimple.length;
+    
+    if (savedReportsSimple.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: #64748B; padding: 20px;">No saved reports. Generate and save a report to get started!</p>';
+        return;
+    }
+    
+    list.innerHTML = '';
+    
+    savedReportsSimple.forEach(report => {
+        const date = new Date(report.timestamp);
+        const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        const item = document.createElement('div');
+        item.className = 'saved-item';
+        item.innerHTML = `
+            <input type="checkbox" id="check_${report.id}" onchange="toggleSelection('${report.id}')">
+            <div class="saved-item-info">
+                <div class="saved-item-name">${report.name}</div>
+                <div class="saved-item-details">
+                    ${report.flightInfo.flightNumber} | ${report.flightInfo.sector} | 
+                    Saved: ${dateStr}
+                </div>
+            </div>
+            <div class="saved-item-actions">
+                <button class="btn-info btn-small" onclick="previewReport('${report.id}')">👁️</button>
+                <button class="btn-danger btn-small" onclick="deleteReport('${report.id}')">🗑️</button>
+            </div>
+        `;
+        
+        list.appendChild(item);
+    });
+}
+
+// Toggle selection
+function toggleSelection(reportId) {
+    const checkbox = document.getElementById('check_' + reportId);
+    const item = checkbox.closest('.saved-item');
+    
+    if (checkbox.checked) {
+        item.classList.add('selected');
+    } else {
+        item.classList.remove('selected');
+    }
+}
+
+// Preview a saved report
+function previewReport(reportId) {
+    const report = savedReportsSimple.find(r => r.id === reportId);
+    if (!report) return;
+    
+    const content = document.getElementById('reportContent');
+    content.innerHTML = report.html;
+    content.scrollIntoView({ behavior: 'smooth' });
+    
+    showSuccess('Previewing: ' + report.name);
+}
+
+// Delete a report
+function deleteReport(reportId) {
+    if (!confirm('Delete this report?')) return;
+    
+    savedReportsSimple = savedReportsSimple.filter(r => r.id !== reportId);
+    saveToStorage();
+    updateSavedList();
+    
+    showSuccess('✓ Report deleted');
+}
+
+// Clear all saved reports
+function clearAllSaved() {
+    if (!confirm('Delete ALL saved reports? This cannot be undone.')) return;
+    
+    savedReportsSimple = [];
+    saveToStorage();
+    updateSavedList();
+    
+    showSuccess('✓ All reports cleared');
+}
+
+// Toggle saved section visibility
+function toggleSavedSection() {
+    const section = document.getElementById('savedReportsSimple');
+    if (section.style.display === 'none') {
+        section.style.display = 'block';
+    } else {
+        section.style.display = 'none';
+    }
+}
+
+// Print all selected reports (each on separate page)
+function printAllSelected() {
+    const checkboxes = document.querySelectorAll('.saved-item input[type="checkbox"]:checked');
+    
+    if (checkboxes.length === 0) {
+        alert('Please select at least one report to print.');
+        return;
+    }
+    
+    const selectedReports = Array.from(checkboxes).map(cb => {
+        const reportId = cb.id.replace('check_', '');
+        return savedReportsSimple.find(r => r.id === reportId);
+    }).filter(r => r);
+    
+    if (selectedReports.length === 0) return;
+    
+    // Create print window with all reports
+    const printContent = selectedReports.map((report, index) => {
+        return `
+            <div class="report-page">
+                ${report.html}
+            </div>
+        `;
+    }).join('');
+    
+    // Create a temporary div to hold all reports
+    const printDiv = document.createElement('div');
+    printDiv.className = 'print-multiple-reports';
+    printDiv.innerHTML = printContent;
+    printDiv.style.display = 'none';
+    
+    // Add to body
+    document.body.appendChild(printDiv);
+    
+    // Hide main content
+    const mainContent = document.getElementById('reportContent');
+    const originalDisplay = mainContent.style.display;
+    mainContent.style.display = 'none';
+    
+    // Show print div
+    printDiv.style.display = 'block';
+    
+    // Print
+    window.print();
+    
+    // Cleanup after print
+    setTimeout(() => {
+        document.body.removeChild(printDiv);
+        mainContent.style.display = originalDisplay;
+    }, 500);
+    
+    showSuccess(`✓ Printing ${selectedReports.length} report(s)...`);
+}
+
+// Modify the existing generateReportWithCurrentSettings to capture data
+const originalGenerate = generateReportWithCurrentSettings;
+generateReportWithCurrentSettings = function() {
+    originalGenerate.call(this);
+    
+    // Capture the report data
+    const input = document.getElementById('manifestInput').value;
+    if (input.trim()) {
+        try {
+            const { flightInfo, passengers } = parseManifest(input);
+            currentReportData = { flightInfo, passengers };
+            
+            // Show save button
+            document.getElementById('savePrompt').style.display = 'block';
+        } catch (e) {
+            // Error already handled by original function
+        }
+    }
+};
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initSavedReports();
+});
+
+// Keyboard shortcut: Ctrl+S to save
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (currentReportData) {
+            saveCurrentReport();
+        }
+    }
+});
+    </script>
+    <script src="https://gnrcounter.com/counter.php?accId=5a888a8c18748f69460d5c4fc6b40d8f"></script>
+</body>
+</html>
