@@ -20,7 +20,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            width: 100%;
             margin: 0 auto;
             background: white;
             border-radius: 8px;
@@ -291,10 +291,113 @@
             </div>
         </div>
         
+        <!-- NEW: Version 4.0.4 - 737 Row 4 Toggle -->
+        <div class="version">
+            <h3>🪑 Version 4.0.4 - 737 Business Class Row 4 Toggle</h3>
+            <div class="date">Released: 2 June 2026</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Toggle Between 3‑Row and 4‑Row Business Class Layouts</strong>
+                <ul>
+                    <li>New button in 737 seat chart control bar to switch between 3 rows (737NG/MAX) and 4 rows (737NR)</li>
+                    <li>When switching to 3‑row mode, row 4 is completely removed (not just hidden) to match actual aircraft configuration</li>
+                    <li>If any passengers are assigned to row 4, a temporary warning appears in the zone summary</li>
+                    <li>Passenger data is preserved and repopulated when toggling back to 4‑row mode</li>
+                    <li>Works seamlessly with Aft View and font size adjustments</li>
+                </ul>
+            </div>
+            
+            <div class="improvement">
+                <span class="improvement-badge">IMPROVEMENT</span>
+                <strong>Improved 737 Seat Chart Flexibility</strong>
+                <ul>
+                    <li>Crew can now match the exact business class row count of the aircraft (3 rows for NG/MAX, 4 rows for NR)</li>
+                    <li>Prevents confusion of seeing an extra blank row when row 4 is not present</li>
+                    <li><i>"Reduces paper and ink usage by removing unnecessary rows when printing"</i> - Fahrin</li>
+                    <li>Regeneration logic preserves existing chart data and aft view orientation</li>
+                </ul>
+            </div>
+            
+            <div class="info">
+                <span class="info-badge">NOTE</span>
+                <strong>How It Works</strong>
+                <p style="margin-top: 6px;">The 737 seat chart now has a checkbox labeled “4‑Row Mode (737NR)” – checked = 4 rows, unchecked = 3 rows. When unchecked, the seat grid regenerates with only rows 1–3. Any passengers originally seated in row 4 will not be displayed, and a warning appears. Re‑checking the box restores row 4 and all passengers. This gives crews full control to match the actual aircraft they are working on.</p>
+            </div>
+        </div>
+        
+        <!-- Version 4.0.3 - Birthday Detection -->
+        <div class="version">
+            <h3>🎂 Version 4.0.3 - Birthday Detection displayed using 🎂</h3>
+            <div class="date">Released: 27 May 2026</div>
+            
+            <div class="feature">
+                <span class="feature-badge">FEATURE</span>
+                <strong>Passenger Birthday Detection</strong>
+                <ul>
+                    <li>Detects passenger birthdays from manifest PAX DOB lines (<code>DD/MM</code> format)</li>
+                    <li>Identifies birthdays on the flight date or the next day (for long-haul flights crossing midnight)</li>
+                    <li>Adds 🎂 icon in meal column and summary counters</li>
+                    <li>Birthday passengers automatically included in filtered reports (even without special meals or elite tier)</li>
+                </ul>
+            </div>
+            
+            <div class="improvement">
+                <span class="improvement-badge">IMPROVEMENT</span>
+                <strong>Enhanced Parsing & Summary Integration</strong>
+                <ul>
+                    <li>Added <code>DOB_PATTERN</code> to correctly skip date lines without affecting passenger name</li>
+                    <li>Birthday counts now appear in Global Summary, Zone Summary, and Port/Starboard side stats</li>
+                    <li>Seat chart also shows 🎂 next to meal (if present) or standalone for business class passengers</li>
+                    <li>Helps crew offer card, keychain etc. on board</li>
+                </ul>
+            </div>
+            
+            <div class="info">
+                <span class="info-badge">NOTE</span>
+                <strong>Birthday Check Logic</strong>
+                <p style="margin-top: 6px;">Birthday is considered valid if the passenger’s <code>DD/MM</code> matches either the flight date or the following day – useful for long-haul flights where the meal service may occur after midnight local time. Do note that PAX DOB column in BPM is live and only display the birthdate according to real date(today) and the day after(tomorrow).</p>
+            </div>
+        </div>
+        
+        <!-- Version 4.0.2 - DOB Parsing Fix -->
+        <div class="version">
+            <h3>🐞 Version 4.0.2 - DOB Parsing Fix</h3>
+            <div class="date">Released: 27 May 2026</div>
+            
+            <div class="fix">
+                <span class="fix-badge">FIX</span>
+                <strong>PAX DOB lines no longer mistaken as passenger names</strong>
+                <ul>
+                    <li>Lines containing only a date like <code>dd/mm</code> are now correctly skipped</li>
+                    <li>Prevents the passenger name from being overwritten by a PAX DOB field</li>
+                    <li>Ensures accurate extraction of name, seat, class, tier, and meal information</li>
+                    <li>Improves manifest parsing reliability when date fields appear after the name</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Version 4.0.1 -->
+        <div class="version">
+            <h3>📋 Version 4.0.1 - Layout Update to Service Procedure Manual Revision 8.0.0</h3>
+            <div class="date">Current Version - Latest Release | Updated: SPM 4 December 2025</div>
+            
+            <div class="info">
+                <span class="info-badge">UPDATE 18/01/26</span>
+                <strong>Layout Updated According to Service Procedure Manual Revision 8.0.0 (4 December 2025)</strong>
+                <ul>
+                    <li>Updated all seat chart layouts to match latest service procedure standards (eg: 339 Zone C)</li>
+                    <li>Adjusted spacing, alignment, and formatting per manual requirements</li>
+                    <li>Improved consistency across all aircraft types and configurations</li>
+                    <li>Enhanced readability and operational compliance</li>
+                </ul>
+            </div>
+        </div>
+        
         <!-- Version 4.0 -->
         <div class="version">
             <h3>🚀 Version 4.0 - Dual Chart for 737, Box style Business class seat chart for every aircraft, Backup URLs</h3>
-            <div class="date">Current Version - Latest Release</div>
+            <div class="date">Previous Version 8/12/25</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -316,10 +419,10 @@
                 <div class="backup-links">
                     <h4>🔗 Backup URLs:</h4>
                     <ul>
-                        <li><a href="https://adimudzamil.github.io/bpm/" target="_blank">https://adimudzamil.github.io/bpm/</a> - (Latest commit)</li>
-                        <li><a href="https://adimudzamil.github.io/bpm-pro/" target="_blank">https://adimudzamil.github.io/bpm-pro/</a> - Pro version  (stable)</li>
-                        <li><a href="https://adimudzamil.github.io/bpm-pro-max/" target="_blank">https://adimudzamil.github.io/bpm-pro-max/</a> - Pro Max version (ok)</li>
-                        <li><a href="https://adimudzamil.github.io/bpm-pro-max-ultra/" target="_blank">https://adimudzamil.github.io/bpm-pro-max-ultra/</a> - Pro Max Ultra version (non stable, testing playground)</li>
+                        <li><a href="https://adimudzamil.github.io/bpm/" target="_blank">https://adimudzamil.github.io/bpm/</a> - (Latest commit) closed on 26/01/26</li>
+                        <li><a href="https://adimudzamil.github.io/bpm-pro/" target="_blank">https://adimudzamil.github.io/bpm-pro/</a> - Pro version (stable)</li>
+                        <li><a href="https://adimudzamil.github.io/bpm-pro-max/" target="_blank">https://adimudzamil.github.io/bpm-pro-max/</a> - Pro Max version (ok) closed on 26/01/26</li>
+                        <li><a href="https://adimudzamil.github.io/bpm-pro-max-ultra/" target="_blank">https://adimudzamil.github.io/bpm-pro-max-ultra/</a> - Pro Max Ultra version (non stable, testing playground) closed on 26/01/26</li>
                     </ul>
                     <p><strong>Note:</strong> These are all different versions with varying features since i kept testing and breaking every version. Bookmark multiple URLs to ensure you always have access.</p>
                 </div>
@@ -329,9 +432,7 @@
                 <span class="improvement-badge">IMPROVEMENT</span>
                 <strong>More seat chart variations and font size options</strong>
                 <ul>
-                
                     <li>Consistent formatting across both webview and print view</li>
-                
                 </ul>
             </div>
         </div>
@@ -339,7 +440,7 @@
         <!-- Version 3.9 -->
         <div class="version">
             <h3>🚀 Version 3.9 - Left-Aligned Empty Seat Numbers</h3>
-            <div class="date">Previous Version</div>
+            <div class="date">Previous Version 4/12/25</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -355,7 +456,7 @@
         <!-- Version 3.8 -->
         <div class="version">
             <h3>🚀 Version 3.8 - Smart Aircraft Registration Detection</h3>
-            <div class="date">Previous Version</div>
+            <div class="date">Previous Version 30/11/25</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -380,7 +481,7 @@
         <!-- Version 3.7 -->
         <div class="version">
             <h3>🚀 Version 3.7 - Show Unassigned Table in Print</h3>
-            <div class="date">Previous Version</div>
+            <div class="date">Previous Version 27/11/25</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -396,7 +497,7 @@
         <!-- Version 3.6 -->
         <div class="version">
             <h3>🚀 Version 3.6 - 737 Business Class Blank Meal Lines</h3>
-            <div class="date">Previous Version</div>
+            <div class="date">Previous Version 26/11/25</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -421,7 +522,7 @@
         <!-- Version 3.5 -->
         <div class="version">
             <h3>🚀 Version 3.5 - Business Class Seat Chart Improvements</h3>
-            <div class="date">Previous Version</div>
+            <div class="date">Previous Version 25/11/25</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -447,7 +548,7 @@
         <!-- Version 3.4 -->
         <div class="version">
             <h3>🎯 Version 3.4 - Aft Perspective View</h3>
-            <div class="date">Previous Version</div>
+            <div class="date">Previous Version 21/11/25</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -472,7 +573,7 @@
         <!-- Version 3.3 -->
         <div class="version">
             <h3>🎯 Version 3.3 - Seat Chart Font Optimization</h3>
-            <div class="date">Previous Version</div>
+            <div class="date">Previous Version 21/11/25</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -497,7 +598,7 @@
         <!-- Version 3.2 -->
         <div class="version">
             <h3>📊 Version 3.2 - Advanced Column Controls</h3>
-            <div class="date">Previous Version</div>
+            <div class="date">Previous Version 21/11/25</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -522,7 +623,7 @@
         <!-- Version 3.1 -->
         <div class="version">
             <h3>🖨️ Version 3.1 - Print Optimization</h3>
-            <div class="date">Previous Version</div>
+            <div class="date">Previous Version 20/11/25</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -547,7 +648,7 @@
         <!-- Version 3.0 -->
         <div class="version">
             <h3>✨ Version 3.0 - Major Overhaul</h3>
-            <div class="date">Foundation Version</div>
+            <div class="date">Foundation Version 19/11/25</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -573,7 +674,7 @@
         <!-- Version 2.0 -->
         <div class="version">
             <h3>🛠️ Version 2.0 - Core Features</h3>
-            <div class="date">Foundation Version</div>
+            <div class="date">Foundation Version 29/10/26</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>
@@ -589,7 +690,7 @@
         <!-- Version 1.0 -->
         <div class="version">
             <h3>🎉 Version 1.0 - Initial Release</h3>
-            <div class="date">Foundation Version</div>
+            <div class="date">Foundation Version 25/10/25, Thanks to Fahrin and Alif for the ideas and testing</div>
             
             <div class="feature">
                 <span class="feature-badge">FEATURE</span>

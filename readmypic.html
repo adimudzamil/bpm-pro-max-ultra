@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>READMYPIC by 2100551 — OCR & PDF Scanner</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='85'>📄🔍</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<!-- libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script>
+    // set pdf.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+</script>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --bg: #0a0a0b;
+    --surface: #111113;
+    --surface2: #18181c;
+    --border: rgba(255,255,255,0.07);
+    --border-bright: rgba(255,255,255,0.15);
+    --text: #f0f0f0;
+    --text-muted: #8a8a8a;
+    --text-dim: #4a4a4a;
+    --accent: #5f9eff;
+    --accent-dim: rgba(95,158,255,0.12);
+    --accent-glow: rgba(95,158,255,0.22);
+    --green: #2ecc71;
+    --red: #ff5e6b;
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  header {
+    padding: 48px 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .logo-area .logo {
+    font-size: clamp(40px, 9vw, 60px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .logo span { color: var(--accent); display: inline-block; animation: flicker 3s infinite; }
+  @keyframes flicker { 0%,100% { opacity:1; } 95% { opacity:0.3; } }
+
+  .byline {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: #555;
+    margin-top: 8px;
+  }
+
+  .badge-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-family: 'DM Mono', monospace;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  .badge.accent {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  /* dropzone */
+  .drop-zone {
+    border: 1.8px dashed var(--border-bright);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 52px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    margin-bottom: 32px;
+  }
+
+  .drop-zone:hover, .drop-zone.drag-over {
+    border-color: var(--accent);
+    background: var(--surface2);
+  }
+
+  .drop-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 18px;
+    background: var(--surface2);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+  }
+
+  .drop-icon svg { width: 28px; height: 28px; color: var(--accent); }
+
+  .drop-title {
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .drop-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .drop-sub span {
+    color: var(--accent);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  input[type="file"] { display: none; }
+
+  /* file list (pages) */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+  }
+
+  .clear-btn {
+    background: none;
+    border: 1px solid var(--border);
+    padding: 5px 14px;
+    border-radius: 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .clear-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .page-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .page-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    transition: all 0.2s;
+  }
+
+  .page-thumb {
+    width: 52px;
+    height: 52px;
+    background: var(--surface2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .page-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+  .page-info {
+    flex: 1;
+  }
+
+  .page-name {
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
+  }
+
+  .page-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .icon-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .icon-btn.del:hover { border-color: var(--red); color: var(--red); }
+
+  /* stats & buttons */
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0 24px;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 12px 18px;
+    flex: 1;
+  }
+
+  .stat-number {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  .action-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  .primary-btn {
+    background: var(--accent);
+    border: none;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #0a0a0b;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .secondary-btn {
+    background: transparent;
+    border: 1px solid var(--border-bright);
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .primary-btn:disabled, .secondary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .progress-wrap {
+    margin-top: 24px;
+    display: none;
+  }
+  .progress-wrap.visible { display: block; }
+  .progress-bar-bg {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.25s;
+  }
+  .progress-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    margin-top: 8px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface);
+    border: 1px solid var(--border-bright);
+    backdrop-filter: blur(12px);
+    padding: 12px 24px;
+    border-radius: 60px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    z-index: 2000;
+    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--green); color: var(--green); }
+  .toast.error { border-color: var(--red); color: var(--red); }
+
+  footer {
+    text-align: center;
+    margin-top: 48px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #2c2c2c; border-radius: 6px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo-area">
+      <div class="logo">READMYPIC<span>.</span></div>
+      <div class="byline">by 2100551 · OCR engine</div>
+    </div>
+    <div class="badge-group">
+      <div class="badge accent">🔒 100% local</div>
+      <div class="badge">📷 JPG/PNG/PDF</div>
+      <div class="badge">🇬🇧 English only</div>
+    </div>
+  </header>
+
+  <!-- Drop zone -->
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M4 16l4-4 4 4 4-4 4 4M12 4v8M9 9l3-3 3 3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="drop-title">Upload images or scanned PDFs</div>
+    <div class="drop-sub">Drag & drop or <span id="browseTrigger">browse files</span> (JPG, PNG, PDF)</div>
+    <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf" multiple>
+  </div>
+
+  <!-- Pages section (dynamic) -->
+  <div id="mainPanel" style="display: none;">
+    <div class="section-header">
+      <div class="section-label">📄 PAGES TO PROCESS · <span id="pageCount">0</span></div>
+      <button class="clear-btn" id="clearPagesBtn">Clear all</button>
+    </div>
+    <div class="page-grid" id="pageList"></div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-number" id="statPages">0</div><div class="stat-label">Total pages</div></div>
+      <div class="stat-card"><div class="stat-number" id="statSize">0</div><div class="stat-label">Data size</div></div>
+    </div>
+
+    <div class="action-group">
+      <button class="primary-btn" id="startOcrBtn">✨ RUN OCR & BUILD</button>
+    </div>
+    <div id="resultActions" style="display: none; margin-top: 20px;">
+      <div class="action-group">
+        <button class="primary-btn" id="downloadPdfBtn">📥 SEARCHABLE PDF</button>
+        <button class="secondary-btn" id="copyTextBtn">📋 COPY PLAIN TEXT</button>
+      </div>
+    </div>
+
+    <div class="progress-wrap" id="progressArea">
+      <div class="progress-bar-bg"><div class="progress-fill" id="ocrProgressFill"></div></div>
+      <div class="progress-text" id="ocrProgressLabel">Ready</div>
+    </div>
+  </div>
+  <footer>🔍 Tesseract OCR runs inside your browser — images never leave your device. <br>Searchable PDF: transparent text overlay (select/copy).</footer>
+</div>
+<div id="toastMsg" class="toast"></div>
+
+<script>
+  // ---------- STATE ----------
+  let pages = [];           // each: { id, blob, width, height, name, text, words, originalType }
+  let ocrResults = new Map(); // id -> { text, words }
+  let tesseractWorker = null;
+  let isProcessing = false;
+
+  // DOM elements
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const browseTrigger = document.getElementById('browseTrigger');
+  const mainPanel = document.getElementById('mainPanel');
+  const pageListDiv = document.getElementById('pageList');
+  const pageCountSpan = document.getElementById('pageCount');
+  const clearPagesBtn = document.getElementById('clearPagesBtn');
+  const startOcrBtn = document.getElementById('startOcrBtn');
+  const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+  const copyTextBtn = document.getElementById('copyTextBtn');
+  const resultActionsDiv = document.getElementById('resultActions');
+  const progressArea = document.getElementById('progressArea');
+  const ocrProgressFill = document.getElementById('ocrProgressFill');
+  const ocrProgressLabel = document.getElementById('ocrProgressLabel');
+  const statPagesSpan = document.getElementById('statPages');
+  const statSizeSpan = document.getElementById('statSize');
+
+  // helpers
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function showToast(msg, type = 'default') {
+    const toast = document.getElementById('toastMsg');
+    toast.textContent = msg;
+    toast.className = `toast ${type} show`;
+    setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+
+  function updateUIStats() {
+    pageCountSpan.innerText = pages.length;
+    statPagesSpan.innerText = pages.length;
+    const totalSize = pages.reduce((sum, p) => sum + (p.blob?.size || 0), 0);
+    statSizeSpan.innerText = formatSize(totalSize);
+  }
+
+  // render page list
+  function renderPageList() {
+    if (!pageListDiv) return;
+    if (pages.length === 0) {
+      mainPanel.style.display = 'none';
+      resultActionsDiv.style.display = 'none';
+      return;
+    }
+    mainPanel.style.display = 'block';
+    pageListDiv.innerHTML = '';
+    pages.forEach((page, idx) => {
+      const card = document.createElement('div');
+      card.className = 'page-card';
+      const thumbUrl = URL.createObjectURL(page.blob);
+      card.innerHTML = `
+        <div class="page-thumb"><img src="${thumbUrl}" alt="thumb" loading="lazy"></div>
+        <div class="page-info">
+          <div class="page-name">${escapeHtml(page.name)}</div>
+          <div class="page-meta">${page.width}×${page.height} · ${formatSize(page.blob.size)}</div>
+        </div>
+        <button class="icon-btn del" data-idx="${idx}" title="Remove page">🗑️</button>
+      `;
+      const delBtn = card.querySelector('.del');
+      delBtn.addEventListener('click', () => {
+        URL.revokeObjectURL(thumbUrl);
+        pages.splice(idx, 1);
+        renderPageList();
+        updateUIStats();
+        resultActionsDiv.style.display = 'none';
+        ocrResults.clear();
+      });
+      pageListDiv.appendChild(card);
+    });
+    updateUIStats();
+    resultActionsDiv.style.display = 'none';
+    ocrResults.clear();
+  }
+
+  // ---- PDF EXTRACTION (using pdf.js) ----
+  async function extractPdfPages(file) {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const pagesBlobs = [];
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const page = await pdfDoc.getPage(i);
+      const viewport = page.getViewport({ scale: 2.0 }); // scale for better OCR
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      pagesBlobs.push({
+        blob: blob,
+        width: viewport.width,
+        height: viewport.height,
+        name: `${file.name} (page ${i})`
+      });
+    }
+    return pagesBlobs;
+  }
+
+  // handle uploaded files (images + PDFs)
+  async function handleFiles(filesList) {
+    if (isProcessing) { showToast("OCR in progress, please wait", "error"); return; }
+    const newPages = [];
+    for (const file of filesList) {
+      if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+        try {
+          const extracted = await extractPdfPages(file);
+          for (const ep of extracted) {
+            newPages.push({
+              id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36),
+              blob: ep.blob,
+              width: ep.width,
+              height: ep.height,
+              name: ep.name,
+              text: null,
+              words: null
+            });
+          }
+        } catch (err) {
+          console.warn(err);
+          showToast(`Failed to parse PDF: ${file.name}`, "error");
+        }
+      } else if (file.type.startsWith('image/')) {
+        const img = new Image();
+        const imgBlob = file;
+        const url = URL.createObjectURL(imgBlob);
+        await new Promise((resolve) => { img.onload = resolve; img.src = url; });
+        newPages.push({
+          id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36),
+          blob: imgBlob,
+          width: img.width,
+          height: img.height,
+          name: file.name,
+          text: null,
+          words: null
+        });
+        URL.revokeObjectURL(url);
+      } else {
+        showToast(`Skipped ${file.name}: not supported`, "error");
+      }
+    }
+    if (newPages.length) pages.push(...newPages);
+    renderPageList();
+    if (pages.length) showToast(`✅ ${newPages.length} new page(s) added`, "success");
+    else showToast("No valid pages added", "error");
+  }
+
+  // ------ Tesseract initialization lazy
+  async function getWorker() {
+    if (tesseractWorker) return tesseractWorker;
+    showToast("Loading OCR engine (one time) ...", "default");
+    ocrProgressLabel.innerText = "Initializing Tesseract...";
+    progressArea.classList.add('visible');
+    tesseractWorker = await Tesseract.createWorker('eng', 1, {
+      logger: m => { if (m.status === 'loading model') ocrProgressLabel.innerText = "Loading language model..."; }
+    });
+    progressArea.classList.remove('visible');
+    showToast("OCR ready", "success");
+    return tesseractWorker;
+  }
+
+  // run OCR on all pages that are not processed
+  async function runOCR() {
+    if (pages.length === 0) { showToast("No pages to process", "error"); return; }
+    if (isProcessing) return;
+    isProcessing = true;
+    startOcrBtn.disabled = true;
+    progressArea.classList.add('visible');
+    ocrResults.clear();
+    const worker = await getWorker();
+    let processed = 0;
+    const total = pages.length;
+
+    for (let i = 0; i < pages.length; i++) {
+      const page = pages[i];
+      ocrProgressFill.style.width = `${(processed / total) * 100}%`;
+      ocrProgressLabel.innerText = `OCR page ${i+1}/${total}: ${page.name}`;
+      try {
+        const { data } = await worker.recognize(page.blob);
+        const words = data.words.map(w => ({
+          text: w.text,
+          bbox: w.bbox,
+          confidence: w.confidence
+        }));
+        ocrResults.set(page.id, { text: data.text, words: words });
+        page.text = data.text;
+        page.words = words;
+      } catch (err) {
+        console.error(err);
+        ocrResults.set(page.id, { text: `[OCR error on ${page.name}]`, words: [] });
+        page.text = `[OCR failed]`;
+        page.words = [];
+        showToast(`OCR failed on ${page.name}`, "error");
+      }
+      processed++;
+      ocrProgressFill.style.width = `${(processed / total) * 100}%`;
+    }
+    ocrProgressFill.style.width = '100%';
+    ocrProgressLabel.innerText = 'OCR complete!';
+    setTimeout(() => { progressArea.classList.remove('visible'); }, 1500);
+    isProcessing = false;
+    startOcrBtn.disabled = false;
+    resultActionsDiv.style.display = 'flex';
+    showToast(`OCR done on ${total} page(s). You can now generate PDF or copy text.`, "success");
+  }
+
+  // ---- Generate searchable PDF (invisible text overlay using opacity) ----
+  async function generateSearchablePDF() {
+    if (pages.length === 0 || !ocrResults.size) {
+      showToast("No OCR data. Run OCR first.", "error");
+      return;
+    }
+    try {
+      const { PDFDocument, rgb, degrees } = PDFLib;
+      const pdfDoc = await PDFDocument.create();
+      for (let idx = 0; idx < pages.length; idx++) {
+        const pageData = pages[idx];
+        const ocrData = ocrResults.get(pageData.id);
+        if (!ocrData || !ocrData.words) continue;
+
+        const imgBlob = pageData.blob;
+        const imgBytes = await imgBlob.arrayBuffer();
+        let imageEmbed;
+        if (imgBlob.type === 'image/png') {
+          imageEmbed = await pdfDoc.embedPng(imgBytes);
+        } else {
+          imageEmbed = await pdfDoc.embedJpg(imgBytes);
+        }
+        const imgWidth = imageEmbed.width;
+        const imgHeight = imageEmbed.height;
+        const page = pdfDoc.addPage([imgWidth, imgHeight]);
+        page.drawImage(imageEmbed, { x: 0, y: 0, width: imgWidth, height: imgHeight });
+
+        // Draw OCR words as nearly invisible (opacity 0.02) but selectable!
+        for (const w of ocrData.words) {
+          const bbox = w.bbox;
+          if (!bbox) continue;
+          let x0 = bbox.x0, y0 = bbox.y0, x1 = bbox.x1, y1 = bbox.y1;
+          // coordinates from Tesseract are relative to image dimensions (pixel coords)
+          const fontSize = Math.max(6, (y1 - y0) * 0.8);
+          const xPos = x0;
+          const yPos = imgHeight - y1; // PDF origin bottom-left
+          if (isNaN(xPos) || isNaN(yPos)) continue;
+          page.drawText(w.text, {
+            x: xPos,
+            y: yPos,
+            size: fontSize,
+            opacity: 0.015,    // almost invisible but still selectable/copyable
+            color: rgb(0.2, 0.2, 0.2)
+          });
+        }
+      }
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `searchable_${Date.now()}.pdf`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 8000);
+      showToast("Searchable PDF generated (text selectable/copyable)", "success");
+    } catch (err) {
+      console.error(err);
+      showToast("PDF generation failed: " + err.message, "error");
+    }
+  }
+
+  // ---- Copy all plain text ----
+  function copyPlainText() {
+    let allText = "";
+    for (const page of pages) {
+      const txt = ocrResults.get(page.id)?.text;
+      if (txt) allText += `--- ${page.name} ---\n${txt}\n\n`;
+      else allText += `--- ${page.name} ---\n[No OCR text]\n\n`;
+    }
+    if (!allText.trim()) { showToast("No extracted text available", "error"); return; }
+    navigator.clipboard.writeText(allText).then(() => {
+      showToast("Plain text copied to clipboard", "success");
+    }).catch(() => showToast("Failed to copy", "error"));
+  }
+
+  // ---- reset & clear ----
+  function clearAll() {
+    if (isProcessing) { showToast("Please wait, OCR in progress", "error"); return; }
+    pages = [];
+    ocrResults.clear();
+    renderPageList();
+    resultActionsDiv.style.display = 'none';
+    progressArea.classList.remove('visible');
+    showToast("All pages cleared", "default");
+  }
+
+  // Drag & drop
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    const items = Array.from(e.dataTransfer.files);
+    if (items.length) await handleFiles(items);
+  });
+  dropZone.addEventListener('click', () => fileInput.click());
+  browseTrigger.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+  fileInput.addEventListener('change', async (e) => { if (e.target.files.length) await handleFiles(Array.from(e.target.files)); fileInput.value = ''; });
+  clearPagesBtn.addEventListener('click', clearAll);
+  startOcrBtn.addEventListener('click', runOCR);
+  downloadPdfBtn.addEventListener('click', generateSearchablePDF);
+  copyTextBtn.addEventListener('click', copyPlainText);
+  
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // init
+  renderPageList();
+</script>
+</body>
+</html>

@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Malaysia Airlines · Seat Finder</title>
+    <style>
+        /* ── reset & base ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0d0d1a 100%);
+            font-family: -apple-system, 'Helvetica Neue', 'SF Pro Display', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            padding: 16px;
+        }
+
+        /* ── watch container ── */
+        .watch {
+            position: relative;
+            width: 280px;
+            height: 380px; /* slightly taller to fit 4 rows of keys */
+            background: #1c1c1e;
+            border-radius: 44px;
+            padding: 10px;
+            box-shadow:
+                0 30px 60px rgba(0, 0, 0, 0.8),
+                0 0 0 2px #3a3a3e inset,
+                0 0 0 4px #1c1c1e inset;
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+        .watch:hover {
+            transform: scale(1.01);
+        }
+
+        /* digital crown */
+        .crown {
+            position: absolute;
+            right: -14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 44px;
+            background: linear-gradient(180deg, #5a5a5e, #3a3a3e);
+            border-radius: 0 6px 6px 0;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.6);
+            border: 1px solid #2a2a2e;
+            border-left: none;
+        }
+        .crown::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 20px;
+            background: repeating-linear-gradient(180deg, #4a4a4e 0px, #4a4a4e 2px, #3a3a3e 2px, #3a3a3e 4px);
+            border-radius: 2px;
+        }
+
+        /* side button */
+        .side-btn {
+            position: absolute;
+            right: -10px;
+            top: 30%;
+            width: 6px;
+            height: 28px;
+            background: linear-gradient(180deg, #4a4a4e, #2a2a2e);
+            border-radius: 0 4px 4px 0;
+            box-shadow: -2px 0 6px rgba(0, 0, 0, 0.4);
+            border: 1px solid #2a2a2e;
+            border-left: none;
+        }
+
+        /* ── screen ── */
+        .screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            border-radius: 36px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 8px 10px 6px;
+            box-shadow: 0 0 0 1px #2a2a2e inset;
+        }
+
+        /* ── status bar ── */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px 4px;
+            font-size: 9px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+        .status-bar .time {
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            font-size: 9px;
+        }
+        .status-bar .icons .battery {
+            display: inline-block;
+            width: 16px;
+            height: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .status-bar .icons .battery::after {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 1.5px;
+            width: 2px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 0 1px 1px 0;
+        }
+        .status-bar .icons .battery .level {
+            height: 100%;
+            width: 72%;
+            background: #34c759;
+            border-radius: 1px;
+            margin: 0.5px;
+        }
+
+        /* flight info line */
+        .flight-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 7px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.35);
+            letter-spacing: 0.5px;
+            padding: 0 2px 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            flex-shrink: 0;
+        }
+        .flight-info .flight-code {
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 600;
+        }
+        .flight-info .flight-code span {
+            color: #ff6b35;
+        }
+
+        /* ── display area ── */
+        .display-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2px 0;
+            min-height: 0;
+            transition: all 0.25s ease;
+        }
+
+        .seat-number {
+            font-size: 38px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 4px;
+            text-align: center;
+            line-height: 1.1;
+            transition: all 0.2s ease;
+            font-variant-numeric: tabular-nums;
+        }
+        .seat-number .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 34px;
+            background: #ff6b35;
+            margin-left: 2px;
+            vertical-align: middle;
+            animation: blink 1s step-end infinite;
+            border-radius: 2px;
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+        .seat-number .dash {
+            color: rgba(255, 255, 255, 0.15);
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        .seat-number .highlight {
+            color: #ff6b35;
+        }
+
+        .passenger-info {
+            text-align: center;
+            margin-top: 4px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .passenger-info .name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 0.2px;
+        }
+        .passenger-info .sub {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 2px;
+            flex-wrap: wrap;
+        }
+        .passenger-info .sub .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.3px;
+        }
+        .passenger-info .sub .badge .dot {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #34c759;
+        }
+        .passenger-info .sub .badge .dot.amber {
+            background: #ff9500;
+        }
+        .passenger-info .sub .badge .dot.red {
+            background: #ff3b30;
+        }
+
+        .passenger-info .not-found {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.35);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+        .passenger-info .not-found .icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .passenger-info .empty-state {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: 400;
+            letter-spacing: 0.8px;
+        }
+
+        /* ── dialpad ── */
+        .dialpad {
+            display: grid;
+            gap: 4px;
+            padding: 4px 0 2px;
+            flex-shrink: 0;
+            transition: all 0.25s ease;
+            max-width: 100%;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* default: 3 columns (number pad) */
+        .dialpad-3col {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        /* 4 columns for letter pad */
+        .dialpad-4col {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .dialpad .key {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 500;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.08s ease;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            min-height: 42px;
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .dialpad .key:active {
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(0.94);
+        }
+        .dialpad .key .label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.1;
+        }
+        .dialpad .key .label .sub-label {
+            font-size: 7px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: 0.5px;
+            margin-top: -1px;
+        }
+        .dialpad .key.letter {
+            font-size: 22px;
+            font-weight: 600;
+            background: rgba(255, 107, 53, 0.12);
+            color: #ff6b35;
+        }
+        .dialpad .key.letter:active {
+            background: rgba(255, 107, 53, 0.30);
+        }
+        .dialpad .key.letter .sub-label {
+            color: rgba(255, 107, 53, 0.25);
+        }
+        .dialpad .key.action {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .dialpad .key.action:active {
+            background: rgba(255, 255, 255, 0.10);
+        }
+        .dialpad .key.action.danger:active {
+            background: rgba(255, 59, 48, 0.20);
+        }
+        .dialpad .key .icon-svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+            opacity: 0.6;
+        }
+
+        /* special for 4col letter grid: action keys can span */
+        .dialpad-4col .key.action {
+            aspect-ratio: auto;
+            min-height: 42px;
+        }
+
+        /* ── transition helpers ── */
+        .dialpad-enter {
+            animation: dialpadIn 0.2s ease forwards;
+        }
+        @keyframes dialpadIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.92) translateY(4px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .display-pop {
+            animation: displayPop 0.25s ease forwards;
+        }
+        @keyframes displayPop {
+            0% {
+                opacity: 0.4;
+                transform: scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .result-show {
+            animation: resultFade 0.3s ease forwards;
+        }
+        @keyframes resultFade {
+            0% {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── strap ── */
+        .strap {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 28px;
+            background: linear-gradient(180deg, #2a2a2e, #1a1a1e);
+            border-radius: 0 0 6px 6px;
+            z-index: -1;
+        }
+        .strap-top {
+            top: -18px;
+            height: 20px;
+            border-radius: 6px 6px 0 0;
+            background: linear-gradient(0deg, #2a2a2e, #1a1a1e);
+        }
+        .strap-bottom {
+            bottom: -18px;
+            height: 20px;
+            border-radius: 0 0 6px 6px;
+        }
+        .strap .buckle {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 4px;
+            background: #3a3a3e;
+            border-radius: 2px;
+            bottom: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
+        .strap-top .buckle {
+            top: 4px;
+            bottom: auto;
+        }
+
+        /* ── responsive ── */
+        @media (max-width: 340px) {
+            .watch {
+                width: 220px;
+                height: 320px;
+                border-radius: 36px;
+                padding: 8px;
+            }
+            .screen {
+                border-radius: 30px;
+                padding: 4px 6px 4px;
+            }
+            .seat-number {
+                font-size: 28px;
+            }
+            .seat-number .cursor {
+                height: 26px;
+            }
+            .dialpad .key {
+                font-size: 16px;
+                min-height: 34px;
+                border-radius: 10px;
+            }
+            .dialpad .key.letter {
+                font-size: 18px;
+            }
+            .passenger-info .name {
+                font-size: 12px;
+            }
+            .passenger-info .sub {
+                font-size: 8px;
+                gap: 6px;
+            }
+            .flight-info {
+                font-size: 6px;
+            }
+            .status-bar {
+                font-size: 8px;
+            }
+            .crown {
+                height: 34px;
+                right: -10px;
+            }
+            .side-btn {
+                height: 20px;
+                right: -8px;
+            }
+            .dialpad {
+                gap: 3px;
+                padding: 2px 0;
+            }
+            .dialpad-4col .key.action {
+                min-height: 34px;
+            }
+        }
+
+        @media (max-width: 260px) {
+            .watch {
+                width: 180px;
+                height: 270px;
+                border-radius: 28px;
+                padding: 6px;
+            }
+            .screen {
+                border-radius: 24px;
+                padding: 3px 4px 3px;
+            }
+            .seat-number {
+                font-size: 22px;
+                letter-spacing: 2px;
+            }
+            .seat-number .cursor {
+                height: 20px;
+            }
+            .dialpad .key {
+                font-size: 13px;
+                min-height: 28px;
+                border-radius: 8px;
+            }
+            .dialpad .key.letter {
+                font-size: 14px;
+            }
+            .passenger-info .name {
+                font-size: 10px;
+            }
+            .passenger-info .sub {
+                font-size: 7px;
+                gap: 4px;
+            }
+            .flight-info {
+                font-size: 5px;
+            }
+            .status-bar {
+                font-size: 7px;
+            }
+            .crown {
+                height: 28px;
+                right: -8px;
+                width: 6px;
+            }
+            .side-btn {
+                height: 16px;
+                right: -6px;
+                width: 4px;
+            }
+            .dialpad {
+                gap: 2px;
+                padding: 1px 0;
+            }
+            .dialpad-4col .key.action {
+                min-height: 28px;
+            }
+            .watch:hover {
+                transform: none;
+            }
+        }
+
+        /* ── scrollbar hide ── */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="watch" role="application" aria-label="Malaysia Airlines Seat Finder on Apple Watch">
+
+        <!-- digital crown -->
+        <div class="crown" aria-hidden="true"></div>
+        <div class="side-btn" aria-hidden="true"></div>
+
+        <!-- straps -->
+        <div class="strap strap-top"><div class="buckle"></div></div>
+        <div class="strap strap-bottom"><div class="buckle"></div></div>
+
+        <!-- screen -->
+        <div class="screen">
+
+            <!-- status bar -->
+            <div class="status-bar">
+                <span class="time" id="watchTime">12:45</span>
+                <span class="icons">
+                    <span style="opacity:0.5;">●</span>
+                    <span class="battery"><span class="level"></span></span>
+                </span>
+            </div>
+
+            <!-- flight info -->
+            <div class="flight-info">
+                <span class="flight-code">MH <span>2604</span> · KUL–BKI</span>
+                <span>737-800 · Seat Finder</span>
+            </div>
+
+            <!-- display area -->
+            <div class="display-area" id="displayArea">
+                <div class="seat-number" id="seatDisplay">
+                    <span class="dash">_</span><span class="dash">_</span><span class="dash">_</span>
+                    <span class="cursor"></span>
+                </div>
+                <div class="passenger-info" id="passengerInfo">
+                    <div class="empty-state">Tap digits to start</div>
+                </div>
+            </div>
+
+            <!-- dialpad -->
+            <div class="dialpad dialpad-3col" id="dialpad"></div>
+
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── state ──────────────────────────────────────────────
+            const state = {
+                phase: 'row', // 'row' | 'letter' | 'result'
+                digits: [], // up to 2 digits
+                seat: null, // e.g. '01A'
+                selectedLetter: null,
+            };
+
+            // ─── DOM refs ───────────────────────────────────────────
+            const dialpadEl = document.getElementById('dialpad');
+            const seatDisplay = document.getElementById('seatDisplay');
+            const passengerInfo = document.getElementById('passengerInfo');
+            const displayArea = document.getElementById('displayArea');
+
+            // ─── mock passenger data ──────────────────────────────
+            const passengers = {};
+
+            // seat letters (A–K, skipping I)
+            const seatLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K'];
+            const firstNames = ['Ahmad', 'Sarah', 'Tan', 'Priya', 'John', 'Lee', 'Raj', 'Wong', 'Lim', 'Ng',
+                'Goh', 'Teh', 'Kumar', 'Mei', 'Chin', 'Siew', 'Hock', 'Sock', 'Keng', 'Lay',
+                'Wei', 'Ming', 'Sharma', 'Bin', 'Binti', 'Abdullah', 'Ali', 'Hassan', 'Omar', 'Zain'
+            ];
+            const lastNames = ['Abdullah', 'Lim', 'Tan', 'Sharma', 'Wong', 'Lee', 'Kumar', 'Ng', 'Goh', 'Teh',
+                'Ali', 'Hassan', 'Omar', 'Zain', 'Rahman', 'Ismail', 'Ahmad', 'Sulaiman', 'Ibrahim', 'Yusof'
+            ];
+            const statuses = ['Boarding OK', 'Checked In', 'At Gate', 'Boarding', 'On Board'];
+            const meals = ['VGML', 'CPML', 'No SPML', 'SFML', 'AVML', 'GFML', 'DBML', 'CHML'];
+
+            // generate rows 01–30, seats A–K (10 letters)
+            for (let row = 1; row <= 30; row++) {
+                const rowStr = String(row).padStart(2, '0');
+                for (let letterIdx = 0; letterIdx < seatLetters.length; letterIdx++) {
+                    const seatLetter = seatLetters[letterIdx];
+                    const seatKey = rowStr + seatLetter;
+                    const idx = (row - 1) * 10 + letterIdx;
+                    const firstName = firstNames[idx % firstNames.length];
+                    const lastName = lastNames[(idx * 7 + 3) % lastNames.length];
+                    const status = statuses[(idx * 13 + 5) % statuses.length];
+                    const meal = meals[(idx * 11 + 7) % meals.length];
+                    // about 12% empty seats
+                    const isEmpty = (idx % 8 === 3 || idx % 13 === 7);
+                    if (!isEmpty) {
+                        passengers[seatKey] = {
+                            name: `${firstName} ${lastName}`,
+                            status: status,
+                            meal: meal,
+                            seat: seatKey,
+                            gender: idx % 2 === 0 ? 'Mr.' : 'Ms.',
+                            boardingGroup: String.fromCharCode(65 + (idx % 5)),
+                            frequentFlyer: idx % 3 === 0 ? 'Enrich Gold' : (idx % 3 === 1 ? 'Enrich Silver' : null),
+                        };
+                    }
+                }
+            }
+
+            // ─── helpers ────────────────────────────────────────────
+
+            function renderSeatDisplay() {
+                const d1 = state.digits[0] !== undefined ? state.digits[0] : '_';
+                const d2 = state.digits[1] !== undefined ? state.digits[1] : '_';
+                const l = state.selectedLetter || '_';
+                seatDisplay.innerHTML = `<span>${d1}</span><span>${d2}</span><span class="${state.selectedLetter ? 'highlight' : ''}">${l}</span><span class="cursor"></span>`;
+            }
+
+            function renderPassengerInfo(seatKey) {
+                const data = passengers[seatKey];
+                if (!data) {
+                    passengerInfo.innerHTML = `
+                        <div class="not-found result-show">
+                            <span class="icon">🪑</span>
+                            Seat ${seatKey} · Empty<br>
+                            <span style="font-size:9px;opacity:0.5;">No passenger assigned</span>
+                        </div>
+                    `;
+                    return;
+                }
+                const ff = data.frequentFlyer ? ` · ${data.frequentFlyer}` : '';
+                const genderPrefix = data.gender || '';
+                passengerInfo.innerHTML = `
+                    <div class="result-show">
+                        <div class="name">${genderPrefix} ${data.name}</div>
+                        <div class="sub">
+                            <span class="badge"><span class="dot"></span> ${data.status}</span>
+                            <span class="badge">🍽 ${data.meal}</span>
+                            <span class="badge">Group ${data.boardingGroup}</span>
+                            ${data.frequentFlyer ? `<span class="badge">✈ ${data.frequentFlyer}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderEmptyState() {
+                const msg = state.phase === 'row' ? 'Tap digits to start' :
+                    state.phase === 'letter' ? 'Select seat letter' :
+                    'Search complete';
+                passengerInfo.innerHTML = `<div class="empty-state">${msg}</div>`;
+            }
+
+            // ─── dialpad rendering ──────────────────────────────────
+
+            function renderDialpad() {
+                const phase = state.phase;
+                let keys = [];
+                let gridClass = 'dialpad-3col';
+
+                if (phase === 'row') {
+                    // number pad 1-9, 0, backspace, confirm
+                    keys = [
+                        { label: '1', value: '1', type: 'num' },
+                        { label: '2', value: '2', type: 'num' },
+                        { label: '3', value: '3', type: 'num' },
+                        { label: '4', value: '4', type: 'num' },
+                        { label: '5', value: '5', type: 'num' },
+                        { label: '6', value: '6', type: 'num' },
+                        { label: '7', value: '7', type: 'num' },
+                        { label: '8', value: '8', type: 'num' },
+                        { label: '9', value: '9', type: 'num' },
+                        { label: '⌫', value: 'backspace', type: 'action' },
+                        { label: '0', value: '0', type: 'num', class: 'zero' },
+                        { label: '✓', value: 'confirm', type: 'action' },
+                    ];
+                    gridClass = 'dialpad-3col';
+                } else if (phase === 'letter') {
+                    // letters A–K (10 letters) in 4 columns
+                    const letterKeys = seatLetters.map(l => ({
+                        label: l,
+                        value: l,
+                        type: 'letter'
+                    }));
+                    // we'll arrange them in 4 columns: first 8 in two rows of 4, then last 2 + backspace + clear
+                    // But we'll just put them in order, CSS grid will wrap.
+                    // We'll add backspace and clear as separate keys at the end.
+                    keys = [
+                        ...letterKeys,
+                        { label: '⌫', value: 'backspace', type: 'action' },
+                        { label: '✕', value: 'clear', type: 'action danger' },
+                    ];
+                    // For 10 letters + 2 actions = 12 items. We'll use 4 columns, so 3 rows of 4.
+                    gridClass = 'dialpad-4col';
+                } else {
+                    // result phase: show "New Search" button spanning full width
+                    keys = [
+                        { label: '', value: 'spacer', type: 'spacer' },
+                        { label: 'New Search', value: 'reset', type: 'action', class: 'zero', style: 'grid-column:1/4; aspect-ratio:auto; padding:8px 0; font-size:14px; background:rgba(255,107,53,0.12); color:#ff6b35; border-radius:12px;' },
+                        { label: '', value: 'spacer', type: 'spacer' },
+                    ];
+                    gridClass = 'dialpad-3col';
+                }
+
+                dialpadEl.className = `dialpad ${gridClass} dialpad-enter`;
+                dialpadEl.innerHTML = '';
+
+                keys.forEach((k, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'key';
+                    if (k.type === 'letter') btn.classList.add('letter');
+                    if (k.type === 'action') btn.classList.add('action');
+                    if (k.type === 'action' && k.value === 'clear') btn.classList.add('danger');
+                    if (k.class) btn.className += ' ' + k.class;
+                    if (k.style) btn.setAttribute('style', k.style);
+                    if (k.value === 'spacer') {
+                        btn.style.visibility = 'hidden';
+                        btn.style.pointerEvents = 'none';
+                    }
+                    btn.dataset.value = k.value;
+                    btn.dataset.type = k.type;
+
+                    if (k.label) {
+                        if (k.type === 'letter') {
+                            btn.innerHTML = `<span class="label">${k.label}<span class="sub-label">seat</span></span>`;
+                        } else if (k.type === 'num') {
+                            btn.innerHTML = `<span class="label">${k.label}</span>`;
+                        } else {
+                            btn.innerHTML = `<span class="label">${k.label}</span>`;
+                        }
+                    } else if (k.value === 'spacer') {
+                        btn.innerHTML = '';
+                    }
+
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        handleKeyPress(k.value);
+                    });
+
+                    // touch feedback
+                    btn.addEventListener('touchstart', () => {}, { passive: true });
+
+                    dialpadEl.appendChild(btn);
+                });
+
+                // re-trigger enter animation
+                requestAnimationFrame(() => {
+                    dialpadEl.classList.remove('dialpad-enter');
+                    void dialpadEl.offsetWidth;
+                    dialpadEl.classList.add('dialpad-enter');
+                });
+            }
+
+            // ─── key press handler ──────────────────────────────────
+
+            function handleKeyPress(value) {
+                if (state.phase === 'result') {
+                    if (value === 'reset') {
+                        resetAll();
+                    }
+                    return;
+                }
+
+                if (state.phase === 'row') {
+                    if (value === 'backspace') {
+                        if (state.digits.length > 0) {
+                            state.digits.pop();
+                            renderSeatDisplay();
+                            renderEmptyState();
+                        }
+                        return;
+                    }
+                    if (value === 'confirm') {
+                        if (state.digits.length === 2) {
+                            state.phase = 'letter';
+                            state.selectedLetter = null;
+                            renderSeatDisplay();
+                            renderEmptyState();
+                            renderDialpad();
+                        }
+                        return;
+                    }
+                    if (value === 'clear') {
+                        resetAll();
+                        return;
+                    }
+                    if (/^[0-9]$/.test(value)) {
+                        if (state.digits.length < 2) {
+                            state.digits.push(value);
+                            renderSeatDisplay();
+                            renderEmptyState();
+                            if (state.digits.length === 2) {
+                                setTimeout(() => {
+                                    state.phase = 'letter';
+                                    state.selectedLetter = null;
+                                    renderSeatDisplay();
+                                    renderEmptyState();
+                                    renderDialpad();
+                                }, 180);
+                            }
+                        }
+                        return;
+                    }
+                    return;
+                }
+
+                if (state.phase === 'letter') {
+                    if (value === 'backspace') {
+                        // go back to row phase, keep digits
+                        state.phase = 'row';
+                        state.selectedLetter = null;
+                        renderSeatDisplay();
+                        renderEmptyState();
+                        renderDialpad();
+                        return;
+                    }
+                    if (value === 'clear') {
+                        resetAll();
+                        return;
+                    }
+                    // letter input – accept any of the seatLetters
+                    if (seatLetters.includes(value)) {
+                        state.selectedLetter = value;
+                        const seatKey = state.digits.join('') + value;
+                        state.seat = seatKey;
+                        state.phase = 'result';
+                        renderSeatDisplay();
+                        renderPassengerInfo(seatKey);
+                        renderDialpad();
+                        // subtle haptic-like flash
+                        displayArea.style.transition = 'transform 0.1s ease';
+                        displayArea.style.transform = 'scale(0.98)';
+                        setTimeout(() => {
+                            displayArea.style.transform = 'scale(1)';
+                        }, 100);
+                        return;
+                    }
+                    return;
+                }
+            }
+
+            // ─── reset ──────────────────────────────────────────────
+
+            function resetAll() {
+                state.phase = 'row';
+                state.digits = [];
+                state.seat = null;
+                state.selectedLetter = null;
+                renderSeatDisplay();
+                renderEmptyState();
+                renderDialpad();
+                displayArea.style.transition = 'transform 0.15s ease';
+                displayArea.style.transform = 'scale(0.96)';
+                setTimeout(() => {
+                    displayArea.style.transform = 'scale(1)';
+                }, 120);
+            }
+
+            // ─── clock ──────────────────────────────────────────────
+
+            function updateClock() {
+                const now = new Date();
+                const h = String(now.getHours()).padStart(2, '0');
+                const m = String(now.getMinutes()).padStart(2, '0');
+                document.getElementById('watchTime').textContent = `${h}:${m}`;
+            }
+            updateClock();
+            setInterval(updateClock, 10000);
+
+            // ─── init ──────────────────────────────────────────────
+
+            function init() {
+                state.phase = 'row';
+                state.digits = [];
+                state.seat = null;
+                state.selectedLetter = null;
+                renderSeatDisplay();
+                renderEmptyState();
+                renderDialpad();
+
+                // keyboard support (desktop)
+                document.addEventListener('keydown', (e) => {
+                    const key = e.key;
+                    if (key >= '0' && key <= '9') {
+                        handleKeyPress(key);
+                        e.preventDefault();
+                    } else if (seatLetters.includes(key.toUpperCase())) {
+                        handleKeyPress(key.toUpperCase());
+                        e.preventDefault();
+                    } else if (key === 'Backspace') {
+                        handleKeyPress('backspace');
+                        e.preventDefault();
+                    } else if (key === 'Enter') {
+                        handleKeyPress('confirm');
+                        e.preventDefault();
+                    } else if (key === 'Escape') {
+                        handleKeyPress('clear');
+                        e.preventDefault();
+                    } else if (key === 'r' || key === 'R') {
+                        handleKeyPress('reset');
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            init();
+
+            // ─── expose for debugging ──────────────────────────────
+            window.__seatFinder = { state, passengers, resetAll };
+
+        })();
+    </script>
+
+</body>
+</html>

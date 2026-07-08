@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FS — Male Feedback Templates</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117; --surface:#161b22; --surface2:#1c2330; --border:#30363d;
+    --teal:#00c9a7; --teal-dim:#00c9a718; --teal-glow:#00c9a730;
+    --male:#58a6ff; --male-dim:#58a6ff18;
+    --text:#e6edf3; --muted:#7d8590; --danger:#f85149; --success:#3fb950;
+    --orange:#ff8c42;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { background:var(--bg); color:var(--text); font-family:'Sora',sans-serif; min-height:100vh; padding:28px 18px 80px; }
+  body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px); background-size:40px 40px; opacity:0.2; z-index:0; pointer-events:none; }
+  .wrap { position:relative; z-index:1; max-width:680px; margin:0 auto; }
+
+  .header { text-align:center; margin-bottom:28px; }
+  .badge { display:inline-block; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.18em; color:var(--male); border:1px solid var(--male); border-radius:20px; padding:3px 14px; margin-bottom:12px; background:var(--male-dim); }
+  h1 { font-size:26px; font-weight:800; background:linear-gradient(135deg,#fff 20%,var(--male) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px; }
+  .subtitle { color:var(--muted); font-size:13px; line-height:1.6; }
+
+  .info-box { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--teal); border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:12px; color:var(--muted); line-height:1.7; }
+  .info-box strong { color:var(--teal); }
+  .placeholder-ref { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .ph-tag { background:var(--surface2); border:1px solid var(--border); border-radius:6px; font-family:'DM Mono',monospace; font-size:11px; color:var(--orange); padding:3px 8px; }
+
+  .section-label { font-size:11px; font-family:'DM Mono',monospace; letter-spacing:0.12em; color:var(--muted); text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* Feedback cards */
+  .feedback-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; margin-bottom:12px; overflow:hidden; transition:border-color 0.2s; }
+  .feedback-card:focus-within { border-color:var(--male); }
+  .card-top { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--border); background:var(--surface2); }
+  .card-num { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); }
+  .card-actions { display:flex; gap:6px; align-items:center; }
+  .word-count { font-family:'DM Mono',monospace; font-size:10px; padding:3px 8px; border-radius:10px; border:1px solid var(--border); color:var(--muted); background:var(--bg); }
+  .word-count.ok { color:var(--success); border-color:var(--success); background:#3fb95012; }
+  .word-count.over { color:var(--orange); border-color:var(--orange); background:#ff8c4212; }
+  .del-btn { background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:6px; font-size:12px; padding:3px 8px; cursor:pointer; font-family:'DM Mono',monospace; }
+  .del-btn:active { border-color:var(--danger); color:var(--danger); }
+  .card-textarea { width:100%; background:var(--surface); border:none; color:var(--text); font-family:'DM Mono',monospace; font-size:12px; padding:12px 14px; resize:none; outline:none; line-height:1.75; min-height:110px; }
+
+  /* Add new */
+  .add-section { background:var(--surface); border:1px dashed var(--border); border-radius:12px; padding:16px; margin-bottom:16px; }
+  .add-section-label { font-size:12px; font-weight:700; color:var(--teal); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+  .add-textarea { width:100%; background:#0a0e14; border:1px solid var(--border); border-radius:10px; color:var(--text); font-family:'DM Mono',monospace; font-size:12px; padding:12px 14px; resize:none; outline:none; line-height:1.75; min-height:110px; transition:border-color 0.2s; }
+  .add-textarea:focus { border-color:var(--teal); }
+  .add-textarea::placeholder { color:#2a3040; }
+  .add-footer { display:flex; align-items:center; justify-content:space-between; margin-top:10px; gap:10px; }
+  .new-word-count { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); }
+  .add-btn { background:linear-gradient(135deg,var(--teal),#00a88e); color:#0d1117; border:none; border-radius:8px; font-family:'Sora',sans-serif; font-weight:700; font-size:13px; padding:10px 20px; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; }
+  .add-btn:active { opacity:0.8; }
+
+  /* Save bar */
+  .save-bar { position:fixed; bottom:0; left:0; right:0; background:var(--surface); border-top:1px solid var(--border); padding:12px 18px; display:flex; gap:10px; align-items:center; z-index:50; }
+  .save-btn { flex:1; background:linear-gradient(135deg,var(--male),#3a7bd5); color:#fff; border:none; border-radius:10px; font-family:'Sora',sans-serif; font-weight:700; font-size:14px; padding:13px; cursor:pointer; transition:opacity 0.15s; }
+  .save-btn:active { opacity:0.8; }
+  .save-status { font-family:'DM Mono',monospace; font-size:11px; color:var(--success); flex-shrink:0; display:none; }
+  .save-status.show { display:block; }
+
+  .toast { position:fixed; bottom:72px; left:50%; transform:translateX(-50%) translateY(10px); background:#161b22ee; border:1px solid var(--success); color:var(--success); font-family:'DM Mono',monospace; font-size:12px; padding:9px 18px; border-radius:20px; opacity:0; transition:opacity 0.2s,transform 0.2s; pointer-events:none; z-index:100; white-space:nowrap; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* JSON output for fetching */
+  #json-output { display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="badge">👨 MALE — FS / LS</div>
+    <h1>Male Feedback Templates</h1>
+    <p class="subtitle">Pre-loaded and custom feedback for male cabin crew (FS/LS). Used by e-CCPR Autofill when Online mode is selected.</p>
+  </div>
+
+  <div class="info-box">
+    <strong>Placeholders you can use:</strong>
+    <div class="placeholder-ref">
+      <span class="ph-tag">[NAME]</span>
+      <span class="ph-tag">[FULLNAME]</span>
+      <span class="ph-tag">[RANK]</span>
+    </div>
+    <div style="margin-top:8px;">
+      <strong>[NAME]</strong> = first name only &nbsp;·&nbsp;
+      <strong>[FULLNAME]</strong> = full name &nbsp;·&nbsp;
+      <strong>[RANK]</strong> = rank from roster (FS/LS for male, FSS/LSS for female)
+    </div>
+  </div>
+
+  <div class="section-label">Pre-loaded Templates</div>
+  <div id="feedback-list"></div>
+
+  <div class="section-label" style="margin-top:8px;">Add New Template</div>
+  <div class="add-section">
+    <div class="add-section-label">✚ New Feedback</div>
+    <textarea class="add-textarea" id="new-feedback" placeholder="Write your feedback here. Use [NAME], [FULLNAME], [RANK] as placeholders.&#10;&#10;Example: [RANK] [FULLNAME] demonstrated outstanding professionalism throughout the flight..."></textarea>
+    <div class="add-footer">
+      <span class="new-word-count" id="new-word-count">0 words</span>
+      <button class="add-btn" onclick="addFeedback()">+ Add to Pool</button>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <button class="save-btn" onclick="saveAll()">💾 Save All Changes</button>
+  <span class="save-status" id="save-status">✓ Saved</span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- JSON output read by main tool when fetched -->
+<script id="json-output" type="application/json"></script>
+
+<script>
+const STORAGE_KEY = 'eccpr_fs_feedback';
+
+// Pre-loaded templates (always available as fallback)
+const PRELOADED = [
+  "[RANK] [FULLNAME] demonstrated an outstanding level of professionalism throughout the flight. His communication skills were excellent — he engaged with passengers in a warm and confident manner, ensuring all requests were attended to promptly. He showed strong teamwork by consistently supporting his fellow crew members during service, displaying great flexibility when the cabin workload increased. His grooming was impeccable and his overall conduct reflected the highest standards expected of our cabin crew. A truly commendable performance.",
+  "It was a pleasure observing [RANK] [FULLNAME] in action during today's flight. He exhibited exceptional situational awareness and a proactive approach to passenger care, anticipating needs before they were verbalised. His knowledge of SOPs was clearly evident in how smoothly he managed both the service and safety procedures. [NAME] maintained a calm and composed demeanour throughout, earning positive remarks from several passengers. His dedication and positive attitude make him a valuable asset to the cabin crew team.",
+  "[RANK] [FULLNAME] performed admirably on this flight, showcasing strong leadership qualities despite operating in a supporting role. He took initiative during the meal service, ensuring efficiency without compromising the quality of passenger interaction. His time management was impressive — tasks were completed methodically and within schedule. [NAME] demonstrated respect for his colleagues' viewpoints and contributed constructively during the pre-flight briefing. His professional grooming and courteous conduct reinforced a positive image of the airline throughout the journey.",
+  "Throughout the flight, [RANK] [FULLNAME] displayed a commendable level of dedication and crew spirit. His ability to solve minor challenges quickly and without disruption to passengers highlighted his problem-solving capability and calm under pressure. He communicated effectively with both passengers and crew, ensuring smooth coordination during the service. [NAME]'s grooming was well-maintained and his uniform presentation was spotless. He approached every task with a positive attitude, making him a reliable and dependable member of the cabin crew.",
+  "[RANK] [FULLNAME] showed exceptional commitment to passenger safety and comfort on this flight. His conduct during the safety demonstration was precise and professional, and he maintained vigilance throughout all phases of the flight. During the service, he was attentive and personable, managing even demanding passengers with patience and grace. [NAME]'s teamwork and willingness to go beyond his assigned duties demonstrated a strong sense of responsibility. His performance today was a fine example of the standards we strive to uphold.",
+  "[RANK] [FULLNAME] carried out his duties with remarkable efficiency and a consistently positive attitude. His interpersonal skills were on full display during the cabin service — he engaged passengers with genuine warmth and attentiveness, ensuring their comfort was prioritised at all times. He demonstrated good decision-making during a brief disruption mid-flight, handling the situation professionally and keeping the team well informed. [NAME]'s smart appearance, punctuality and cooperative nature made him a pleasure to work alongside on this flight."
+];
+
+let userTemplates = [];
+let toastTimer;
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function countWords(str) {
+  return str.trim().split(/\s+/).filter(w => w.length > 0).length;
+}
+
+function updateWordCount(textarea, countEl) {
+  const wc = countWords(textarea.value);
+  countEl.textContent = wc + ' words';
+  countEl.className = 'word-count' + (wc >= 60 && wc <= 100 ? ' ok' : wc > 100 ? ' over' : '');
+}
+
+function renderList() {
+  const list = document.getElementById('feedback-list');
+  list.innerHTML = '';
+  const all = [...PRELOADED, ...userTemplates];
+  all.forEach((text, i) => {
+    const isPreload = i < PRELOADED.length;
+    const card = document.createElement('div');
+    card.className = 'feedback-card';
+    const wc = countWords(text);
+    const wcClass = wc >= 60 && wc <= 100 ? 'ok' : wc > 100 ? 'over' : '';
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="card-num">#${i+1} ${isPreload ? '· Pre-loaded' : '· Custom'}</span>
+        <div class="card-actions">
+          <span class="word-count ${wcClass}" id="wc-${i}">${wc} words</span>
+          ${!isPreload ? `<button class="del-btn" onclick="deleteTemplate(${i - PRELOADED.length})">✕ Delete</button>` : ''}
+        </div>
+      </div>
+      <textarea class="card-textarea" data-index="${i}" ${isPreload ? 'readonly' : ''}
+        oninput="onEditTemplate(this)">${text}</textarea>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function onEditTemplate(ta) {
+  const i = parseInt(ta.dataset.index);
+  const userIdx = i - PRELOADED.length;
+  if (userIdx >= 0) {
+    userTemplates[userIdx] = ta.value;
+    const wcEl = document.getElementById('wc-' + i);
+    if (wcEl) {
+      const wc = countWords(ta.value);
+      wcEl.textContent = wc + ' words';
+      wcEl.className = 'word-count' + (wc >= 60 && wc <= 100 ? ' ok' : wc > 100 ? ' over' : '');
+    }
+  }
+}
+
+function deleteTemplate(userIdx) {
+  if (confirm('Delete this feedback template?')) {
+    userTemplates.splice(userIdx, 1);
+    renderList();
+    showToast('Template deleted. Tap Save to confirm.');
+  }
+}
+
+function addFeedback() {
+  const ta = document.getElementById('new-feedback');
+  const text = ta.value.trim();
+  if (!text) { showToast('Please write a feedback template first.'); return; }
+  if (countWords(text) < 20) { showToast('Template seems too short. Aim for ~75 words.'); return; }
+  userTemplates.push(text);
+  ta.value = '';
+  document.getElementById('new-word-count').textContent = '0 words';
+  renderList();
+  showToast('✓ Added! Tap Save to keep it.');
+  // Scroll to new card
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.feedback-card');
+    if (cards.length) cards[cards.length-1].scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 100);
+}
+
+function saveAll() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(userTemplates));
+    updateJSONOutput();
+    const s = document.getElementById('save-status');
+    s.classList.add('show');
+    showToast('✓ All changes saved.');
+    setTimeout(() => s.classList.remove('show'), 3000);
+  } catch(e) {
+    showToast('Save failed — storage may be full.');
+  }
+}
+
+function updateJSONOutput() {
+  // This is read by the main tool when it fetches this page
+  const all = [...PRELOADED, ...userTemplates];
+  const script = document.getElementById('json-output');
+  script.textContent = JSON.stringify(all);
+}
+
+function loadSaved() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) userTemplates = JSON.parse(saved);
+  } catch(e) { userTemplates = []; }
+}
+
+// Word count on new textarea
+document.getElementById('new-feedback').addEventListener('input', function() {
+  const wc = countWords(this.value);
+  const el = document.getElementById('new-word-count');
+  el.textContent = wc + ' words';
+  el.style.color = wc >= 60 && wc <= 100 ? 'var(--success)' : wc > 100 ? 'var(--orange)' : 'var(--muted)';
+});
+
+loadSaved();
+renderList();
+updateJSONOutput();
+</script>
+</body>
+</html>

@@ -1,0 +1,3488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MEMO.LOG">
+    <meta name="theme-color" content="#001F4E">
+    <title>MEMO.LOG</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗂️</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ══════════════════════════════════════════
+           THEME VARIABLES
+        ══════════════════════════════════════════ */
+        :root {
+            --bg: #F4F7FB;
+            --surface: #FFFFFF;
+            --surface2: #EEF3FA;
+            --border: #D6E0EF;
+            --border2: #C0CFDF;
+            --text: #0D1F3C;
+            --text2: #4A6280;
+            --text3: #8FA3BC;
+            --navy: #003580;
+            --navy2: #001F4E;
+            --navy3: #00418A;
+            --gold: #C9A84C;
+            --gold2: #E8C96A;
+            --gold3: #FBF5E6;
+            --ifs: #003580;
+            --ifs-bg: #EBF1FB;
+            --ops: #16A34A;
+            --ops-bg: #ECFAF2;
+            --fsoc: #DC2626;
+            --fsoc-bg: #FEF2F2;
+            --success: #16A34A;
+            --error: #DC2626;
+            --shadow: 0 2px 12px rgba(0, 31, 78, 0.08);
+            --shadow2: 0 4px 24px rgba(0, 31, 78, 0.14);
+            --radius: 10px;
+            --header-h: 60px;
+        }
+        [data-theme="dark"] {
+            --bg: #0D1525;
+            --surface: #162035;
+            --surface2: #1C2A42;
+            --border: #243350;
+            --border2: #2E4070;
+            --text: #E8EEF7;
+            --text2: #8FA3BC;
+            --text3: #4A6280;
+            --gold3: #1C2A42;
+            --shadow: 0 2px 12px rgba(0, 0, 0, .3);
+            --shadow2: 0 4px 24px rgba(0, 0, 0, .4);
+        }
+        [data-theme="black"] {
+            --bg: #000;
+            --surface: #0A0A0A;
+            --surface2: #111;
+            --border: #1A1A1A;
+            --border2: #222;
+            --text: #F0F0F0;
+            --text2: #888;
+            --text3: #444;
+            --gold3: #0A0A0A;
+            --shadow: 0 2px 12px rgba(0, 0, 0, .6);
+            --shadow2: 0 4px 24px rgba(0, 0, 0, .8);
+        }
+        [data-theme="modern"] {
+            --navy: #1D4ED8;
+            --navy2: #1E3A8A;
+            --navy3: #2563EB;
+            --gold: #F59E0B;
+            --gold2: #FCD34D;
+            --gold3: #FFFBEB;
+            --ifs: #1D4ED8;
+            --ifs-bg: #EFF6FF;
+            --ops: #059669;
+            --ops-bg: #ECFDF5;
+            --fsoc: #DC2626;
+            --fsoc-bg: #FEF2F2;
+        }
+
+        /* ══════════════════════════════════════════
+           RESET & BASE
+        ══════════════════════════════════════════ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: background .2s, color .2s;
+        }
+        button {
+            font-family: 'Inter', system-ui, sans-serif;
+            cursor: pointer;
+        }
+        input,
+        textarea,
+        select {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        /* ══════════════════════════════════════════
+           HEADER
+        ══════════════════════════════════════════ */
+        .hdr {
+            height: var(--header-h);
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--navy2), var(--navy));
+            border-bottom: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 10px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, .25);
+            position: relative;
+            z-index: 100;
+        }
+        .hdr-back {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, .7);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: background .15s;
+            flex-shrink: 0;
+        }
+        .hdr-back:hover {
+            background: rgba(255, 255, 255, .1);
+        }
+        .hdr-back svg {
+            width: 18px;
+            height: 18px;
+        }
+        .hdr-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0;
+            line-height: 1.2;
+        }
+        .hdr-logo-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .hdr-emoji {
+            font-size: 22px;
+            line-height: 1;
+        }
+        .hdr-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: .04em;
+        }
+        .hdr-name em {
+            color: var(--gold);
+            font-style: normal;
+        }
+        .hdr-sub {
+            font-size: 9px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, .35);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin-left: 2px;
+            line-height: 1.2;
+        }
+        .hdr-cat-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, .85);
+            letter-spacing: .04em;
+            display: none;
+        }
+        .hdr-spacer {
+            flex: 1;
+        }
+        .hdr-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, .6);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .15s, color .15s;
+            flex-shrink: 0;
+        }
+        .hdr-btn:hover {
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+        }
+        .hdr-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ══════════════════════════════════════════
+           VIEW SYSTEM
+        ══════════════════════════════════════════ */
+        .view {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ══════════════════════════════════════════
+           TOAST
+        ══════════════════════════════════════════ */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--navy2);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .02em;
+            border-left: 3px solid var(--gold);
+            box-shadow: var(--shadow2);
+            opacity: 0;
+            transition: all .25s ease;
+            z-index: 9999;
+            pointer-events: none;
+            white-space: nowrap;
+            max-width: 90vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.ok {
+            border-left-color: #22C55E;
+        }
+        .toast.err {
+            border-left-color: #EF4444;
+        }
+
+        /* ══════════════════════════════════════════
+           MODAL
+        ══════════════════════════════════════════ */
+        .modal-wrap {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(0, 0, 0, .5);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-wrap.open {
+            display: flex;
+        }
+        .modal {
+            background: var(--surface);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: var(--shadow2);
+            overflow: hidden;
+            animation: modalIn .2s ease;
+        }
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(.95)
+            }
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+        .modal-hdr {
+            background: linear-gradient(135deg, var(--navy2), var(--navy));
+            border-bottom: 2px solid var(--gold);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: .04em;
+        }
+        .modal-title em {
+            color: var(--gold);
+            font-style: normal;
+        }
+        .modal-x {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, .5);
+            font-size: 22px;
+            line-height: 1;
+            padding: 0 2px;
+            transition: color .15s;
+        }
+        .modal-x:hover {
+            color: #fff;
+        }
+        .modal-body {
+            padding: 16px;
+        }
+        .modal-body p {
+            font-size: 13px;
+            color: var(--text2);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .modal-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            justify-content: flex-end;
+        }
+        .mbtn {
+            border: none;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 18px;
+            letter-spacing: .04em;
+            transition: all .15s;
+        }
+        .mbtn.primary {
+            background: var(--navy);
+            color: #fff;
+        }
+        .mbtn.primary:hover {
+            background: var(--navy3);
+        }
+        .mbtn.cancel {
+            background: var(--surface2);
+            color: var(--text2);
+            border: 1px solid var(--border);
+        }
+        .mbtn.cancel:hover {
+            border-color: var(--border2);
+        }
+        .mbtn.danger {
+            background: #EF4444;
+            color: #fff;
+        }
+        .mbtn.danger:hover {
+            background: #DC2626;
+        }
+
+        /* ══════════════════════════════════════════
+           HOME VIEW
+        ══════════════════════════════════════════ */
+        .home-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Category cards */
+        .cat-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .cat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            transition: all .18s;
+            position: relative;
+            overflow: hidden;
+        }
+        .cat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+        .cat-card.ifs::before {
+            background: var(--ifs);
+        }
+        .cat-card.ops::before {
+            background: var(--ops);
+        }
+        .cat-card.fsoc::before {
+            background: var(--fsoc);
+        }
+        .cat-card:hover {
+            box-shadow: var(--shadow2);
+            transform: translateY(-1px);
+        }
+        .cat-card:active {
+            transform: translateY(0);
+        }
+        .cc-label {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--text3);
+        }
+        .cc-name {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text2);
+            line-height: 1.3;
+        }
+        .cc-count {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1;
+            margin-top: 2px;
+        }
+        [data-theme="dark"] .cc-count,
+        [data-theme="black"] .cc-count {
+            color: var(--gold);
+        }
+        .cc-arrow {
+            font-size: 10px;
+            color: var(--text3);
+            align-self: flex-end;
+        }
+
+        /* Upload panel */
+        .upload-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .up-hdr {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .up-hdr-title {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--text2);
+        }
+        .up-body {
+            padding: 14px;
+        }
+        .drop-zone {
+            border: 2px dashed var(--border2);
+            border-radius: 8px;
+            padding: 24px 16px;
+            text-align: center;
+            transition: all .2s;
+            margin-bottom: 12px;
+        }
+        .drop-zone.drag-over {
+            border-color: var(--gold);
+            background: var(--gold3);
+        }
+        .dz-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .dz-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+        [data-theme="dark"] .dz-title,
+        [data-theme="black"] .dz-title {
+            color: var(--gold);
+        }
+        .dz-hint {
+            font-size: 11px;
+            color: var(--text3);
+            line-height: 1.5;
+        }
+        .browse-btns {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .browse-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--navy);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: 9px 16px;
+            transition: background .15s;
+        }
+        .browse-btn:hover {
+            background: var(--navy3);
+        }
+        .browse-btn.secondary {
+            background: var(--surface2);
+            color: var(--text2);
+            border: 1px solid var(--border2);
+        }
+        .browse-btn.secondary:hover {
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+        #imgInput,
+        #pdfInput {
+            position: absolute;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+        }
+
+        /* Progress bar */
+        .proc-wrap {
+            display: none;
+            margin-bottom: 12px;
+        }
+        .proc-wrap.show {
+            display: block;
+        }
+        .proc-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .proc-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text2);
+        }
+        .proc-pct {
+            font-size: 11px;
+            color: var(--text3);
+        }
+        .proc-bar-bg {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .proc-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--navy), var(--gold));
+            border-radius: 2px;
+            width: 0;
+            transition: width .3s;
+        }
+
+        /* Parse log */
+        .parse-log {
+            display: none;
+        }
+        .parse-log.show {
+            display: block;
+        }
+        .pl-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .pl-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--text3);
+        }
+        .pl-clear {
+            font-size: 11px;
+            color: var(--text3);
+            background: none;
+            border: none;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .pl-clear:hover {
+            color: var(--error);
+        }
+        .pl-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .pl-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+        .pl-row.ok {
+            background: #F0FDF4;
+            border: 1px solid #BBF7D0;
+        }
+        [data-theme="dark"] .pl-row.ok,
+        [data-theme="black"] .pl-row.ok {
+            background: #0D2818;
+            border-color: #166534;
+        }
+        .pl-row.fail {
+            background: #FFF5F5;
+            border: 1px solid #FECACA;
+        }
+        [data-theme="dark"] .pl-row.fail,
+        [data-theme="black"] .pl-row.fail {
+            background: #2A0D0D;
+            border-color: #7F1D1D;
+        }
+        .pl-icon {
+            flex-shrink: 0;
+            font-size: 13px;
+            margin-top: 1px;
+        }
+        .pl-text {
+            flex: 1;
+            color: var(--text2);
+        }
+        .pl-ref {
+            font-weight: 700;
+            color: var(--navy);
+        }
+        [data-theme="dark"] .pl-ref,
+        [data-theme="black"] .pl-ref {
+            color: var(--gold2);
+        }
+
+        /* DB bar */
+        .db-bar {
+            background: var(--gold3);
+            border: 1px solid #E8D9A0;
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        [data-theme="dark"] .db-bar,
+        [data-theme="black"] .db-bar {
+            border-color: var(--border);
+        }
+        .db-bar-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--navy);
+            flex-shrink: 0;
+        }
+        [data-theme="dark"] .db-bar-label,
+        [data-theme="black"] .db-bar-label {
+            color: var(--gold);
+        }
+        .db-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: none;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            transition: all .15s;
+            white-space: nowrap;
+        }
+        .db-btn.primary {
+            background: var(--navy);
+            color: #fff;
+        }
+        .db-btn.primary:hover {
+            background: var(--navy3);
+        }
+        .db-btn.gold {
+            background: var(--gold);
+            color: var(--navy2);
+        }
+        .db-btn.gold:hover {
+            background: var(--gold2);
+        }
+        .db-btn.ghost {
+            background: var(--surface);
+            color: var(--text2);
+            border: 1px solid var(--border2);
+        }
+        .db-btn.ghost:hover {
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+        .db-spacer {
+            flex: 1;
+        }
+        .db-info {
+            font-size: 10px;
+            color: var(--text3);
+            font-style: italic;
+        }
+
+        /* ══════════════════════════════════════════
+           CATEGORY VIEW
+        ══════════════════════════════════════════ */
+        .cat-view-body {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Cat toolbar */
+        .cat-toolbar {
+            padding: 10px 14px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        .ct-sort {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text2);
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .ct-sort:hover {
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+        .ct-spacer {
+            flex: 1;
+        }
+        .ct-search {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 10px;
+        }
+        .ct-search svg {
+            width: 13px;
+            height: 13px;
+            color: var(--text3);
+            flex-shrink: 0;
+        }
+        .ct-search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 12px;
+            color: var(--text);
+            width: 140px;
+        }
+        .ct-search input::placeholder {
+            color: var(--text3);
+        }
+        .ct-add {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--navy);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            padding: 6px 12px;
+            transition: background .15s;
+        }
+        .ct-add:hover {
+            background: var(--navy3);
+        }
+
+        /* Mini upload bar in cat view */
+        .cat-upload-bar {
+            padding: 8px 14px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+        .cub-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--text3);
+        }
+        .cub-spacer {
+            flex: 1;
+        }
+
+        /* Table wrapper */
+        .table-wrap {
+            flex: 1;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Table */
+        .memo-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 600px;
+        }
+        .memo-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .memo-table th {
+            background: var(--navy2);
+            color: rgba(255, 255, 255, .75);
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .memo-table th:first-child {
+            width: 40px;
+            text-align: center;
+        }
+        .th-inner {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .th-menu-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, .3);
+            padding: 0;
+            margin-left: 2px;
+            line-height: 1;
+            transition: color .15s;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .th-menu-btn:hover {
+            color: var(--gold);
+        }
+        .memo-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            color: var(--text);
+        }
+        .memo-table tbody tr {
+            transition: background .1s;
+        }
+        .memo-table tbody tr:hover {
+            background: var(--surface2);
+        }
+        .memo-table tbody tr.editing {
+            background: var(--gold3);
+        }
+        [data-theme="dark"] .memo-table tbody tr.editing,
+        [data-theme="black"] .memo-table tbody tr.editing {
+            background: var(--surface2);
+        }
+        .memo-table tbody tr.drag-over-row {
+            border-top: 2px solid var(--gold);
+        }
+
+        /* Cell types */
+        .td-num {
+            text-align: center;
+            color: var(--text3);
+            font-size: 11px;
+            width: 40px;
+        }
+        .td-ref {
+            font-weight: 700;
+            color: var(--navy);
+            white-space: nowrap;
+            font-size: 11px;
+        }
+        [data-theme="dark"] .td-ref,
+        [data-theme="black"] .td-ref {
+            color: var(--gold2);
+        }
+        .td-subject {
+            min-width: 200px;
+            line-height: 1.4;
+        }
+        .td-date {
+            white-space: nowrap;
+            font-size: 11px;
+            color: var(--text2);
+        }
+        .td-actions {
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        /* Row actions */
+        .row-acts {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: flex-end;
+        }
+        .ra-btn {
+            width: 26px;
+            height: 26px;
+            border: none;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface2);
+            color: var(--text2);
+            transition: all .15s;
+            flex-shrink: 0;
+        }
+        .ra-btn:hover.copy {
+            background: #EFF6FF;
+            color: var(--navy);
+        }
+        .ra-btn:hover.edit {
+            background: #FFF7ED;
+            color: #C2410C;
+        }
+        .ra-btn:hover.del {
+            background: #FEF2F2;
+            color: var(--error);
+        }
+        .ra-btn:hover.drag {
+            cursor: grab;
+        }
+        .ra-btn svg {
+            width: 13px;
+            height: 13px;
+        }
+        .copy-ok {
+            background: #DCFCE7 !important;
+            color: #16A34A !important;
+        }
+
+        /* Inline edit inputs */
+        .edit-input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+            padding: 4px 7px;
+            font-size: 12px;
+            color: var(--text);
+            outline: none;
+        }
+        .edit-save-btn {
+            background: var(--navy);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 10px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Empty state */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 20px;
+            color: var(--text3);
+            text-align: center;
+        }
+        .empty-emoji {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: .4;
+        }
+        .empty-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text2);
+            margin-bottom: 6px;
+        }
+        .empty-sub {
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* ══════════════════════════════════════════
+           SETTINGS VIEW
+        ══════════════════════════════════════════ */
+        .settings-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .settings-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .ss-hdr {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--text3);
+        }
+        .ss-body {
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .ss-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .ss-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .ss-sub {
+            font-size: 11px;
+            color: var(--text3);
+            margin-top: 1px;
+        }
+
+        /* Theme picker */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .theme-btn {
+            padding: 10px 12px;
+            border-radius: 7px;
+            border: 2px solid var(--border);
+            background: var(--surface2);
+            cursor: pointer;
+            text-align: left;
+            transition: all .15s;
+        }
+        .theme-btn:hover {
+            border-color: var(--gold);
+        }
+        .theme-btn.active {
+            border-color: var(--gold);
+            background: var(--gold3);
+        }
+        .tb-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .tb-sub {
+            font-size: 10px;
+            color: var(--text3);
+            margin-top: 2px;
+        }
+        .theme-btn .tb-swatch {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+        }
+
+        /* Col manager */
+        .col-mgr {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .col-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        .col-drag {
+            color: var(--text3);
+            cursor: grab;
+            flex-shrink: 0;
+        }
+        .col-name {
+            flex: 1;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .col-toggle {
+            width: 36px;
+            height: 20px;
+            border-radius: 10px;
+            border: none;
+            background: var(--border2);
+            cursor: pointer;
+            position: relative;
+            transition: background .2s;
+            flex-shrink: 0;
+        }
+        .col-toggle.on {
+            background: var(--navy);
+        }
+        .col-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff;
+            transition: transform .2s;
+        }
+        .col-toggle.on::after {
+            transform: translateX(16px);
+        }
+
+        /* ══════════════════════════════════════════
+           COLUMN HEADER DROPDOWN
+        ══════════════════════════════════════════ */
+        .col-menu {
+            position: absolute;
+            z-index: 200;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow2);
+            min-width: 160px;
+            overflow: hidden;
+        }
+        .col-menu-item {
+            padding: 9px 14px;
+            font-size: 12px;
+            color: var(--text);
+            cursor: pointer;
+            transition: background .1s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .col-menu-item:hover {
+            background: var(--surface2);
+        }
+        .col-menu-item.danger {
+            color: var(--error);
+        }
+        .col-menu-item svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        /* ══════════════════════════════════════════
+           IMPORT MODAL EXTRAS
+        ══════════════════════════════════════════ */
+        .import-drop {
+            border: 2px dashed var(--border2);
+            border-radius: 8px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .2s;
+            margin-bottom: 12px;
+        }
+        .import-drop:hover,
+        .import-drop.drag-over {
+            border-color: var(--gold);
+            background: var(--gold3);
+        }
+        .import-status {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: none;
+            margin-bottom: 10px;
+        }
+        .import-status.ok {
+            display: block;
+            background: #F0FDF4;
+            color: #166534;
+            border: 1px solid #BBF7D0;
+        }
+        .import-status.err {
+            display: block;
+            background: #FEF2F2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
+        /* ══════════════════════════════════════════
+           ADD ROW MODAL FORM
+        ══════════════════════════════════════════ */
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .form-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--text3);
+        }
+        .form-input {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 13px;
+            color: var(--text);
+            outline: none;
+            transition: border-color .15s;
+            width: 100%;
+        }
+        .form-input:focus {
+            border-color: var(--navy);
+        }
+
+        /* ══════════════════════════════════════════
+           SCROLLBAR
+        ══════════════════════════════════════════ */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text3);
+        }
+
+        /* ══════════════════════════════════════════
+           FOOTER CREDIT
+        ══════════════════════════════════════════ */
+        .footer {
+            padding: 8px;
+            text-align: center;
+            font-size: 9px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--text3);
+            flex-shrink: 0;
+            border-top: 1px solid var(--border);
+        }
+        .footer em {
+            color: var(--gold);
+        }
+
+        /* ══════════════════════════════════════════
+           RESPONSIVE
+        ══════════════════════════════════════════ */
+        @media(max-width:480px) {
+            .cat-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .cc-count {
+                font-size: 22px;
+            }
+            .ct-search input {
+                width: 100px;
+            }
+        }
+
+        /* ── AUTO-SAVE STATUS CHIP ── */
+        .as-chip {
+            display: none;
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text2);
+            box-shadow: var(--shadow);
+            z-index: 300;
+            align-items: center;
+            gap: 6px;
+            transition: opacity .3s;
+        }
+        .as-chip.show {
+            display: flex;
+        }
+        .as-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--border2);
+            flex-shrink: 0;
+        }
+        .as-dot.saving {
+            background: #F59E0B;
+            animation: pulse .8s infinite;
+        }
+        .as-dot.saved {
+            background: #22C55E;
+        }
+        .as-dot.err {
+            background: #EF4444;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1
+            }
+            50% {
+                opacity: .3
+            }
+        }
+
+        /* ── LINK FILE BUTTON in db bar ── */
+        .db-btn.link {
+            background: var(--surface);
+            color: var(--text2);
+            border: 1px solid var(--border2);
+        }
+        .db-btn.link:hover {
+            border-color: var(--gold);
+            color: var(--navy);
+        }
+        .db-btn.link.linked {
+            border-color: #22C55E;
+            color: #16A34A;
+        }
+
+        /* ── FIRST OPEN MODAL ── */
+        .fo-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 600;
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .fo-modal.open {
+            display: flex;
+        }
+        .fo-box {
+            background: var(--surface);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow2);
+            overflow: hidden;
+            animation: modalIn .25s ease;
+        }
+        .fo-hdr {
+            background: linear-gradient(135deg, var(--navy2), var(--navy));
+            border-bottom: 2px solid var(--gold);
+            padding: 16px;
+        }
+        .fo-hdr h2 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: .03em;
+        }
+        .fo-hdr h2 em {
+            color: var(--gold);
+            font-style: normal;
+        }
+        .fo-hdr p {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .45);
+            margin-top: 3px;
+        }
+        .fo-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .fo-body p {
+            font-size: 13px;
+            color: var(--text2);
+            line-height: 1.6;
+        }
+        .fo-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .fo-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .15s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .fo-btn.primary {
+            background: var(--navy);
+            color: #fff;
+        }
+        .fo-btn.primary:hover {
+            background: var(--navy3);
+        }
+        .fo-btn.secondary {
+            background: var(--surface2);
+            color: var(--text2);
+            border: 1px solid var(--border2);
+        }
+        .fo-btn.secondary:hover {
+            border-color: var(--navy);
+        }
+        .fo-btn.ghost {
+            background: none;
+            color: var(--text3);
+            font-size: 12px;
+            padding: 8px 16px;
+        }
+        .fo-btn-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        /* ── MOBILE SAVE BANNER ── */
+        .save-banner {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 400;
+            background: var(--navy2);
+            border-top: 2px solid var(--gold);
+            padding: 12px 16px;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, .3);
+        }
+        .save-banner.show {
+            display: flex;
+        }
+        .sb-text {
+            flex: 1;
+            font-size: 12px;
+            color: rgba(255, 255, 255, .8);
+            line-height: 1.4;
+        }
+        .sb-text strong {
+            color: var(--gold2);
+        }
+        .sb-btn {
+            border: none;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 8px 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+        .sb-btn.save {
+            background: var(--gold);
+            color: var(--navy2);
+        }
+        .sb-btn.save:hover {
+            background: var(--gold2);
+        }
+        .sb-btn.dismiss {
+            background: rgba(255, 255, 255, .1);
+            color: rgba(255, 255, 255, .6);
+            margin-left: 4px;
+        }
+
+        /* ── LOADING SPINNER for Tesseract ── */
+        .tess-loading {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--surface2);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text2);
+            margin-top: 8px;
+        }
+        .tess-loading.show {
+            display: flex;
+        }
+        .tess-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border2);
+            border-top-color: var(--navy);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body data-theme="ops">
+
+    <!-- HEADER -->
+    <header class="hdr">
+        <button class="hdr-back" id="hdrBack" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="hdr-logo">
+            <div class="hdr-logo-row">
+                <span class="hdr-emoji">🗂️</span>
+                <span class="hdr-name">MEMO<em>.LOG</em></span>
+            </div>
+            <span class="hdr-sub">by2100551</span>
+        </div>
+        <span class="hdr-cat-label" id="hdrCatLabel"></span>
+        <div class="hdr-spacer"></div>
+        <button class="hdr-btn" id="hdrSettings" title="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+        </button>
+    </header>
+
+    <!-- ════════ HOME VIEW ════════ -->
+    <div class="view active" id="viewHome">
+        <div class="home-body">
+
+            <!-- Category cards -->
+            <div class="cat-cards">
+                <div class="cat-card ifs" onclick="openCat('ifs')">
+                    <div class="cc-label">IFS</div>
+                    <div class="cc-name">In-Flight Services</div>
+                    <div class="cc-count" id="cnt-ifs">0</div>
+                    <div class="cc-arrow">→</div>
+                </div>
+                <div class="cat-card ops" onclick="openCat('ops')">
+                    <div class="cc-label">OPS</div>
+                    <div class="cc-name">Ops Planning &amp; Support</div>
+                    <div class="cc-count" id="cnt-ops">0</div>
+                    <div class="cc-arrow">→</div>
+                </div>
+                <div class="cat-card fsoc" onclick="openCat('fsoc')">
+                    <div class="cc-label">FSOC</div>
+                    <div class="cc-name">Flight Safety</div>
+                    <div class="cc-count" id="cnt-fsoc">0</div>
+                    <div class="cc-arrow">→</div>
+                </div>
+            </div>
+
+            <!-- Upload panel -->
+            <div class="upload-panel">
+                <div class="up-hdr">
+                    <span class="up-hdr-title">📥 Parse Memo Files</span>
+                </div>
+                <div class="up-body">
+                    <div class="drop-zone" id="dropZone">
+                        <div class="dz-icon">☁️</div>
+                        <div class="dz-title">Drop files here</div>
+                        <div class="dz-hint">PDF memos &amp; screenshot images · Auto-detects IFS · OPS · FSOC</div>
+                        <div class="browse-btns">
+                            <label class="browse-btn" for="imgInput">📷 Images</label>
+                            <label class="browse-btn secondary" for="pdfInput">📄 PDFs</label>
+                        </div>
+                    </div>
+
+                    <!-- Tesseract loading indicator -->
+                    <div class="tess-loading" id="tessLoading">
+                        <div class="tess-spinner"></div>
+                        <span>Loading OCR engine… (one-time)</span>
+                    </div>
+
+                    <input type="file" id="imgInput" multiple accept="image/png,image/jpeg,image/jpg,image/webp">
+                    <input type="file" id="pdfInput" multiple accept=".pdf,application/pdf">
+
+                    <!-- Progress -->
+                    <div class="proc-wrap" id="procWrap">
+                        <div class="proc-info">
+                            <span class="proc-label" id="procLabel">Processing…</span>
+                            <span class="proc-pct" id="procPct">0%</span>
+                        </div>
+                        <div class="proc-bar-bg"><div class="proc-bar-fill" id="procBar"></div></div>
+                    </div>
+
+                    <!-- Parse log -->
+                    <div class="parse-log" id="parseLog">
+                        <div class="pl-hdr">
+                            <span class="pl-title">Parse Results</span>
+                            <button class="pl-clear" onclick="clearLog()">Clear</button>
+                        </div>
+                        <div class="pl-rows" id="plRows"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DB bar -->
+            <div class="db-bar">
+                <span class="db-bar-label">🗄️ Database</span>
+                <button class="db-btn primary" onclick="openImportModal()">⬆ Import</button>
+                <button class="db-btn gold" onclick="exportJSON()">⬇ Save</button>
+                <button class="db-btn ghost" onclick="exportHTML()">🖨 HTML</button>
+                <button class="db-btn link" id="linkFileBtn" onclick="linkBackupFile()" title="Auto-save to a file on your device">🔗 Link File</button>
+                <div class="db-spacer"></div>
+                <span class="db-info" id="dbInfo">—</span>
+            </div>
+
+        </div>
+        <div class="footer">by <em>2100551</em> · memo.log · local database</div>
+    </div>
+
+    <!-- ════════ CATEGORY VIEW ════════ -->
+    <div class="view" id="viewCat">
+        <div class="cat-view-body">
+
+            <!-- Toolbar -->
+            <div class="cat-toolbar">
+                <button class="ct-sort" id="ctSort" onclick="toggleSort()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/></svg>
+                    <span id="ctSortLabel">Newest First</span>
+                </button>
+                <div class="ct-spacer"></div>
+                <div class="ct-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="catSearch" placeholder="Search…" oninput="renderTable()">
+                </div>
+                <button class="ct-add" onclick="openAddModal()">+ Add</button>
+            </div>
+
+            <!-- Mini upload bar -->
+            <div class="cat-upload-bar">
+                <span class="cub-label">📥 Add memos</span>
+                <label class="browse-btn" for="imgInput" style="font-size:10px;padding:5px 10px;">📷 Images</label>
+                <label class="browse-btn secondary" for="pdfInput" style="font-size:10px;padding:5px 10px;">📄 PDFs</label>
+                <div class="cub-spacer"></div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-wrap" id="tableWrap">
+                <table class="memo-table" id="memoTable">
+                    <thead id="memoThead"></thead>
+                    <tbody id="memoTbody"></tbody>
+                </table>
+                <div class="empty-state" id="emptyState" style="display:none;">
+                    <div class="empty-emoji">🗂️</div>
+                    <div class="empty-title">No memos yet</div>
+                    <div class="empty-sub">Parse screenshots above or tap + Add to enter manually.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ════════ SETTINGS VIEW ════════ -->
+    <div class="view" id="viewSettings">
+        <div class="settings-body">
+
+            <div class="settings-section">
+                <div class="ss-hdr">🎨 Theme</div>
+                <div class="ss-body">
+                    <div class="theme-grid">
+                        <button class="theme-btn" data-theme-val="ops" onclick="setTheme('ops')">
+                            <div class="tb-swatch" style="background:linear-gradient(90deg,#001F4E,#C9A84C)"></div>
+                            <div class="tb-name">Operations</div>
+                            <div class="tb-sub">Navy · Gold</div>
+                        </button>
+                        <button class="theme-btn" data-theme-val="modern" onclick="setTheme('modern')">
+                            <div class="tb-swatch" style="background:linear-gradient(90deg,#1D4ED8,#F59E0B)"></div>
+                            <div class="tb-name">Modern</div>
+                            <div class="tb-sub">Blue · Amber</div>
+                        </button>
+                        <button class="theme-btn" data-theme-val="dark" onclick="setTheme('dark')">
+                            <div class="tb-swatch" style="background:linear-gradient(90deg,#0D1525,#C9A84C)"></div>
+                            <div class="tb-name">Dark</div>
+                            <div class="tb-sub">Dark Navy</div>
+                        </button>
+                        <button class="theme-btn" data-theme-val="black" onclick="setTheme('black')">
+                            <div class="tb-swatch" style="background:linear-gradient(90deg,#000,#444)"></div>
+                            <div class="tb-name">Black</div>
+                            <div class="tb-sub">OLED Black</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="ss-hdr">📋 Table Columns</div>
+                <div class="ss-body">
+                    <p style="font-size:12px;color:var(--text3);margin-bottom:8px;">Toggle columns on/off. Changes apply to all categories.</p>
+                    <div class="col-mgr" id="colMgr"></div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="ss-hdr">🗄️ Database</div>
+                <div class="ss-body">
+                    <div class="ss-row">
+                        <div><div class="ss-label">Import backup</div><div class="ss-sub">Restore from .json file</div></div>
+                        <button class="db-btn primary" onclick="openImportModal()">Import</button>
+                    </div>
+                    <div class="ss-row">
+                        <div><div class="ss-label">Save database</div><div class="ss-sub">Download .json backup</div></div>
+                        <button class="db-btn gold" onclick="exportJSON()">Save</button>
+                    </div>
+                    <div class="ss-row">
+                        <div><div class="ss-label">Export HTML</div><div class="ss-sub">Offline readable report</div></div>
+                        <button class="db-btn ghost" onclick="exportHTML()">Export</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="ss-hdr">ℹ️ About</div>
+                <div class="ss-body">
+                    <p style="font-size:12px;color:var(--text2);line-height:1.7;">
+                        <strong>MEMO.LOG</strong> — Personal memo reference tool.<br>
+                        Parses IFS · OPS · FSOC memos from screenshots and PDFs.<br>
+                        Data stored locally in your browser's IndexedDB.<br><br>
+                        by <strong>2100551</strong>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+        <div class="footer">by <em>2100551</em> · memo.log · local database</div>
+    </div>
+
+    <!-- ════════ IMPORT MODAL ════════ -->
+    <div class="modal-wrap" id="importModal">
+        <div class="modal">
+            <div class="modal-hdr">
+                <div class="modal-title">Import <em>Database</em></div>
+                <button class="modal-x" onclick="closeModal('importModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Select a previously saved <strong>MemoLog .json</strong> file. New memos are added — duplicates (same REF) are skipped.</p>
+                <div class="import-status" id="importStatus"></div>
+                <div class="import-drop" id="importDrop" onclick="document.getElementById('importFileInput').click()">
+                    <div style="font-size:28px;margin-bottom:8px;">📂</div>
+                    <div style="font-size:12px;color:var(--text3);"><strong style="color:var(--text2);">Tap to browse</strong> or drop .json file here</div>
+                </div>
+                <input type="file" id="importFileInput" accept=".json" style="position:absolute;left:-9999px;opacity:0;">
+                <div class="modal-row">
+                    <button class="mbtn cancel" onclick="closeModal('importModal')">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════ ADD ROW MODAL ════════ -->
+    <div class="modal-wrap" id="addModal">
+        <div class="modal">
+            <div class="modal-hdr">
+                <div class="modal-title">Add <em>Memo</em></div>
+                <button class="modal-x" onclick="closeModal('addModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid" id="addForm"></div>
+                <div class="modal-row">
+                    <button class="mbtn cancel" onclick="closeModal('addModal')">Cancel</button>
+                    <button class="mbtn primary" onclick="saveAddModal()">Add Memo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════ DELETE CONFIRM MODAL ════════ -->
+    <div class="modal-wrap" id="delModal">
+        <div class="modal">
+            <div class="modal-hdr">
+                <div class="modal-title">Delete <em>Memo</em></div>
+                <button class="modal-x" onclick="closeModal('delModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Remove this memo from your log? This cannot be undone.</p>
+                <p id="delModalRef" style="font-weight:700;color:var(--navy);font-size:13px;"></p>
+                <div class="modal-row">
+                    <button class="mbtn cancel" onclick="closeModal('delModal')">Cancel</button>
+                    <button class="mbtn danger" onclick="confirmDelete()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- AUTO-SAVE STATUS CHIP -->
+    <div class="as-chip" id="asChip">
+        <div class="as-dot" id="asDot"></div>
+        <span id="asLabel">Saved</span>
+    </div>
+
+    <!-- FIRST-OPEN MODAL -->
+    <div class="fo-modal" id="foModal">
+        <div class="fo-box">
+            <div class="fo-hdr">
+                <h2>Welcome to MEMO<em>.LOG</em></h2>
+                <p>Your local memo reference database</p>
+            </div>
+            <div class="fo-body">
+                <p>Do you have a previously saved database backup? Import it to restore your memo list.</p>
+                <div class="fo-btns">
+                    <button class="fo-btn primary" onclick="foImport()">
+                        <span class="fo-btn-icon">📂</span>
+                        <div>
+                            <div>Import existing backup</div>
+                            <div style="font-size:11px;font-weight:400;opacity:.7;margin-top:2px">Restore from MemoLog .json file</div>
+                        </div>
+                    </button>
+                    <button class="fo-btn secondary" onclick="foLinkFile()">
+                        <span class="fo-btn-icon">🔗</span>
+                        <div>
+                            <div>Link a backup file</div>
+                            <div style="font-size:11px;font-weight:400;opacity:.7;margin-top:2px">Auto-save to a file on your device</div>
+                        </div>
+                    </button>
+                    <button class="fo-btn ghost" onclick="foSkip()">Start fresh — no backup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE SAVE BANNER (visibility change fallback) -->
+    <div class="save-banner" id="saveBanner">
+        <div class="sb-text"><strong>Don't lose your memos.</strong> Save a backup to your device.</div>
+        <button class="sb-btn save" onclick="saveBackupNow()">Save now</button>
+        <button class="sb-btn dismiss" onclick="dismissSaveBanner()">✕</button>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- COL MENU (shared, moved by JS) -->
+    <div class="col-menu" id="colMenu" style="display:none;"></div>
+
+    <!-- ── CDN SCRIPTS ── -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
+    </script>
+
+    <!-- ── CDN LOAD CHECK (PART 2) ── -->
+    <script>
+        window.addEventListener('load', function() {
+            if (typeof Tesseract === 'undefined') {
+                console.warn('Tesseract.js CDN failed to load. Image OCR will not work offline.');
+            }
+            if (typeof pdfjsLib === 'undefined') {
+                console.warn('PDF.js CDN failed to load. PDF parsing will not work offline.');
+            }
+        });
+    </script>
+
+    <!-- ── MAIN APPLICATION ── -->
+    <script>
+        'use strict';
+        // ════════════════════════════════════════════════════════
+        //  CONSTANTS & STATE
+        // ════════════════════════════════════════════════════════
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        const DB_NAME = 'MemoLogDB2';
+        const DB_VER = 1;
+        const ST_MEMOS = 'memos';
+        const ST_META = 'meta';
+        let db = null;
+        let memos = [];
+        let curCat = null;
+        let sortMode = 'newest';
+        let editingId = null;
+        let deleteId = null;
+
+        const DEFAULT_COLS = [
+            { key: 'dateIssued', label: 'Date Issued', visible: true, editable: true },
+            { key: 'ref', label: 'Ref', visible: true, editable: true },
+            { key: 'subject', label: 'Subject', visible: true, editable: true },
+            { key: 'effective', label: 'Effective', visible: true, editable: true },
+            { key: 'validity', label: 'Validity', visible: true, editable: true },
+        ];
+        let cols = JSON.parse(localStorage.getItem('mlCols') || 'null') || DEFAULT_COLS;
+
+        // ════════════════════════════════════════════════════════
+        //  INDEXEDDB
+        // ════════════════════════════════════════════════════════
+        function openDB() {
+            return new Promise((res, rej) => {
+                const r = indexedDB.open(DB_NAME, DB_VER);
+                r.onupgradeneeded = e => {
+                    const d = e.target.result;
+                    if (!d.objectStoreNames.contains(ST_MEMOS)) {
+                        const s = d.createObjectStore(ST_MEMOS, { keyPath: 'id' });
+                        s.createIndex('cat', 'cat', { unique: false });
+                        s.createIndex('ts', 'ts', { unique: false });
+                    }
+                    if (!d.objectStoreNames.contains(ST_META))
+                        d.createObjectStore(ST_META, { keyPath: 'key' });
+                };
+                r.onsuccess = e => { db = e.target.result;
+                    res(); };
+                r.onerror = e => rej(e.target.error);
+            });
+        }
+
+        function tx(store, mode) { return db.transaction(store, mode).objectStore(store); }
+
+        function dbPut(storeName, obj) {
+            return new Promise((res, rej) => {
+                const r = tx(storeName, 'readwrite').put(obj);
+                r.onsuccess = () => res();
+                r.onerror = e => rej(e.target.error);
+            });
+        }
+
+        function dbDelete(id) {
+            return new Promise((res, rej) => {
+                const r = tx(ST_MEMOS, 'readwrite').delete(id);
+                r.onsuccess = () => res();
+                r.onerror = e => rej(e.target.error);
+            });
+        }
+
+        function dbGetAll() {
+            return new Promise((res, rej) => {
+                const r = tx(ST_MEMOS, 'readonly').getAll();
+                r.onsuccess = e => res(e.target.result || []);
+                r.onerror = e => rej(e.target.error);
+            });
+        }
+
+        async function hydrate() {
+            try {
+                let rows = await dbGetAll();
+                if (!rows.length) {
+                    const old = localStorage.getItem('mhMemoLog_backup') || localStorage.getItem('mhMemoLog_v4');
+                    if (old) {
+                        try {
+                            const parsed = JSON.parse(old);
+                            for (const m of parsed) { await dbPut(ST_MEMOS, m); }
+                            rows = await dbGetAll();
+                            if (rows.length) toast('Migrated ' + rows.length + ' memos from old storage', 'ok');
+                        } catch (e) {}
+                    }
+                }
+                memos = rows;
+            } catch (e) {
+                try { memos = JSON.parse(localStorage.getItem('mhMemoLog_backup') || '[]'); } catch (e2) { memos = []; }
+            }
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  AUTO-SAVE SYSTEM
+        // ════════════════════════════════════════════════════════
+        let fileHandle = null;
+        let fsaSupported = typeof window !== 'undefined' && 'showSaveFilePicker' in window;
+        let autoSaveTimer = null;
+        let pendingSave = false;
+
+        function showChip(state, label) {
+            const chip = document.getElementById('asChip');
+            const dot = document.getElementById('asDot');
+            const lbl = document.getElementById('asLabel');
+            if (!chip) return;
+            dot.className = 'as-dot ' + state;
+            lbl.textContent = label;
+            chip.classList.add('show');
+            if (state === 'saved') {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(() => chip.classList.remove('show'), 3000);
+            }
+        }
+
+        async function writeToLinkedFile() {
+            if (!fileHandle) return false;
+            try {
+                const writable = await fileHandle.createWritable();
+                const payload = { _type: 'MemoLogDB', _version: 2, _exported: new Date().toISOString(), _count: memos
+                        .length, memos };
+                await writable.write(JSON.stringify(payload, null, 2));
+                await writable.close();
+                localStorage.setItem('mlLastSaved', new Date().toISOString());
+                return true;
+            } catch (e) {
+                console.warn('Auto-save write failed:', e);
+                return false;
+            }
+        }
+
+        let _asDebounce;
+
+        async function triggerAutoSave() {
+            pendingSave = true;
+            showChip('saving', 'Saving…');
+            clearTimeout(_asDebounce);
+            _asDebounce = setTimeout(async () => {
+                lsMirror();
+                if (fileHandle && fsaSupported) {
+                    const ok = await writeToLinkedFile();
+                    showChip(ok ? 'saved' : 'err', ok ? 'Auto-saved' : 'Save failed');
+                } else {
+                    showChip('saved', 'Stored locally');
+                }
+                pendingSave = false;
+            }, 1500);
+        }
+
+        async function linkBackupFile() {
+            if (!fsaSupported) {
+                toast('Auto-save to file not supported on this browser — use Save button instead', 'err');
+                return;
+            }
+            try {
+                fileHandle = await window.showSaveFilePicker({
+                    suggestedName: 'MemoLog_Database.json',
+                    types: [{ description: 'JSON Database', accept: { 'application/json': ['.json'] } }]
+                });
+                localStorage.setItem('mlFileLinked', 'true');
+                updateLinkBtn(true);
+                showChip('saving', 'Saving…');
+                const ok = await writeToLinkedFile();
+                showChip(ok ? 'saved' : 'err', ok ? 'File linked — auto-saving' : 'Link failed');
+                toast('File linked — changes will auto-save', 'ok');
+            } catch (e) {
+                if (e.name !== 'AbortError') toast('Could not link file', 'err');
+            }
+        }
+
+        function updateLinkBtn(linked) {
+            const btn = document.getElementById('linkFileBtn');
+            if (!btn) return;
+            if (linked) {
+                btn.className = 'db-btn link linked';
+                btn.title = 'File linked — auto-saving';
+                btn.textContent = '✓ Linked';
+            } else {
+                btn.className = 'db-btn link';
+                btn.title = 'Auto-save to a file on your device';
+                btn.textContent = '🔗 Link File';
+            }
+            if (!fsaSupported) btn.style.display = 'none';
+        }
+
+        function lsMirror() {
+            try { localStorage.setItem('mhMemoLog_backup', JSON.stringify(memos)); } catch (e) {}
+        }
+
+        async function persistOne(m) {
+            try { await dbPut(ST_MEMOS, m); } catch (e) {}
+            triggerAutoSave();
+        }
+
+        async function removeOne(id) {
+            try { await dbDelete(id); } catch (e) {}
+            triggerAutoSave();
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  FIRST-OPEN FLOW
+        // ════════════════════════════════════════════════════════
+        function checkFirstOpen() {
+            const seen = localStorage.getItem('mlFoSeen');
+            if (!seen && memos.length === 0) {
+                document.getElementById('foModal').classList.add('open');
+            }
+        }
+
+        function foSkip() {
+            localStorage.setItem('mlFoSeen', '1');
+            document.getElementById('foModal').classList.remove('open');
+        }
+
+        function foImport() {
+            localStorage.setItem('mlFoSeen', '1');
+            document.getElementById('foModal').classList.remove('open');
+            document.getElementById('importStatus').className = 'import-status';
+            openModal('importModal');
+        }
+
+        async function foLinkFile() {
+            localStorage.setItem('mlFoSeen', '1');
+            document.getElementById('foModal').classList.remove('open');
+            if (fsaSupported) {
+                try {
+                    const [handle] = await window.showOpenFilePicker({
+                        types: [{ description: 'JSON Database', accept: { 'application/json': ['.json'] } }],
+                        multiple: false
+                    });
+                    const file = await handle.getFile();
+                    fileHandle = handle;
+                    localStorage.setItem('mlFileLinked', 'true');
+                    updateLinkBtn(true);
+                    await importJSON(file);
+                    toast('File linked and database loaded', 'ok');
+                } catch (e) {
+                    if (e.name !== 'AbortError') {
+                        await linkBackupFile();
+                    }
+                }
+            } else {
+                document.getElementById('importStatus').className = 'import-status';
+                openModal('importModal');
+            }
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  MOBILE SAVE BANNER
+        // ════════════════════════════════════════════════════════
+        let bannerDismissed = false;
+
+        function showSaveBanner() {
+            if (fileHandle || !memos.length || bannerDismissed) return;
+            document.getElementById('saveBanner').classList.add('show');
+        }
+
+        function dismissSaveBanner() {
+            bannerDismissed = true;
+            document.getElementById('saveBanner').classList.remove('show');
+        }
+
+        async function saveBackupNow() {
+            exportJSON();
+            dismissSaveBanner();
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  PARSING — HELPERS
+        // ════════════════════════════════════════════════════════
+        const MONTHS =
+            'JAN(?:UARY)?|FEB(?:RUARY)?|MAR(?:CH)?|APR(?:IL)?|MAY|JUN(?:E)?|JUL(?:Y)?|AUG(?:UST)?|SEP(?:TEMBER)?|OCT(?:OBER)?|NOV(?:EMBER)?|DEC(?:EMBER)?';
+        const MO_IDX = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const ALL_CATS = 'FSOC|IFS|OPS|FOTM|FOMM|FOTC|FOPS|FOCC|FOCA|FOCM|DFO|DFT|FOO|FLTOPS';
+
+        function parseDate(s) {
+            if (!s) return null;
+            s = s.trim();
+            const mL = s.match(new RegExp(`(\\d{1,2})(?:st|nd|rd|th)?[\\s]+(${MONTHS})[\\s]+(20\\d{2})`, 'i'));
+            if (mL) return `${parseInt(mL[1])} ${mL[2].substring(0,3).toUpperCase()} ${mL[3]}`;
+            const m4 = s.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](20\d{2})/);
+            if (m4) { const mo = MO_IDX[parseInt(m4[2]) - 1] || m4[2]; return `${parseInt(m4[1])} ${mo} ${m4[3]}`; }
+            const m2 = s.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2})$/);
+            if (m2) { const mo = MO_IDX[parseInt(m2[2]) - 1] || m2[2]; return `${parseInt(m2[1])} ${mo} 20${m2[3]}`; }
+            // ── CHANGE 2: added NIL ──
+            if (/^(UFN|NIL|N\/A|NA|TBD|IMMEDIATE EFFECT|IMMEDIATE)$/i.test(s)) return s.toUpperCase();
+            return null;
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  REPLACED extractRef() with improved OCR handling
+        // ════════════════════════════════════════════════════════
+        function extractRef(text) {
+            // ── Regex building blocks ─────────────────────────────────────
+            const SEP = '[\\s\\/\\-\\.]+';
+            // SEP between NUM and YR is optional — OCR sometimes merges them
+            const SEP_OPT = '[\\s\\/\\-\\.]*';
+            // CAT: any 2-6 letter dept code
+            const CAT = '([A-Za-z]{2,6})';
+            // NUM: OCR CONFUSION FIX
+            // In sans-serif bold fonts, digit "1", letter "l", and "I" look
+            // identical to Tesseract. "144" often comes out as "l44" or "I44".
+            // We allow [0-9lI] to cover all three, then normalise after match.
+            // Also allow optional single space inside (OCR splits "144" → "1 44")
+            const NUM = '([0-9lI]{1,2}\\s?[0-9lI]{0,3}[A-Za-z]?)';
+            const YR = '(20\\d{2})';
+
+            // Helper: clean up a captured memo number
+            // l → 1, I → 1, remove internal spaces
+            function fixNum(s) {
+                return s.replace(/\s/g, '').replace(/[lI]/g, '1').toUpperCase();
+            }
+
+            // Only look near REF label — ignore attachment names, subjects etc.
+            const lines = text.split(/\n/).map(l => l.trim());
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (!/\bREF\b/i.test(line)) continue;
+
+                // Scan this line + next 2 lines
+                const candidates = [
+                    line,
+                    lines[i + 1] || '',
+                    lines[i + 2] || '',
+                ];
+
+                for (const candidate of candidates) {
+                    // Primary match: FO/CAT/NUM/YR — separator between NUM and YR optional
+                    const rx = new RegExp(
+                        `F[O0]${SEP}${CAT}${SEP}${NUM}${SEP_OPT}${YR}`,
+                        'i'
+                    );
+                    const m = candidate.match(rx);
+                    if (m) {
+                        const cat = m[1].toUpperCase();
+                        const num = fixNum(m[2]);
+                        const yr = m[3];
+                        if (num && yr && num.length >= 1) {
+                            const yearN = parseInt(yr);
+                            if (yearN >= 2000 && yearN <= 2099) {
+                                return `FO/${cat}/${num}/${yr}`;
+                            }
+                        }
+                    }
+
+                    // Fallback: NUM and YR merged into one token
+                    // e.g. "FO-IFS-1442026" or "FO-IFS-l442026"
+                    const rx2 = new RegExp(
+                        `F[O0]${SEP}${CAT}${SEP}([0-9lI]{1,4}[A-Za-z]?)(20\\d{2})`,
+                        'i'
+                    );
+                    const m2 = candidate.match(rx2);
+                    if (m2) {
+                        const cat = m2[1].toUpperCase();
+                        const num = fixNum(m2[2]);
+                        const yr = m2[3];
+                        if (num && yr) {
+                            const yearN = parseInt(yr);
+                            if (yearN >= 2000 && yearN <= 2099) {
+                                return `FO/${cat}/${num}/${yr}`;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        // ── CUSTOM CATEGORY SYSTEM ─────────────────────────────────────
+
+        // Built-in categories — these always exist
+        const BUILTIN_CATS = {
+            ifs: { label: 'In-Flight Services', color: '#003580' },
+            ops: { label: 'Ops & Flight Ops', color: '#16A34A' },
+            fsoc: { label: 'Flight Safety', color: '#DC2626' },
+        };
+
+        // Load user-defined dept-to-category mappings from localStorage
+        // Format: { "FOTM": "ops", "DFO": "ops", "MYCODE": "training" }
+        function loadDeptMap() {
+            try { return JSON.parse(localStorage.getItem('mlDeptMap') || '{}'); } catch (e) { return {}; }
+        }
+
+        function saveDeptMap(map) {
+            localStorage.setItem('mlDeptMap', JSON.stringify(map));
+        }
+
+        // Load user-defined custom categories
+        // Format: { "training": { label: "Training", color: "#7C3AED" } }
+        function loadCustomCats() {
+            try { return JSON.parse(localStorage.getItem('mlCustomCats') || '{}'); } catch (e) { return {}; }
+        }
+
+        function saveCustomCats(cats) {
+            localStorage.setItem('mlCustomCats', JSON.stringify(cats));
+        }
+
+        // All categories combined
+        function allCats() {
+            return { ...BUILTIN_CATS, ...loadCustomCats() };
+        }
+
+        // ── CHANGE 3 of 4 — Custom Categories system ──
+        function detectCat(ref) {
+            if (!ref) return null;
+            const parts = ref.toUpperCase().split('/');
+            if (parts.length < 4) return null;
+            const dept = parts[1];
+
+            // Check user-defined dept map first
+            const deptMap = loadDeptMap();
+            if (deptMap[dept]) return deptMap[dept];
+
+            // Built-in rules
+            if (dept === 'FSOC') return 'fsoc';
+            if (dept === 'IFS') return 'ifs';
+
+            // Everything else → ops
+            return 'ops';
+        }
+
+        // Save a dept-to-category mapping for future auto-routing
+        function saveDeptMapping(dept, catKey) {
+            const map = loadDeptMap();
+            map[dept.toUpperCase()] = catKey;
+            saveDeptMap(map);
+        }
+
+        // ── END CUSTOM CATEGORY SYSTEM ─────────────────────────────────
+
+        function extractSubject(text) {
+            const lines = text.split(/\n/).map(l => l.trim()).filter(Boolean);
+
+            for (let i = 0; i < lines.length; i++) {
+                const m = lines[i].match(/^SUBJECT[\s\|\:\-]+(.{4,})/i);
+                if (!m) continue;
+                const parts = [cleanSubj(m[1])];
+                for (let j = i + 1; j < Math.min(i + 8, lines.length); j++) {
+                    if (FIELD_BOUNDARY.test(lines[j])) break;
+                    const c = cleanSubj(lines[j]);
+                    if (isOnlyDash(c)) break;
+                    if (!c) continue;
+                    parts.push(c);
+                }
+                const joined = parts.filter(Boolean).join(' ');
+                if (okSubj(joined)) return joined;
+            }
+
+            for (let i = 0; i < lines.length; i++) {
+                if (!/^SUBJECT\s*$/i.test(lines[i])) continue;
+                const parts = [];
+                for (let j = i + 1; j < Math.min(i + 8, lines.length); j++) {
+                    if (FIELD_BOUNDARY.test(lines[j])) break;
+                    const c = cleanSubj(lines[j]);
+                    if (isOnlyDash(c)) break;
+                    if (!c) continue;
+                    parts.push(c);
+                }
+                const joined = parts.filter(Boolean).join(' ');
+                if (okSubj(joined)) return joined;
+            }
+
+            const meRx = new RegExp(
+                `FO[-\\/\\s](${ALL_CATS})[-\\/\\s_]\\d+[-\\/\\s_]\\d+[\\s:\\-–_]+(.{4,})`,
+                'i'
+            );
+            const me = text.match(meRx);
+            if (me) {
+                const matchIndex = text.indexOf(me[0]);
+                const afterMatch = text.slice(matchIndex + me[0].length);
+                const nextLineRaw = (afterMatch.split(/\n/)[0] || '').trim();
+                const firstPart = cleanSubj(me[2]);
+                let combined = firstPart;
+                if (nextLineRaw && !FIELD_BOUNDARY.test(nextLineRaw) && !isOnlyDash(nextLineRaw)) {
+                    const nextClean = cleanSubj(nextLineRaw);
+                    if (nextClean) combined = firstPart + ' ' + nextClean;
+                }
+                if (okSubj(combined)) return combined;
+            }
+
+            return null;
+        }
+
+        function extractDateField(text, label) {
+            const lines = text.split(/\n/).map(l => l.trim()).filter(Boolean);
+            const lRx = new RegExp(`^${label}\\b[\\s\\|\\:]*`, 'i');
+            const tRx = new RegExp(`^${label}\\b`, 'i');
+            for (let i = 0; i < lines.length; i++) {
+                if (!tRx.test(lines[i])) continue;
+                const cands = [
+                    lines[i].replace(lRx, '').replace(/\s*VALIDITY\b.*/i, ''),
+                    lines[i + 1] || '',
+                    lines[i + 2] || ''
+                ];
+                for (const c of cands) {
+                    const d = parseDate(c.trim());
+                    if (d) return d;
+                    const sp = c.match(/\b(UFN|N\/A|TBD|IMMEDIATE EFFECT|IMMEDIATE|NIL)\b/i);
+                    if (sp && c.length < 40) return sp[1].toUpperCase();
+                }
+            }
+            return null;
+        }
+
+        function extractEffective(text) {
+            const lines = text.split(/\n/).map(l => l.trim()).filter(Boolean);
+            for (const line of lines) {
+                if (!/^EFFECTIVE\b/i.test(line)) continue;
+                const s = line.replace(/^EFFECTIVE\b[\s\|:]*/i, '').replace(/\s*VALIDITY\b.*/i, '').trim();
+                const d = parseDate(s);
+                if (d) return d;
+                const sp = s.match(/\b(UFN|N\/A|TBD|IMMEDIATE EFFECT|IMMEDIATE|NIL)\b/i);
+                if (sp) return sp[1].toUpperCase();
+            }
+            return extractDateField(text, 'EFFECTIVE');
+        }
+
+        // ── CHANGE 2 (part 2): extractValidity() regex updated ──
+        function extractValidity(text) {
+            const lines = text.split(/\n/).map(l => l.trim()).filter(Boolean);
+            for (const line of lines) {
+                if (!/VALIDITY\b/i.test(line)) continue;
+                const after = line.replace(/.*?VALIDITY\b[\s\|:]*/i, '').trim();
+                const clean = after.split(/\s{2,}|\|/)[0].trim();
+                const d = parseDate(clean);
+                if (d) return d;
+                // ── UPDATED: added NIL, NA ──
+                const sp = clean.match(/^(UFN|NIL|NA|N\/A|TBD)\b/i);
+                if (sp) return sp[1].toUpperCase();
+                const idx = lines.indexOf(line);
+                if (lines[idx + 1]) {
+                    const d2 = parseDate(lines[idx + 1]);
+                    if (d2) return d2;
+                    const ns = lines[idx + 1].match(/\b(UFN|NIL|NA|N\/A|TBD)\b/i);
+                    if (ns) return ns[1].toUpperCase();
+                }
+            }
+            return extractDateField(text, 'VALIDITY');
+        }
+
+        function parseFields(text) {
+            const ref = extractRef(text);
+            const subject = extractSubject(text);
+            const dateIssued = extractDateField(text, 'DATE');
+            const effective = extractEffective(text);
+            const validity = extractValidity(text);
+            return { ref, subject, dateIssued, effective, validity };
+        }
+
+        const TABLE_SKIP =
+            /^(TO|FROM|REF|DATE|EFFECTIVE|VALIDITY|CATEGORY|LEVEL|INFORMATION|COMPLIANCE|LOW|MEDIUM|HIGH|UFN|N\/A|TBD|ALL CREW|ALL FLIGHT|ALL CREWMEMBERS|HEAD|CHIEF|SENIOR|CAPTAIN|INTRODUCTION|INSTRUCTIONS|MANUAL INCORPORATION|ISSUED|INTERNAL|DEAR|FOR YOUR|N\/A)$/i;
+
+        function okSubj(s) { return s && s.length > 6 && !TABLE_SKIP.test(s.trim()) && !/^\d+$/.test(s.trim()); }
+
+        const FIELD_BOUNDARY =
+            /^(TO|FROM|REF|DATE\b|EFFECTIVE\b|VALIDITY\b|CATEGORY\b|LEVEL\b|INFORMATION\b|COMPLIANCE\b|INTRODUCTION\b|INSTRUCTIONS\b|MANUAL\s+INCORPORATION\b|ISSUED\b|INTERNAL\b|DEAR\b|BACKGROUND\b|ACTION\b|ATTACHMENT\b|DISTRIBUTION\b|PREPARED\b|APPROVED\b|SIGNED\b|REFERENCE\b)/i;
+
+        function isOnlyDash(s) { return /^[\-–—=\*\s]+$/.test(s); }
+
+        function cleanSubj(s) {
+            return s
+                .replace(/^[\s\-–—:]+/, '')
+                .replace(/[\s\-–—:]+$/, '')
+                .replace(/\s{2,}/g, ' ')
+                .trim()
+                .toUpperCase();
+        }
+
+        function refSortKey(ref) {
+            if (!ref) return { year: 0, num: 0 };
+            const m = ref.match(/\/(\d{1,4})\/(20\d{2})$/);
+            return m ? { year: parseInt(m[2]), num: parseInt(m[1]) } : { year: 0, num: 0 };
+        }
+
+        // ── PART 1: waitForTesseract + ocrFile ──────────────────────────
+
+        function waitForTesseract(maxMs = 15000) {
+            return new Promise((resolve, reject) => {
+                if (typeof Tesseract !== 'undefined') {
+                    resolve();
+                    return;
+                }
+                const start = Date.now();
+                const check = setInterval(() => {
+                    if (typeof Tesseract !== 'undefined') {
+                        clearInterval(check);
+                        resolve();
+                    } else if (Date.now() - start > maxMs) {
+                        clearInterval(check);
+                        reject(new Error(
+                            'Tesseract did not load in time. Check your internet connection and try again.'));
+                    }
+                }, 200);
+            });
+        }
+
+        async function ocrFile(fileOrBlob) {
+            // Show loading indicator
+            const loadingEl = document.getElementById('tessLoading');
+            if (loadingEl) loadingEl.classList.add('show');
+
+            try {
+                await waitForTesseract();
+            } catch (err) {
+                if (loadingEl) loadingEl.classList.remove('show');
+                throw err;
+            }
+
+            if (loadingEl) loadingEl.classList.remove('show');
+
+            const url = URL.createObjectURL(fileOrBlob);
+            try {
+                const result = await Tesseract.recognize(url, 'eng', { logger: () => {} });
+                return result.data.text;
+            } finally {
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // ── PDF helpers ──────────────────────────────────────────────────
+
+        async function pdfToText(file) {
+            const ab = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+            let out = '';
+            for (let p = 1; p <= Math.min(pdf.numPages, 2); p++) {
+                const page = await pdf.getPage(p);
+                const cont = await page.getTextContent();
+                let lastY = null;
+                const parts = [];
+                for (const item of cont.items) {
+                    if (lastY !== null && Math.abs(item.transform[5] - lastY) > 4) parts.push('\n');
+                    parts.push(item.str);
+                    lastY = item.transform[5];
+                }
+                out += parts.join(' ') + '\n';
+            }
+            return out;
+        }
+
+        async function pdfToImageBlob(file) {
+            const ab = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+            const page = await pdf.getPage(1);
+            const vp = page.getViewport({ scale: 2 });
+            const cvs = document.createElement('canvas');
+            cvs.width = vp.width;
+            cvs.height = vp.height;
+            await page.render({ canvasContext: cvs.getContext('2d'), viewport: vp }).promise;
+            return new Promise(r => cvs.toBlob(b => r(b), 'image/jpeg', 0.9));
+        }
+
+        // ── processFiles with friendly error handling ──────────────────
+
+        async function processFiles(files) {
+            if (!files.length) return;
+            const procWrap = document.getElementById('procWrap');
+            const procBar = document.getElementById('procBar');
+            const procLabel = document.getElementById('procLabel');
+            const procPct = document.getElementById('procPct');
+            const parseLog = document.getElementById('parseLog');
+            const plRows = document.getElementById('plRows');
+
+            procWrap.classList.add('show');
+            parseLog.classList.add('show');
+
+            let added = 0,
+                failed = 0;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const pct = Math.round((i / files.length) * 100);
+                procBar.style.width = pct + '%';
+                procLabel.textContent = `${i+1} / ${files.length}: ${file.name.substring(0,30)}`;
+                procPct.textContent = pct + '%';
+
+                try {
+                    let text = '';
+                    if (file.type === 'application/pdf') {
+                        text = await pdfToText(file);
+                        if (!extractRef(text)) {
+                            const blob = await pdfToImageBlob(file);
+                            text = await ocrFile(blob);
+                        }
+                    } else {
+                        text = await ocrFile(file);
+                    }
+
+                    const f = parseFields(text);
+
+                    if (!f.ref) {
+                        addLogRow('fail', file.name, 'REF not found');
+                        failed++;
+                        continue;
+                    }
+
+                    if (memos.find(m => m.ref === f.ref)) {
+                        addLogRow('fail', file.name, `${f.ref} already in log`);
+                        continue;
+                    }
+
+                    const cat = detectCat(f.ref);
+                    if (!cat) {
+                        addLogRow('fail', file.name, `Unknown category: ${f.ref}`);
+                        failed++;
+                        continue;
+                    }
+
+                    const memo = {
+                        id: `${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
+                        cat,
+                        ref: f.ref,
+                        subject: f.subject || '—',
+                        dateIssued: f.dateIssued || '—',
+                        effective: f.effective || '—',
+                        validity: f.validity || '—',
+                        sortOrder: 0,
+                        ts: new Date().toISOString()
+                    };
+
+                    memos.unshift(memo);
+                    await persistOne(memo);
+                    addLogRow('ok', file.name, f.ref, f.subject || '');
+                    added++;
+
+                } catch (err) {
+                    const msg = err.message || String(err);
+                    if (msg.toLowerCase().includes('tesseract') || msg.toLowerCase().includes('not defined') ||
+                        msg.toLowerCase().includes('load in time')) {
+                        addLogRow('fail', file.name, 'OCR not ready — wait a moment and try again');
+                        toast('Tesseract still loading — try again in a few seconds', 'err');
+                    } else {
+                        addLogRow('fail', file.name, 'Error: ' + msg);
+                    }
+                    failed++;
+                }
+            }
+
+            procBar.style.width = '100%';
+            procPct.textContent = '100%';
+            procLabel.textContent = `Done — ${added} added, ${failed} failed`;
+
+            updateCounts();
+            if (curCat) renderTable();
+            updateDbInfo();
+
+            if (added) toast(`${added} memo${added > 1 ? 's' : ''} added`, 'ok');
+            if (failed) toast(`${failed} file${failed > 1 ? 's' : ''} failed`, 'err');
+        }
+
+        function addLogRow(type, filename, refOrMsg, subject) {
+            const plRows = document.getElementById('plRows');
+            const div = document.createElement('div');
+            div.className = 'pl-row ' + type;
+            div.innerHTML = type === 'ok' ?
+                `<span class="pl-icon">✓</span><span class="pl-text"><span class="pl-ref">${refOrMsg}</span>${subject ? ' — ' + subject.substring(0,60) : ''}</span>` :
+                `<span class="pl-icon">✗</span><span class="pl-text"><strong>${filename.substring(0,24)}</strong> — ${refOrMsg}</span>`;
+            plRows.appendChild(div);
+            plRows.scrollTop = plRows.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('plRows').innerHTML = '';
+            document.getElementById('parseLog').classList.remove('show');
+            document.getElementById('procWrap').classList.remove('show');
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  NAVIGATION
+        // ════════════════════════════════════════════════════════
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function openCat(cat) {
+            curCat = cat;
+            const names = { ifs: 'In-Flight Services', ops: 'Ops Planning & Support', fsoc: 'Flight Safety' };
+            // Merge with custom cats
+            const all = allCats();
+            const label = all[cat] ? all[cat].label : cat.toUpperCase();
+            document.getElementById('hdrCatLabel').textContent = label;
+            document.getElementById('hdrCatLabel').style.display = 'block';
+            document.getElementById('hdrBack').style.display = 'flex';
+            document.getElementById('hdrSettings').style.display = 'none';
+            document.getElementById('catSearch').value = '';
+            buildTableHead();
+            renderTable();
+            showView('viewCat');
+        }
+
+        function goHome() {
+            curCat = null;
+            document.getElementById('hdrCatLabel').style.display = 'none';
+            document.getElementById('hdrBack').style.display = 'none';
+            document.getElementById('hdrSettings').style.display = 'flex';
+            showView('viewHome');
+            updateCounts();
+        }
+
+        function goSettings() {
+            document.getElementById('hdrBack').style.display = 'flex';
+            document.getElementById('hdrCatLabel').style.display = 'none';
+            document.getElementById('hdrSettings').style.display = 'none';
+            buildColMgr();
+            buildThemeGrid();
+            showView('viewSettings');
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  TABLE
+        // ════════════════════════════════════════════════════════
+        function visibleCols() { return cols.filter(c => c.visible); }
+
+        function buildTableHead() {
+            const thead = document.getElementById('memoThead');
+            const vc = visibleCols();
+            thead.innerHTML = `<tr>
+            <th style="width:40px;text-align:center;">#</th>
+            ${vc.map(c => `
+              <th>
+                <div class="th-inner">
+                  ${c.label}
+                  <button class="th-menu-btn" onclick="openColMenu(event,'${c.key}')" title="Column options">⚙</button>
+                </div>
+              </th>`).join('')}
+            <th style="width:90px;text-align:right;">Actions</th>
+          </tr>`;
+        }
+
+        function sortedMemos() {
+            const list = memos.filter(m => m.cat === curCat);
+            if (sortMode === 'newest') {
+                list.sort((a, b) => {
+                    const ka = refSortKey(a.ref),
+                        kb = refSortKey(b.ref);
+                    if (kb.year !== ka.year) return kb.year - ka.year;
+                    return kb.num - ka.num;
+                });
+            } else {
+                list.sort((a, b) => {
+                    const ka = refSortKey(a.ref),
+                        kb = refSortKey(b.ref);
+                    if (ka.year !== kb.year) return ka.year - kb.year;
+                    return ka.num - kb.num;
+                });
+            }
+            return list;
+        }
+
+        function renderTable() {
+            const q = (document.getElementById('catSearch').value || '').toLowerCase().trim();
+            const vc = visibleCols();
+            let list = sortedMemos();
+
+            if (q) list = list.filter(m =>
+                (m.ref || '').toLowerCase().includes(q) ||
+                (m.subject || '').toLowerCase().includes(q) ||
+                (m.dateIssued || '').toLowerCase().includes(q)
+            );
+
+            const tbody = document.getElementById('memoTbody');
+            const empty = document.getElementById('emptyState');
+            const table = document.getElementById('memoTable');
+
+            if (!list.length) {
+                table.style.display = 'none';
+                empty.style.display = 'flex';
+                return;
+            }
+            table.style.display = '';
+            empty.style.display = 'none';
+
+            tbody.innerHTML = list.map((m, i) => {
+                if (m.id === editingId) return buildEditRow(m, i + 1, vc);
+                return buildRow(m, i + 1, vc);
+            }).join('');
+
+            tbody.querySelectorAll('tr[draggable]').forEach(row => {
+                row.addEventListener('dragstart', onRowDragStart);
+                row.addEventListener('dragover', onRowDragOver);
+                row.addEventListener('drop', onRowDrop);
+                row.addEventListener('dragend', onRowDragEnd);
+            });
+        }
+
+        function buildRow(m, idx, vc) {
+            const cells = vc.map(c => {
+                const val = (m[c.key] || '—');
+                if (c.key === 'ref')
+                    return `<td class="td-ref">${val}</td>`;
+                if (c.key === 'subject')
+                    return `<td class="td-subject">${val}</td>`;
+                return `<td class="td-date">${val}</td>`;
+            }).join('');
+
+            return `<tr draggable="true" data-id="${m.id}">
+            <td class="td-num">${idx}</td>
+            ${cells}
+            <td class="td-actions">
+              <div class="row-acts">
+                <button class="ra-btn copy" onclick="copyMemo('${m.id}')" title="Copy ref + subject" id="cpbtn-${m.id}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+                <button class="ra-btn edit" onclick="startEdit('${m.id}')" title="Edit row">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+                <button class="ra-btn del" onclick="openDeleteModal('${m.id}')" title="Delete">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                </button>
+                <button class="ra-btn drag" title="Drag to reorder" style="cursor:grab;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="6" r="1" fill="currentColor"/><circle cx="15" cy="6" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="18" r="1" fill="currentColor"/><circle cx="15" cy="18" r="1" fill="currentColor"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>`;
+        }
+
+        // ── CHANGE 4 of 4 — buildEditRow with category selector ──
+        function buildEditRow(m, idx, vc) {
+            const cats = allCats();
+            const catOptions = Object.entries(cats)
+                .map(([k, v]) => `<option value="${k}" ${k === m.cat ? 'selected' : ''}>${v.label}</option>`)
+                .join('');
+
+            const cells = vc.map(c => `
+              <td><input class="edit-input" data-key="${c.key}" value="${(m[c.key] || '').replace(/"/g, '&quot;')}"></td>
+            `).join('');
+
+            return `<tr class="editing" data-id="${m.id}">
+            <td class="td-num">${idx}</td>
+            ${cells}
+            <td class="td-actions">
+              <div class="row-acts" style="flex-direction:column;align-items:flex-end;gap:6px;">
+                <select id="catsel-${m.id}" style="font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid var(--gold);background:var(--surface);color:var(--text);width:100%;">
+                  ${catOptions}
+                </select>
+                <div style="display:flex;gap:4px;">
+                  <button class="edit-save-btn" onclick="saveEdit('${m.id}')">Save</button>
+                  <button class="ra-btn" onclick="cancelEdit()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>`;
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  ROW ACTIONS
+        // ════════════════════════════════════════════════════════
+        function copyMemo(id) {
+            const m = memos.find(x => x.id === id);
+            if (!m) return;
+            const line = `${m.ref} ${m.subject !== '—' ? m.subject : ''}`.trim();
+            navigator.clipboard.writeText(line).then(() => {
+                const btn = document.getElementById('cpbtn-' + id);
+                if (btn) { btn.classList.add('copy-ok');
+                    setTimeout(() => btn.classList.remove('copy-ok'), 1800); }
+                toast('Copied!', 'ok');
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = line;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                toast('Copied!', 'ok');
+            });
+        }
+
+        function startEdit(id) { editingId = id;
+            renderTable(); }
+
+        function cancelEdit() { editingId = null;
+            renderTable(); }
+
+        // ── CHANGE 4 (part 2): saveEdit with category move + dept mapping ──
+        async function saveEdit(id) {
+            const m = memos.find(x => x.id === id);
+            if (!m) return;
+
+            const row = document.querySelector(`tr[data-id="${id}"]`);
+            if (!row) return;
+
+            // Save text fields
+            row.querySelectorAll('.edit-input').forEach(inp => {
+                m[inp.dataset.key] = inp.value.trim();
+            });
+
+            // Read category selector
+            const catSel = document.getElementById('catsel-' + id);
+            if (catSel && catSel.value) {
+                const newCat = catSel.value;
+                if (newCat !== m.cat) {
+                    // If user changed the category, ask if we should
+                    // remember this dept code mapping for future parses
+                    const deptParts = (m.ref || '').toUpperCase().split('/');
+                    if (deptParts.length >= 2) {
+                        const dept = deptParts[1];
+                        const remember = confirm(
+                            `Move this memo to "${newCat}"?\n\n` +
+                            `Also remember: route all future "${dept}" memos to "${newCat}" automatically?`
+                        );
+                        if (remember) saveDeptMapping(dept, newCat);
+                    }
+                    m.cat = newCat;
+                }
+            }
+
+            editingId = null;
+            await persistOne(m);
+            updateCounts();
+            renderTable();
+            toast('Saved', 'ok');
+        }
+
+        function openDeleteModal(id) {
+            deleteId = id;
+            const m = memos.find(x => x.id === id);
+            document.getElementById('delModalRef').textContent = m ? m.ref : '';
+            openModal('delModal');
+        }
+
+        async function confirmDelete() {
+            if (!deleteId) return;
+            memos = memos.filter(m => m.id !== deleteId);
+            await removeOne(deleteId);
+            deleteId = null;
+            closeModal('delModal');
+            updateCounts();
+            renderTable();
+            updateDbInfo();
+            toast('Deleted', 'ok');
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  ADD ROW MODAL
+        // ════════════════════════════════════════════════════════
+        function openAddModal() {
+            const form = document.getElementById('addForm');
+            form.innerHTML = cols.map(c => `
+              <div class="form-row">
+                <label class="form-label">${c.label}</label>
+                <input class="form-input" data-key="${c.key}" placeholder="${c.label}">
+              </div>`).join('');
+            openModal('addModal');
+        }
+
+        async function saveAddModal() {
+            const inputs = document.querySelectorAll('#addForm .form-input');
+            const data = {};
+            inputs.forEach(i => { data[i.dataset.key] = i.value.trim(); });
+
+            if (!data.ref) { toast('REF is required', 'err'); return; }
+            const ref = data.ref.replace(/[-–]/g, '/').toUpperCase();
+            if (memos.find(m => m.ref === ref)) { toast('REF already exists', 'err'); return; }
+
+            const cat = detectCat(ref);
+            if (!cat) { toast('Cannot detect category from REF', 'err'); return; }
+
+            const memo = {
+                id: `${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
+                cat,
+                ref,
+                subject: data.subject || '—',
+                dateIssued: data.dateIssued || '—',
+                effective: data.effective || '—',
+                validity: data.validity || '—',
+                sortOrder: 0,
+                ts: new Date().toISOString()
+            };
+            memos.unshift(memo);
+            await persistOne(memo);
+            closeModal('addModal');
+            updateCounts();
+            if (curCat === cat) renderTable();
+            updateDbInfo();
+            toast('Memo added', 'ok');
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  DRAG TO REORDER
+        // ════════════════════════════════════════════════════════
+        let dragId = null;
+
+        function onRowDragStart(e) {
+            dragId = e.currentTarget.dataset.id;
+            e.currentTarget.style.opacity = '.4';
+        }
+
+        function onRowDragOver(e) {
+            e.preventDefault();
+            document.querySelectorAll('.drag-over-row').forEach(r => r.classList.remove('drag-over-row'));
+            e.currentTarget.classList.add('drag-over-row');
+        }
+
+        function onRowDrop(e) {
+            e.preventDefault();
+            const targetId = e.currentTarget.dataset.id;
+            if (!dragId || dragId === targetId) return;
+            const list = sortedMemos();
+            const fromIdx = list.findIndex(m => m.id === dragId);
+            const toIdx = list.findIndex(m => m.id === targetId);
+            if (fromIdx < 0 || toIdx < 0) return;
+            const [moved] = list.splice(fromIdx, 1);
+            list.splice(toIdx, 0, moved);
+            list.forEach((m, i) => { m.sortOrder = i;
+                persistOne(m); });
+            list.forEach(m => { const idx = memos.findIndex(x => x.id === m.id); if (idx > -1) memos[idx] = m; });
+            renderTable();
+        }
+
+        function onRowDragEnd(e) {
+            e.currentTarget.style.opacity = '';
+            document.querySelectorAll('.drag-over-row').forEach(r => r.classList.remove('drag-over-row'));
+            dragId = null;
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  SORT
+        // ════════════════════════════════════════════════════════
+        function toggleSort() {
+            sortMode = sortMode === 'newest' ? 'oldest' : 'newest';
+            document.getElementById('ctSortLabel').textContent = sortMode === 'newest' ? 'Newest First' : 'Oldest First';
+            renderTable();
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  COLUMN HEADER MENU
+        // ════════════════════════════════════════════════════════
+        let colMenuKey = null;
+
+        function openColMenu(e, key) {
+            e.stopPropagation();
+            colMenuKey = key;
+            const menu = document.getElementById('colMenu');
+            const col = cols.find(c => c.key === key);
+            menu.innerHTML = `
+              <div class="col-menu-item" onclick="hideCol('${key}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                Hide column
+              </div>
+              <div class="col-menu-item" onclick="sortByCol('${key}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/></svg>
+                Sort by this column
+              </div>`;
+            const rect = e.target.getBoundingClientRect();
+            menu.style.display = 'block';
+            menu.style.top = (rect.bottom + 4) + 'px';
+            menu.style.left = Math.min(rect.left, window.innerWidth - 170) + 'px';
+        }
+
+        function hideCol(key) {
+            const c = cols.find(x => x.key === key);
+            if (c) c.visible = false;
+            saveCols();
+            buildTableHead();
+            renderTable();
+            closeColMenu();
+            toast('Column hidden — restore in Settings', 'ok');
+        }
+
+        function sortByCol(key) {
+            closeColMenu();
+            const list = sortedMemos();
+            list.sort((a, b) => (a[key] || '').localeCompare(b[key] || ''));
+            list.forEach((m, i) => { m.sortOrder = i;
+                persistOne(m);
+                memos[memos.findIndex(x => x.id === m.id)] = m; });
+            renderTable();
+        }
+
+        function closeColMenu() {
+            document.getElementById('colMenu').style.display = 'none';
+            colMenuKey = null;
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  SETTINGS — THEME
+        // ════════════════════════════════════════════════════════
+        function setTheme(t) {
+            document.body.dataset.theme = t;
+            localStorage.setItem('mlTheme', t);
+            buildThemeGrid();
+            updateMetaTheme();
+        }
+
+        function buildThemeGrid() {
+            const t = document.body.dataset.theme;
+            document.querySelectorAll('.theme-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.themeVal === t);
+            });
+        }
+
+        function updateMetaTheme() {
+            const colors = { ops: '#001F4E', dark: '#0D1525', black: '#000000', modern: '#1E3A8A' };
+            document.querySelector('meta[name="theme-color"]').content = colors[document.body.dataset.theme] || '#001F4E';
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  SETTINGS — COLUMNS
+        // ════════════════════════════════════════════════════════
+        function saveCols() { localStorage.setItem('mlCols', JSON.stringify(cols)); }
+
+        function buildColMgr() {
+            const mgr = document.getElementById('colMgr');
+            mgr.innerHTML = cols.map((c, i) => `
+              <div class="col-row" data-idx="${i}">
+                <span class="col-drag">⠿</span>
+                <span class="col-name">${c.label}</span>
+                <button class="col-toggle ${c.visible ? 'on' : ''}" onclick="toggleCol(${i})" title="${c.visible ? 'Hide' : 'Show'}"></button>
+              </div>`).join('');
+        }
+
+        function toggleCol(i) {
+            cols[i].visible = !cols[i].visible;
+            saveCols();
+            buildColMgr();
+            if (curCat) { buildTableHead();
+                renderTable(); }
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  DATABASE EXPORT / IMPORT
+        // ════════════════════════════════════════════════════════
+        function exportJSON() {
+            if (!memos.length) { toast('No memos to save', 'err'); return; }
+            const payload = { _type: 'MemoLogDB', _version: 2, _exported: new Date().toISOString(), _count: memos.length,
+                memos };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `MemoLog_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            toast(`Saved — ${memos.length} memos`, 'ok');
+        }
+
+        function exportHTML() {
+            if (!memos.length) { toast('No memos to export', 'err'); return; }
+            const now = new Date().toLocaleDateString('en-MY', { day: '2-digit', month: 'long', year: 'numeric' });
+            const all = allCats();
+            const catKeys = Object.keys(all);
+            const vc = visibleCols();
+
+            const tableFor = catKey => {
+                const list = memos.filter(m => m.cat === catKey);
+                if (!list.length) return '<p style="color:#888;padding:12px 16px;font-style:italic">No memos.</p>';
+                const rows = list.map((m, i) =>
+                    `<tr${i % 2 ? ' style="background:#F9FBFD"' : ''}>
+                ${vc.map(c => `<td style="padding:9px 14px;border-bottom:1px solid #E8EEF7;font-size:12px;${c.key === 'ref' ? 'font-weight:700;color:#003580;white-space:nowrap' : 'vertical-align:top'}">${m[c.key] || '—'}</td>`).join('')}
+              </tr>`).join('');
+                const heads = vc.map(c =>
+                    `<th style="background:#001F4E;color:rgba(255,255,255,.7);padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">${c.label}</th>`
+                    ).join('');
+                return `<table style="width:100%;border-collapse:collapse"><thead><tr>${heads}</tr></thead><tbody>${rows}</tbody></table>`;
+            };
+
+            const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MEMO.LOG — ${now}</title>
+          <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#F4F7FB;color:#0D1F3C}
+          .hdr{background:linear-gradient(135deg,#001F4E,#003580);border-bottom:3px solid #C9A84C;padding:16px 20px;color:#fff}
+          .hdr h1{font-size:20px;font-weight:800}.hdr h1 em{color:#C9A84C;font-style:normal}
+          .hdr p{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+          .body{max-width:1000px;margin:0 auto;padding:20px 14px 60px}
+          .sec{background:#fff;border:1px solid #E8EEF7;border-radius:10px;margin-bottom:20px;overflow:hidden}
+          .sec-hdr{padding:12px 16px;border-bottom:2px solid #E8EEF7;display:flex;align-items:center;gap:8px}
+          .sec-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+          .sec-label{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+          .foot{text-align:center;font-size:10px;color:#7A93B4;padding:16px;letter-spacing:.08em;text-transform:uppercase}
+          </style></head><body>
+          <div class="hdr"><h1>MEMO<em>.LOG</em></h1><p>Exported ${now} · ${memos.length} memos · by2100551</p></div>
+          <div class="body">
+          ${catKeys.map(catKey => `<div class="sec">
+            <div class="sec-hdr">
+              <div class="sec-dot" style="background:${all[catKey].color || '#666'}"></div>
+              <span class="sec-label" style="color:${all[catKey].color || '#666'}">${catKey.toUpperCase()}</span>
+              <span style="font-size:11px;color:#7A93B4;margin-left:4px">— ${all[catKey].label} · ${memos.filter(m => m.cat === catKey).length} memos</span>
+            </div>
+            ${tableFor(catKey)}
+          </div>`).join('')}
+          </div>
+          <div class="foot">memo.log · by2100551 · local reference only</div>
+          </body></html>`;
+
+            const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `MemoLog_Export_${new Date().toISOString().slice(0,10)}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            toast('HTML exported', 'ok');
+        }
+
+        function openImportModal() { document.getElementById('importStatus').className = 'import-status';
+            openModal('importModal'); }
+
+        async function importJSON(file) {
+            const st = document.getElementById('importStatus');
+            try {
+                const data = JSON.parse(await file.text());
+                const incoming = Array.isArray(data) ? data : (data.memos || []);
+                if (!incoming.length) { st.className = 'import-status err';
+                    st.textContent = 'No memos found.'; return; }
+                let added = 0,
+                    skipped = 0;
+                for (const m of incoming) {
+                    if (!m.ref || !m.cat) { skipped++; continue; }
+                    if (memos.find(x => x.ref === m.ref)) { skipped++; continue; }
+                    if (!m.id) m.id = `imp-${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
+                    memos.unshift(m);
+                    await persistOne(m);
+                    added++;
+                }
+                st.className = 'import-status ok';
+                st.textContent = `✓ ${added} imported${skipped ? ', ' + skipped + ' skipped' : ''}`;
+                updateCounts();
+                updateDbInfo();
+                if (added) toast(added + ' memos imported', 'ok');
+            } catch (e) {
+                st.className = 'import-status err';
+                st.textContent = 'Invalid file — use a MemoLog .json backup.';
+            }
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  MODAL HELPERS
+        // ════════════════════════════════════════════════════════
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+        // ════════════════════════════════════════════════════════
+        //  COUNTS & DB INFO
+        // ════════════════════════════════════════════════════════
+        function updateCounts() {
+            const all = allCats();
+            const counts = {};
+            Object.keys(all).forEach(k => counts[k] = 0);
+            memos.forEach(m => { if (counts[m.cat] !== undefined) counts[m.cat]++; });
+            // Update home cards: built-in + custom cats get shown if they have memos
+            const homeCards = document.querySelector('.cat-cards');
+            // We keep the static 3 cards for built-in, but we need to update counts
+            document.getElementById('cnt-ifs').textContent = counts.ifs || 0;
+            document.getElementById('cnt-ops').textContent = counts.ops || 0;
+            document.getElementById('cnt-fsoc').textContent = counts.fsoc || 0;
+            // For custom categories, we add dynamic cards if they have memos
+            // (they'll appear when user creates them)
+        }
+
+        function updateDbInfo() {
+            const all = allCats();
+            const counts = {};
+            Object.keys(all).forEach(k => counts[k] = 0);
+            memos.forEach(m => { if (counts[m.cat] !== undefined) counts[m.cat]++; });
+            const parts = Object.entries(counts).filter(([k, v]) => v > 0)
+                .map(([k, v]) => `${k.toUpperCase()}:${v}`);
+            const el = document.getElementById('dbInfo');
+            if (el) el.textContent = memos.length ? `${memos.length} memos · ${parts.join(' ')}` : 'No memos yet';
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  TOAST
+        // ════════════════════════════════════════════════════════
+        let _tt;
+
+        function toast(msg, type = '') {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = 'toast show ' + (type || '');
+            clearTimeout(_tt);
+            _tt = setTimeout(() => el.className = 'toast', 3000);
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  SERVICE WORKER (PWA offline support)
+        // ════════════════════════════════════════════════════════
+        function registerSW() {
+            if (!('serviceWorker' in navigator)) return;
+            const swCode = `
+          const CACHE='memolog-v1';
+          const URLS=[
+            self.registration.scope,
+            'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap',
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+            'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',
+          ];
+          self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(URLS).catch(()=>{})));self.skipWaiting();});
+          self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});
+          self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{if(res.ok&&e.request.method==='GET'){const clone=res.clone();caches.open(CACHE).then(c=>c.put(e.request,clone));}return res;}).catch(()=>r||new Response('Offline',{status:503}))));});`;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const url = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(url).catch(() => {});
+        }
+
+        // ════════════════════════════════════════════════════════
+        //  BOOT
+        // ════════════════════════════════════════════════════════
+        document.addEventListener('DOMContentLoaded', async () => {
+
+            const savedTheme = localStorage.getItem('mlTheme') || 'ops';
+            document.body.dataset.theme = savedTheme;
+            updateMetaTheme();
+
+            try { await openDB(); } catch (e) { console.warn('IDB unavailable', e); }
+            await hydrate();
+            updateCounts();
+            updateDbInfo();
+            buildThemeGrid();
+
+            registerSW();
+
+            document.getElementById('hdrBack').addEventListener('click', () => {
+                if (document.getElementById('viewSettings').classList.contains('active')) {
+                    if (curCat) {
+                        document.getElementById('hdrBack').style.display = 'flex';
+                        document.getElementById('hdrSettings').style.display = 'none';
+                        document.getElementById('hdrCatLabel').style.display = 'block';
+                        showView('viewCat');
+                    } else {
+                        goHome();
+                    }
+                } else {
+                    goHome();
+                }
+            });
+
+            document.getElementById('hdrSettings').addEventListener('click', goSettings);
+
+            const dz = document.getElementById('dropZone');
+            dz.addEventListener('dragover', e => { e.preventDefault();
+                dz.classList.add('drag-over'); });
+            dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+            dz.addEventListener('drop', e => {
+                e.preventDefault();
+                dz.classList.remove('drag-over');
+                const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/') || f.type ===
+                    'application/pdf');
+                if (files.length) processFiles(files);
+            });
+
+            document.getElementById('imgInput').addEventListener('change', e => {
+                const files = Array.from(e.target.files);
+                if (files.length) { processFiles(files);
+                    e.target.value = ''; }
+            });
+            document.getElementById('pdfInput').addEventListener('change', e => {
+                const files = Array.from(e.target.files);
+                if (files.length) { processFiles(files);
+                    e.target.value = ''; }
+            });
+
+            const importDrop = document.getElementById('importDrop');
+            importDrop.addEventListener('dragover', e => { e.preventDefault();
+                importDrop.classList.add('drag-over'); });
+            importDrop.addEventListener('dragleave', () => importDrop.classList.remove('drag-over'));
+            importDrop.addEventListener('drop', e => {
+                e.preventDefault();
+                importDrop.classList.remove('drag-over');
+                if (e.dataTransfer.files[0]) importJSON(e.dataTransfer.files[0]);
+            });
+            document.getElementById('importFileInput').addEventListener('change', e => {
+                if (e.target.files[0]) { importJSON(e.target.files[0]);
+                    e.target.value = ''; }
+            });
+            document.getElementById('importModal').addEventListener('click', e => {
+                if (e.target === document.getElementById('importModal')) closeModal('importModal');
+            });
+            document.getElementById('addModal').addEventListener('click', e => {
+                if (e.target === document.getElementById('addModal')) closeModal('addModal');
+            });
+            document.getElementById('delModal').addEventListener('click', e => {
+                if (e.target === document.getElementById('delModal')) closeModal('delModal');
+            });
+
+            document.addEventListener('click', () => closeColMenu());
+
+            window.addEventListener('beforeunload', e => {
+                if (pendingSave) {
+                    const m = 'Changes are being saved — please wait a moment.';
+                    e.preventDefault();
+                    e.returnValue = m;
+                    return m;
+                }
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) showSaveBanner();
+            });
+
+            checkFirstOpen();
+            updateLinkBtn(!!localStorage.getItem('mlFileLinked'));
+
+            if (localStorage.getItem('mlFileLinked') && !fileHandle && memos.length) {
+                setTimeout(() => {
+                    if (!fileHandle && fsaSupported) {
+                        toast('Tip: Re-link your backup file for auto-save → tap 🔗 Link File', '');
+                    }
+                }, 2000);
+            }
+
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Print Preview - by *2100551*</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  html,body{margin:0;padding:0;background:#525659;font-family:-apple-system,Segoe UI,Roboto,sans-serif;}
+  .toolbar{position:sticky;top:0;z-index:200;background:#1e293b;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+  .toolbar h1{font-size:14px;margin:0;flex:1;font-weight:600;}
+  .toolbar button{background:#2563EB;color:#fff;border:none;padding:8px 14px;border-radius:5px;font-size:12px;cursor:pointer;font-weight:600;}
+  .toolbar button.secondary{background:#475569;}
+  .toolbar button.merge{background:#059669;}
+  .wrap{max-width:900px;margin:20px auto;padding:0 16px 60px;}
+  .report-block{background:#fff;border-radius:8px;margin-bottom:28px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.25);}
+  .report-block-header{background:#0f172a;color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;}
+  .report-block-header .rb-title{flex:1;}
+  .report-block-header button{background:#dc2626;border:none;color:#fff;padding:5px 10px;border-radius:4px;font-size:11px;cursor:pointer;}
+  .paste-area{padding:12px 14px;border-bottom:1px solid #e2e8f0;}
+  .paste-area textarea{width:100%;min-height:70px;box-sizing:border-box;font-family:monospace;font-size:11px;padding:8px;border:1px solid #cbd5e1;border-radius:5px;resize:vertical;}
+  .paste-area .row-buttons{margin-top:6px;display:flex;gap:8px;}
+  .paste-area .row-buttons button{padding:6px 12px;font-size:11px;border:none;border-radius:4px;cursor:pointer;background:#2563EB;color:#fff;font-weight:600;}
+  .options-bar{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;background:#f1f5f9;padding:10px 14px;font-size:11px;border-bottom:1px solid #e2e8f0;}
+  .options-bar .opt{display:flex;flex-direction:column;gap:3px;min-width:110px;}
+  .options-bar .opt label{color:#475569;font-weight:600;font-size:10px;}
+  .options-bar .opt .val{color:#2563EB;font-weight:700;}
+  .options-bar .opt-toggle{flex-direction:row;align-items:center;gap:6px;min-width:auto;}
+  .options-bar .opt-toggle label{font-size:10px;}
+  .meta-line{padding:6px 14px;font-size:11px;color:#64748B;background:#fafafa;border-bottom:1px solid #eee;}
+  .page-stack{background:#525659;padding:20px 0;display:flex;flex-direction:column;align-items:center;gap:18px;}
+  .page{
+    width:210mm;height:297mm;background:#fff;position:relative;overflow:hidden;
+    box-shadow:0 0 10px rgba(0,0,0,.4);flex-shrink:0;
+  }
+  .page-window{position:absolute;overflow:hidden;}
+  .page-filmstrip{position:absolute;left:0;}
+  .page-num{position:absolute;bottom:3mm;right:5mm;font-size:8px;color:#94a3b8;}
+  .measure-host{position:absolute;left:-99999px;top:0;visibility:hidden;pointer-events:none;}
+  .add-report-btn-wrap{text-align:center;margin:0 0 28px;}
+  .add-report-btn-wrap button{background:#2563EB;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;}
+  .merge-bar{text-align:center;padding:20px 0 40px;}
+  .merge-bar button{background:#059669;color:#fff;border:none;padding:12px 28px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;}
+  .merge-status{font-size:12px;color:#e2e8f0;margin-top:8px;}
+  .toast{position:fixed;top:60px;right:16px;background:#059669;color:#fff;padding:10px 16px;border-radius:6px;font-size:12px;z-index:500;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+  .empty-state{padding:30px;text-align:center;color:#64748B;font-size:12px;}
+  @media print{
+    body{background:#fff;}
+    .toolbar,.options-bar,.paste-area,.meta-line,.add-report-btn-wrap,.merge-bar,.no-print{display:none !important;}
+    .wrap{margin:0;padding:0;max-width:none;}
+    .report-block{box-shadow:none;border-radius:0;margin:0;}
+    .report-block-header{display:none !important;}
+    .page-stack{background:#fff;padding:0;gap:0;}
+    .page{box-shadow:none;page-break-after:always;}
+    .page:last-child{page-break-after:auto;}
+    .page-num{display:block !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar no-print">
+  <h1>🖨️ Report Print Preview <span id="totalPagesLabel" style="opacity:.7;font-weight:400;"></span></h1>
+  <button class="secondary" onclick="location.reload()">↺ Reset All</button>
+  <button onclick="window.print()">Print</button>
+</div>
+
+<div class="wrap">
+  <div id="reportsContainer"></div>
+  <div class="add-report-btn-wrap no-print">
+    <button onclick="addReport()">+ Add Another Report</button>
+  </div>
+  <div class="merge-bar no-print">
+    <button onclick="mergeReports()">🔗 Merge Reports (continuous page numbers)</button>
+    <div class="merge-status" id="mergeStatus"></div>
+  </div>
+</div>
+
+<div id="measureHost" class="measure-host"></div>
+
+<script>
+/* ============================================================
+   SHARED PARSING / RENDERING ENGINE
+   (ported from bpm-pro to keep output identical)
+   ============================================================ */
+const CONFIG = {
+  SEAT_PATTERN: /^\d{2}[A-K]$/i,
+  PNR_PATTERN: /^[A-Z0-9]{6,7}$/i,
+  CLASS_PATTERN: /^[JY]$/i,
+  TITLES: ['MR','MS','MRS','MISS','MSTR','DATO','DATIN','DTUK','TSRI','MDM','DR','PROF'],
+  TIERS: ['ELIT','PLAT','GOLD','RUBY','SLVR','BLUE','SAPH','EMER'],
+  DOB_PATTERN: /^\d{1,2}\/\d{1,2}$/
+};
+
+const AIRCRAFT_CONFIGS = {
+  '737NG': [{name:'B',start:1,end:3},{name:'EY',start:4,end:31}],
+  '737MAX':[{name:'B',start:1,end:3},{name:'EY',start:4,end:31}],
+  '737NR': [{name:'B',start:1,end:4},{name:'EY',start:5,end:30}],
+  '333':[{name:'B',start:1,end:7},{name:'C',start:9,end:27},{name:'D',start:28,end:44}],
+  '332':[{name:'B',start:1,end:6},{name:'C',start:14,end:30},{name:'D',start:31,end:50}],
+  '339':[{name:'B',start:1,end:8},{name:'C',start:9,end:25},{name:'D',start:26,end:44}],
+  '359':[{name:'B',start:1,end:11},{name:'C',start:12,end:22},{name:'D',start:23,end:32},{name:'E',start:33,end:41}],
+  '350':[{name:'B',start:1,end:10},{name:'C',start:20,end:35},{name:'D',start:36,end:46},{name:'E',start:47,end:55}]
+};
+
+function truncateName(name){
+  if(!name || !name.includes('/')) return name || '';
+  return name.split('/').map(p=>{const t=p.trim();return t.length>15?t.substring(0,6)+'..':t;}).join('/');
+}
+function parseFlightDate(stdLt){
+  if(!stdLt) return null;
+  const months={JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
+  const m=stdLt.trim().match(/^(\d{1,2})([A-Z]{3})/i);
+  if(!m) return null;
+  const mon=months[m[2].toUpperCase()];
+  if(mon===undefined) return null;
+  return new Date(new Date().getFullYear(), mon, parseInt(m[1]));
+}
+function checkBirthday(dob, flightDate){
+  if(!dob || !flightDate) return false;
+  const m=dob.match(/^(\d{1,2})\/(\d{1,2})$/);
+  if(!m) return false;
+  const day=parseInt(m[1]), mon=parseInt(m[2])-1;
+  const tmr=new Date(flightDate); tmr.setDate(tmr.getDate()+1);
+  if(day===flightDate.getDate() && mon===flightDate.getMonth()) return true;
+  if(day===tmr.getDate() && mon===tmr.getMonth()) return true;
+  return false;
+}
+function countBirthdays(pax){ return pax.filter(p=>p.hasBirthday).length; }
+
+function parseManifest(text){
+  text = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
+  const lines = text.split('\n').map(l=>l.trim()).filter(l=>l!=='');
+  const passengers = [];
+  let flightInfo = {flightNumber:'',sector:'',aircraft:'',date:'',stdLocal:''};
+  for(let i=0;i<lines.length;i++){
+    if(lines[i]==='FLT NBR' && i+1<lines.length) flightInfo.flightNumber=lines[i+1];
+    if(lines[i]==='Sector' && i+1<lines.length) flightInfo.sector=lines[i+1];
+    if(lines[i]==='ACFT' && i+1<lines.length) flightInfo.aircraft=lines[i+1];
+    if(lines[i]==='STD LT' && i+1<lines.length){
+      const parts=lines[i+1].split(/\s+/);
+      if(parts.length>=2){flightInfo.date=parts[0];flightInfo.stdLocal=parts[1];}
+    }
+  }
+  const flightDate = parseFlightDate(flightInfo.date);
+  let startIndex=-1;
+  for(let i=0;i<lines.length;i++){
+    if(lines[i]==='MEALS' || lines[i].includes('Passenger & Meal Count')){startIndex=i+1;break;}
+  }
+  if(startIndex===-1) return {flightInfo,passengers};
+  let i=startIndex;
+  while(i<lines.length){
+    const line=lines[i];
+    if(line.includes('-- END of PAX List') || (line.includes('Showing') && line.includes('entries'))) break;
+    if(line==='-- CUT HERE --'){i++;continue;}
+    const passenger={title:'',name:'',seat:'',pnr:'',class:'',fqtv:'',tier:'',meal:'',remark:'',dob:'',hasBirthday:false};
+    if(CONFIG.TITLES.includes(line)){passenger.title=line;i++;if(i>=lines.length)break;}
+    if(i<lines.length && lines[i].includes('/')){
+      if(CONFIG.DOB_PATTERN.test(lines[i])){i++;continue;}
+      passenger.name=truncateName(lines[i]); i++;
+    } else { i++; continue; }
+    if(i<lines.length && CONFIG.DOB_PATTERN.test(lines[i])){
+      passenger.dob=lines[i]; passenger.hasBirthday=checkBirthday(lines[i], flightDate); i++;
+    }
+    while(i<lines.length){
+      const field=lines[i];
+      if(CONFIG.TITLES.includes(field) || field.includes('/') || field==='-- CUT HERE --' || field.includes('-- END of PAX List')) break;
+      if(!passenger.seat && CONFIG.SEAT_PATTERN.test(field)) passenger.seat=field.toUpperCase();
+      else if(!passenger.pnr && CONFIG.PNR_PATTERN.test(field)) passenger.pnr=field.toUpperCase();
+      else if(!passenger.class && CONFIG.CLASS_PATTERN.test(field)) passenger.class=field.toUpperCase();
+      else if(!passenger.tier && CONFIG.TIERS.includes(field.toUpperCase())) passenger.tier=field.toUpperCase();
+      else if(!passenger.meal && field.toUpperCase().includes('ML')){
+        const uf=field.toUpperCase();
+        if(uf.includes(',')){
+          const valid=uf.split(',').map(m=>m.trim()).filter(m=>/^[A-Z]{4}$/i.test(m) && m.endsWith('ML'));
+          if(valid.length>0) passenger.meal=valid.join(',');
+        } else if(/^[A-Z]{4}$/i.test(uf) && uf.endsWith('ML')) passenger.meal=uf;
+      }
+      else if(field.toUpperCase().includes('UPGRADED')) passenger.remark='UPG';
+      else if(field.toUpperCase().includes('DOWNGRADED')) passenger.remark='DNG';
+      i++;
+    }
+    if(passenger.name && passenger.class) passengers.push(passenger);
+  }
+  return {flightInfo, passengers};
+}
+
+function detectAircraftType(passengers, flightInfo){
+  if(flightInfo.aircraft){
+    const acft=flightInfo.aircraft.toUpperCase();
+    if(acft.startsWith('9MM')){
+      const c4=acft[3], c5=acft[4];
+      if(['X','L','V','F'].includes(c4)) return 'narrowbody';
+      if(c4==='N') return 'widebody';
+      if(c4==='A' && c5 && c5>='A' && c5<='G') return 'widebody';
+      if(acft==='9MMAH') return 'widebody';
+      if(c4==='T' && c5 && c5>='A' && c5<='S') return 'widebody';
+      if(c4==='T' && c5 && c5>='U' && c5<='Z') return 'widebody';
+    }
+    if(acft.includes('737')) return 'narrowbody';
+    if(acft.includes('A330')||acft.includes('A350')||acft.includes('A340')) return 'widebody';
+    if(acft.includes('777')||acft.includes('787')) return 'widebody';
+  }
+  for(const p of passengers){
+    if(p.seat){
+      const sl=p.seat.slice(-1).toUpperCase();
+      if(['G','H','J','K'].includes(sl)) return 'widebody';
+    }
+  }
+  return 'narrowbody';
+}
+
+function getEffectiveAircraftConfig(manualType, detectedType, flightInfo, passengers){
+  if(manualType && manualType!=='auto') return manualType;
+  if(flightInfo.aircraft){
+    const acft=flightInfo.aircraft.toUpperCase();
+    if(acft.startsWith('9MM')){
+      const c4=acft[3], c5=acft[4];
+      if(['X','L','V','F'].includes(c4)){
+        const hasRow4=passengers.some(p=>{
+          if(p.seat && p.class==='J'){const r=parseInt(p.seat.substring(0,2));return r===4;}
+          return false;
+        });
+        return hasRow4 ? '737NR' : '737NG';
+      }
+      if(c4==='N') return '339';
+      if(c4==='A' && c5 && c5>='A' && c5<='G') return '359';
+      if(acft==='9MMAH') return '350';
+      if(c4==='T' && c5 && c5>='A' && c5<='S') return '333';
+      if(c4==='T' && c5 && c5>='U' && c5<='Z') return '332';
+    }
+  }
+  return detectedType==='widebody' ? '333' : '737NG';
+}
+
+function getEffectiveLayout(manualLayout, detectedType){
+  if(!manualLayout || manualLayout==='auto') return detectedType==='widebody' ? 'port-starboard' : 'single';
+  return manualLayout;
+}
+
+function n(value){
+  return `${value}<span style="display:inline-block;letter-spacing:1px;color:#aaa;">___</span>`;
+}
+
+function mealBreakdownHTML(passengers){
+  const counts={};
+  passengers.forEach(p=>{
+    if(p.meal){
+      p.meal.split(',').map(m=>m.trim()).forEach(meal=>{ if(meal!=='BBML') counts[meal]=(counts[meal]||0)+1; });
+    }
+  });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([m,c])=>`${m}: ${n(c)}`).join(', ');
+}
+function bbmlCount(passengers){
+  let c=0;
+  passengers.forEach(p=>{ if(p.meal){ p.meal.split(',').map(m=>m.trim()).forEach(m=>{ if(m==='BBML') c++; }); } });
+  return c;
+}
+
+function generateGlobalSummary(filtered, summaryFontSize){
+  const specialMeal=filtered.filter(p=>p.meal).length;
+  const tier=filtered.filter(p=>p.tier==='EMER'||p.tier==='PLAT').length;
+  const bday=countBirthdays(filtered);
+  const bbml=bbmlCount(filtered);
+  let html=`<div class="stats" style="font-size:${summaryFontSize}px"><strong>Summary:</strong> Special Meals: ${n(specialMeal)} | EMER/PLAT: ${n(tier)}`;
+  if(bday>0) html+=` | 🎂 ${n(bday)}`;
+  if(bbml>0) html+=` | Infants (BBML): ${n(bbml)}`;
+  html+=`<br><strong>Meal Breakdown:</strong> ${mealBreakdownHTML(filtered)||'None'}`;
+  if(bbml>0) html+=` | BBML: ${n(bbml)}`;
+  html+=`</div>`;
+  return html;
+}
+function generateZoneStats(passengers, summaryFontSize){
+  const specialMeal=passengers.filter(p=>p.meal).length;
+  const tier=passengers.filter(p=>p.tier==='EMER'||p.tier==='PLAT').length;
+  const bday=countBirthdays(passengers);
+  const bbml=bbmlCount(passengers);
+  let html=`<div class="stats" style="font-size:${summaryFontSize}px"><strong>Zone Summary:</strong> Special Meals: ${n(specialMeal)} | EMER/PLAT: ${n(tier)}`;
+  if(bday>0) html+=` | 🎂 ${n(bday)}`;
+  if(bbml>0) html+=` | Infants (BBML): ${n(bbml)}`;
+  html+=`<br><strong>Zone Meal Breakdown:</strong> ${mealBreakdownHTML(passengers)||'None'}`;
+  if(bbml>0) html+=` | BBML: ${n(bbml)}`;
+  html+=`</div>`;
+  return html;
+}
+function generateSideStats(passengers, sideName, summaryFontSize){
+  const specialMeal=passengers.filter(p=>p.meal).length;
+  const tier=passengers.filter(p=>p.tier==='EMER'||p.tier==='PLAT').length;
+  const bday=countBirthdays(passengers);
+  const bbml=bbmlCount(passengers);
+  let html=`<div class="side-stats" style="font-size:${summaryFontSize}px"><strong>${sideName}:</strong> Meals: ${n(specialMeal)} | EMER/PLAT: ${n(tier)}`;
+  if(bday>0) html+=` | 🎂 ${n(bday)}`;
+  if(bbml>0) html+=` | BBML: ${n(bbml)}`;
+  const mb=mealBreakdownHTML(passengers);
+  if(mb) html+=`<br>${mb}`;
+  html+=`</div>`;
+  return html;
+}
+function mealDisplay(p){
+  const meals=p.meal ? p.meal.split(',').map(m=>m.trim()) : [];
+  const parent=meals.find(m=>m!=='BBML')||'';
+  const infant=meals.find(m=>m==='BBML')||'';
+  let d='';
+  if(parent && infant) d=`<strong>${parent}</strong><span class="infant-meal">(+${infant})</span>`;
+  else if(parent) d=`<strong>${parent}</strong>`;
+  else if(infant) d=`<strong>${infant}</strong>`;
+  if(p.hasBirthday) d += (d?' ':'')+'🎂';
+  return d;
+}
+function remarkIndicator(p){
+  if(p.remark==='UPG') return '<span class="upgrade-indicator">↑</span>';
+  if(p.remark==='DNG') return '<span class="downgrade-indicator">↓</span>';
+  return '';
+}
+
+/* Returns a table's outer HTML split as {theadHTML, rowsHTML:[array of <tr> strings], tableClass} */
+function buildTableParts(passengers, showSeat, aircraftType){
+  const tableClass = aircraftType==='widebody' ? 'widebody-table' : 'narrowbody-table';
+  const headers = showSeat ? `<th>SEAT</th><th>TITLE</th><th>NAME</th><th>TIER</th><th>MEAL</th>` : `<th>TITLE</th><th>NAME</th><th>TIER</th><th>MEAL</th>`;
+  const rows = passengers.map(p=>{
+    let row='<tr>';
+    if(showSeat){
+      row += p.seat ? `<td><strong>${p.seat}</strong>${remarkIndicator(p)}</td>` : `<td style="border:1px dashed #999;background:#fffacd;">&nbsp;</td>`;
+    }
+    row += `<td>${p.title}</td><td>${p.name}</td><td><strong>${p.tier}</strong></td><td>${mealDisplay(p)}</td></tr>`;
+    return row;
+  });
+  return {tableClass, headers, rows};
+}
+
+/* ============================================================
+   PAGINATION ENGINE
+   ============================================================ */
+const MM_TO_PX = 3.7795275591;
+const PAGE_W_MM = 210, PAGE_H_MM = 297;
+
+function getMeasureHost(){ return document.getElementById('measureHost'); }
+
+/**
+ * Build the full "flow" for a report as an array of atomic + row units,
+ * each rendered once into the measure host so we get real pixel heights.
+ * unit = { html, height, type:'atomic'|'row', zoneId, tableKey, forceBreak }
+ */
+function buildFlow(report){
+  const {flightInfo, passengers} = report.parsed;
+  const s = report.settings;
+  const filtered = passengers.filter(p=>p.meal || p.tier==='EMER' || p.tier==='PLAT' || p.hasBirthday);
+  const detected = detectAircraftType(passengers, flightInfo);
+  const effAcft = getEffectiveAircraftConfig(s.aircraftType, detected, flightInfo, passengers);
+  const effLayout = getEffectiveLayout(null, detected); // report blocks always auto layout (single/port-starboard chosen by opener)
+  report.detected = detected; report.effAcft = effAcft; report.effLayout = effLayout; report.filteredCount = filtered.length;
+
+  const host = getMeasureHost();
+  const contentWidthMm = PAGE_W_MM - s.marginLeft - s.marginRight;
+  host.innerHTML = `<div class="output-section" data-font-size="${s.fontSize}" data-table-width="${s.tableWidth}" style="width:${contentWidthMm}mm;"></div>`;
+  const root = host.firstElementChild;
+
+  const units = [];
+  function measureAndPush(html, type, zoneId, tableKey, forceBreak, widthPercent){
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const el = wrap.firstElementChild;
+    if(widthPercent) el.style.width = widthPercent+'%';
+    root.appendChild(el);
+    const h = el.getBoundingClientRect().height;
+    units.push({html, height:h, type, zoneId, tableKey, forceBreak});
+  }
+  function measureRowsIntoUnits(tableHTML_open, rowsArr, tableHTML_close, zoneId, tableKey, widthPercent, tableClass, headers){
+    // Render whole table once to get row heights accurately (borders/padding included)
+    const wrap = document.createElement('div');
+    wrap.innerHTML = tableHTML_open + rowsArr.join('') + tableHTML_close;
+    const table = wrap.firstElementChild;
+    if(widthPercent) table.style.width = widthPercent+'%';
+    root.appendChild(table);
+    const trs = table.querySelectorAll('tbody tr');
+    trs.forEach((tr,idx)=>{
+      units.push({html:rowsArr[idx], height:tr.getBoundingClientRect().height, type:'row', zoneId, tableKey, forceBreak:false});
+    });
+    root.removeChild(table);
+    report._lastTableMeta = report._lastTableMeta || {};
+    report._lastTableMeta[tableKey] = {tableClass, headers};
+  }
+
+  // Flight info + global summary (atomic, always first)
+  const flightInfoHTML = `<div class="flight-info">Flight: ${flightInfo.flightNumber} | Route: ${flightInfo.sector} | Date: ${flightInfo.date} ${flightInfo.stdLocal} | ACFT: ${flightInfo.aircraft}</div>`;
+  measureAndPush(flightInfoHTML, 'atomic', null, null, false, s.tableWidth);
+  measureAndPush(generateGlobalSummary(filtered, s.summaryFontSize), 'atomic', null, null, false, s.tableWidth);
+
+  const zones = AIRCRAFT_CONFIGS[effAcft] || [];
+  zones.forEach((zone, zi) => {
+    const zonePax = filtered.filter(p=>{
+      if(!p.seat) return false;
+      const r=parseInt(p.seat.substring(0,2));
+      return r>=zone.start && r<=zone.end;
+    }).sort((a,b)=>{ if(!a.seat) return 1; if(!b.seat) return -1; return parseInt(a.seat)-parseInt(b.seat); });
+    if(zonePax.length===0) return;
+
+    const zoneId = 'z'+zi;
+    let header = `<div class="zone-section-head"><div class="zone-header">${flightInfo.flightNumber} - ${zone.name} - Rows ${zone.start}-${zone.end}</div>${generateZoneStats(zonePax, s.summaryFontSize)}</div>`;
+    measureAndPush(header, 'atomic', zoneId, null, s.pageBreakZones && zi>0 ? true : false, s.tableWidth);
+
+    if(effLayout === 'port-starboard'){
+      const isWide = detected==='widebody';
+      const portLetters = isWide ? ['A','B','C','D','E'] : ['A','B','C'];
+      const portPax = zonePax.filter(p=>p.seat && portLetters.includes(p.seat.slice(-1)));
+      const starPax  = zonePax.filter(p=>p.seat && !portLetters.includes(p.seat.slice(-1)));
+
+      measureAndPush(`<div class="table-title">PORT SIDE</div>`, 'atomic', zoneId, null, false, s.tableWidth);
+      measureAndPush(generateSideStats(portPax,'Port', s.summaryFontSize), 'atomic', zoneId, null, false, s.tableWidth);
+      if(portPax.length){
+        const tp = buildTableParts(portPax, true, detected);
+        measureRowsIntoUnits(`<table class="${tp.tableClass}"><thead><tr>${tp.headers}</tr></thead><tbody>`, tp.rows, `</tbody></table>`, zoneId, zoneId+'-port', s.tableWidth, tp.tableClass, tp.headers);
+      }
+      measureAndPush(`<div class="table-title">STARBOARD SIDE</div>`, 'atomic', zoneId, null, false, s.tableWidth);
+      measureAndPush(generateSideStats(starPax,'Starboard', s.summaryFontSize), 'atomic', zoneId, null, false, s.tableWidth);
+      if(starPax.length){
+        const ts = buildTableParts(starPax, true, detected);
+        measureRowsIntoUnits(`<table class="${ts.tableClass}"><thead><tr>${ts.headers}</tr></thead><tbody>`, ts.rows, `</tbody></table>`, zoneId, zoneId+'-star', s.tableWidth, ts.tableClass, ts.headers);
+      }
+    } else {
+      const t = buildTableParts(zonePax, true, detected);
+      measureRowsIntoUnits(`<table class="${t.tableClass}"><thead><tr>${t.headers}</tr></thead><tbody>`, t.rows, `</tbody></table>`, zoneId, zoneId+'-single', s.tableWidth, t.tableClass, t.headers);
+    }
+  });
+
+  host.innerHTML = '';
+  return units;
+}
+
+/**
+ * Greedy pagination with zone-break forcing + simple orphan avoidance
+ * (keeps at least 2 trailing rows of the same table together).
+ */
+function computePages(units, budgetPx, avoidOrphans){
+  const pages = [[]];
+  let used = 0;
+  for(let i=0;i<units.length;i++){
+    const u = units[i];
+    const startsNewPageForced = u.forceBreak && pages[pages.length-1].length>0;
+    let fits = (used + u.height) <= budgetPx;
+
+    if(startsNewPageForced || !fits){
+      if(pages[pages.length-1].length===0){
+        // nothing fits on an empty page - place it anyway to avoid infinite loop
+      } else {
+        pages.push([]);
+        used = 0;
+      }
+    }
+    pages[pages.length-1].push(u);
+    used += u.height;
+
+    // Orphan avoidance: if this is a 'row' and it's the LAST unit on the page,
+    // but the next unit is also a row of the same table, and only 1 row total
+    // of that table would be alone on this page -> pull it to next page.
+    if(avoidOrphans && u.type==='row' && i+1<units.length){
+      const next = units[i+1];
+      const isPageFull = (used + (next ? next.height : 0)) > budgetPx || (next && next.forceBreak);
+      if(isPageFull && next && next.type==='row' && next.tableKey===u.tableKey){
+        const curPage = pages[pages.length-1];
+        const rowsOfThisTableOnPage = curPage.filter(x=>x.tableKey===u.tableKey).length;
+        if(rowsOfThisTableOnPage===1){
+          curPage.pop();
+          used -= u.height;
+          pages.push([u]);
+          used = u.height;
+        }
+      }
+    }
+  }
+  return pages.filter(p=>p.length>0);
+}
+
+/* ============================================================
+   REPORT BLOCK RENDERING
+   ============================================================ */
+let reportCounter = 0;
+const reports = {}; // id -> report state
+
+function defaultSettings(){
+  return { fontSize:9, summaryFontSize:9, tableWidth:100, pageBreakZones:true, avoidOrphans:true,
+           showUnassignedInPrint:false, aircraftType:'auto', marginTop:4, marginRight:4, marginBottom:4, marginLeft:4, printScale:100 };
+}
+
+function createReportState(id, isPrimary){
+  return { id, isPrimary, manifestText:'', parsed:{flightInfo:{},passengers:[]}, settings: defaultSettings(), filteredCount:0 };
+}
+
+function renderReportShell(id){
+  const r = reports[id];
+  const el = document.createElement('div');
+  el.className = 'report-block';
+  el.id = 'block-'+id;
+  el.innerHTML = `
+    <div class="report-block-header">
+      <div class="rb-title">📄 ${r.isPrimary ? 'Report 1 (synced with main page)' : 'Report ' + id}</div>
+      ${r.isPrimary ? '' : `<button onclick="removeReport('${id}')">Remove</button>`}
+    </div>
+    ${r.isPrimary ? '' : `
+    <div class="paste-area">
+      <textarea id="paste-${id}" placeholder="Paste passenger manifest here..."></textarea>
+      <div class="row-buttons"><button onclick="generateFromPaste('${id}')">Generate Report</button></div>
+    </div>`}
+    <div class="options-bar" id="opts-${id}"></div>
+    <div class="meta-line" id="meta-${id}">No data yet.</div>
+    <div class="page-stack" id="pages-${id}"><div class="empty-state">Paste a manifest and click Generate to see the print preview.</div></div>
+  `;
+  document.getElementById('reportsContainer').appendChild(el);
+  renderOptionsBar(id);
+}
+
+function renderOptionsBar(id){
+  const r = reports[id];
+  const s = r.settings;
+  const bar = document.getElementById('opts-'+id);
+  bar.innerHTML = `
+    <div class="opt">
+      <label>Font Size <span class="val">${s.fontSize}px</span></label>
+      <input type="range" min="7" max="14" step="1" value="${s.fontSize}" oninput="updateSetting('${id}','fontSize',this.value,true)">
+    </div>
+    <div class="opt">
+      <label>Summary Text <span class="val">${s.summaryFontSize}px</span></label>
+      <input type="range" min="9" max="14" step="1" value="${s.summaryFontSize}" oninput="updateSetting('${id}','summaryFontSize',this.value,true)">
+    </div>
+    <div class="opt">
+      <label>Table Width <span class="val">${s.tableWidth}%</span></label>
+      <input type="range" min="50" max="150" step="10" value="${s.tableWidth}" oninput="updateSetting('${id}','tableWidth',this.value,true)">
+    </div>
+    <div class="opt">
+      <label>Aircraft</label>
+      <select onchange="updateSetting('${id}','aircraftType',this.value,true)">
+        <option value="auto" ${s.aircraftType==='auto'?'selected':''}>Auto-detect</option>
+        <option value="737NG" ${s.aircraftType==='737NG'?'selected':''}>737NG</option>
+        <option value="737MAX" ${s.aircraftType==='737MAX'?'selected':''}>737MAX</option>
+        <option value="737NR" ${s.aircraftType==='737NR'?'selected':''}>737NR</option>
+        <option value="333" ${s.aircraftType==='333'?'selected':''}>A330-300</option>
+        <option value="332" ${s.aircraftType==='332'?'selected':''}>A330-200</option>
+        <option value="339" ${s.aircraftType==='339'?'selected':''}>A330-900</option>
+        <option value="359" ${s.aircraftType==='359'?'selected':''}>A350-900</option>
+        <option value="350" ${s.aircraftType==='350'?'selected':''}>A350-MAH</option>
+      </select>
+    </div>
+    <div class="opt opt-toggle">
+      <input type="checkbox" id="pbz-${id}" ${s.pageBreakZones?'checked':''} onchange="updateSetting('${id}','pageBreakZones',this.checked,true)">
+      <label for="pbz-${id}">Page Break Between Zones</label>
+    </div>
+    <div class="opt opt-toggle">
+      <input type="checkbox" id="orph-${id}" ${s.avoidOrphans?'checked':''} onchange="updateSetting('${id}','avoidOrphans',this.checked,true)">
+      <label for="orph-${id}">Avoid Orphan Rows</label>
+    </div>
+    <div class="opt opt-toggle">
+      <input type="checkbox" id="unas-${id}" ${s.showUnassignedInPrint?'checked':''} onchange="updateSetting('${id}','showUnassignedInPrint',this.checked,true)">
+      <label for="unas-${id}">Show Unassigned</label>
+    </div>
+  `;
+}
+
+function updateSetting(id, key, value, rerender){
+  const r = reports[id];
+  if(!r) return;
+  if(typeof r.settings[key]==='number' || ['fontSize','summaryFontSize','tableWidth','marginTop','marginRight','marginBottom','marginLeft','printScale'].includes(key)){
+    r.settings[key] = (typeof value==='boolean') ? value : parseFloat(value);
+  } else {
+    r.settings[key] = (value==='true') ? true : (value==='false') ? false : value;
+  }
+  renderOptionsBar(id);
+  if(rerender) renderReportContent(id);
+  if(r.isPrimary) broadcastToOpener({type:'settingsChanged', settings:r.settings});
+}
+
+function renderReportContent(id){
+  const r = reports[id];
+  const metaEl = document.getElementById('meta-'+id);
+  const pagesEl = document.getElementById('pages-'+id);
+  if(!r.manifestText || !r.manifestText.trim()){
+    pagesEl.innerHTML = '<div class="empty-state">Paste a manifest and click Generate to see the print preview.</div>';
+    metaEl.textContent = 'No data yet.';
+    return;
+  }
+  const units = buildFlow(r);
+  const s = r.settings;
+  const budgetPx = (MM_TO_PX * (PAGE_H_MM - s.marginTop - s.marginBottom)) / (s.printScale/100);
+  const pages = computePages(units, budgetPx, s.avoidOrphans);
+  r.pageCount = pages.length;
+
+  metaEl.innerHTML = `Flight ${r.parsed.flightInfo.flightNumber||'-'} | ${r.parsed.flightInfo.sector||'-'} | Aircraft: ${r.effAcft} (${r.effLayout==='port-starboard'?'Port/Starboard':'Single Column'}) | ${r.filteredCount} passengers flagged | <strong>${pages.length} page${pages.length!==1?'s':''}</strong>`;
+
+  pagesEl.innerHTML = '';
+  pages.forEach((pageUnits, idx)=>{
+    const pageDiv = document.createElement('div');
+    pageDiv.className = 'page';
+    pageDiv.style.padding = `${s.marginTop}mm ${s.marginRight}mm ${s.marginBottom}mm ${s.marginLeft}mm`;
+    pageDiv.style.boxSizing = 'border-box';
+    const inner = document.createElement('div');
+    inner.className = 'output-section';
+    inner.setAttribute('data-font-size', s.fontSize);
+    inner.setAttribute('data-table-width', s.tableWidth);
+    inner.style.transform = `scale(${s.printScale/100})`;
+    inner.style.transformOrigin = 'top left';
+    inner.style.width = (100/(s.printScale/100))+'%';
+
+    // Rebuild HTML for this page's units, re-wrapping consecutive rows into tables
+    let html = '';
+    let i = 0;
+    while(i < pageUnits.length){
+      const u = pageUnits[i];
+      if(u.type==='atomic'){ html += u.html; i++; continue; }
+      // consecutive rows of same tableKey -> wrap in a table with header
+      const tableKey = u.tableKey;
+      const rowsHtml = [];
+      let j = i;
+      while(j<pageUnits.length && pageUnits[j].type==='row' && pageUnits[j].tableKey===tableKey){
+        rowsHtml.push(pageUnits[j].html); j++;
+      }
+      const sample = r._lastTableMeta && r._lastTableMeta[tableKey];
+      const tableClass = (sample && sample.tableClass) || 'narrowbody-table';
+      const headers = (sample && sample.headers) || '<th>SEAT</th><th>TITLE</th><th>NAME</th><th>TIER</th><th>MEAL</th>';
+      html += `<table class="${tableClass}" style="width:${s.tableWidth}%"><thead><tr>${headers}</tr></thead><tbody>${rowsHtml.join('')}</tbody></table>`;
+      i = j;
+    }
+    inner.innerHTML = html;
+    pageDiv.appendChild(inner);
+    const pn = document.createElement('div');
+    pn.className = 'page-num';
+    pn.textContent = `Page ${idx+1} of ${pages.length}`;
+    pageDiv.appendChild(pn);
+    pagesEl.appendChild(pageDiv);
+  });
+
+  updateTotalPagesLabel();
+}
+
+function updateTotalPagesLabel(){
+  const total = Object.values(reports).reduce((sum,r)=> sum + (r.pageCount||0), 0);
+  document.getElementById('totalPagesLabel').textContent = total ? `(${total} total pages across ${Object.keys(reports).length} report${Object.keys(reports).length!==1?'s':''})` : '';
+}
+
+function addReport(){
+  reportCounter++;
+  const id = 'r'+reportCounter;
+  reports[id] = createReportState(id, false);
+  renderReportShell(id);
+}
+
+function removeReport(id){
+  delete reports[id];
+  const el = document.getElementById('block-'+id);
+  if(el) el.remove();
+  updateTotalPagesLabel();
+}
+
+function generateFromPaste(id){
+  const text = document.getElementById('paste-'+id).value;
+  if(!text.trim()){ showToast('Please paste a manifest first.'); return; }
+  const r = reports[id];
+  r.manifestText = text;
+  r.parsed = parseManifest(text);
+  renderReportContent(id);
+}
+
+function showToast(msg){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
+
+/* ============================================================
+   MERGE (continuous page numbering)
+   ============================================================ */
+let merged = false;
+function mergeReports(){
+  const ids = Object.keys(reports);
+  let counter = 0;
+  let total = 0;
+  ids.forEach(id=>{ total += (reports[id].pageCount||0); });
+  ids.forEach(id=>{
+    const pagesEl = document.getElementById('pages-'+id);
+    const pageDivs = pagesEl.querySelectorAll('.page');
+    pageDivs.forEach(p=>{
+      counter++;
+      const pn = p.querySelector('.page-num');
+      if(pn) pn.textContent = `Page ${counter} of ${total}`;
+    });
+  });
+  merged = true;
+  document.getElementById('mergeStatus').textContent = `✓ Merged — ${total} pages numbered continuously across ${ids.length} report(s). Ready to print.`;
+  showToast('Reports merged for printing');
+}
+
+/* ============================================================
+   SYNC WITH OPENER (main bpm-pro page) - Report 1 only
+   ============================================================ */
+const PRIMARY_ID = 'r1';
+reports[PRIMARY_ID] = createReportState(PRIMARY_ID, true);
+renderReportShell(PRIMARY_ID);
+
+function applyIncomingPrimaryData(data){
+  const r = reports[PRIMARY_ID];
+  if(data.manifestText !== undefined){ r.manifestText = data.manifestText; r.parsed = parseManifest(data.manifestText); }
+  if(data.settings){ Object.assign(r.settings, data.settings); renderOptionsBar(PRIMARY_ID); }
+  renderReportContent(PRIMARY_ID);
+}
+
+function broadcastToOpener(msg){
+  try{ if(window.opener && !window.opener.closed) window.opener.postMessage(Object.assign({source:'reportPreview'}, msg), '*'); }catch(e){}
+}
+
+window.addEventListener('message', function(evt){
+  if(!evt.data || evt.data.source !== 'bpmPro') return;
+  if(evt.data.type === 'primaryData'){
+    applyIncomingPrimaryData(evt.data);
+  }
+});
+
+window.addEventListener('DOMContentLoaded', function(){
+  broadcastToOpener({type:'ready'});
+});
+</script>
+</body>
+</html>

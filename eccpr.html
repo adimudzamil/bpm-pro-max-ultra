@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>e-CCPR Autofill + CPA (Per‑Category Copy)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📧</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📧</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117; --surface:#161b22; --surface2:#1c2330; --border:#30363d;
+    --teal:#00c9a7; --teal-dim:#00c9a718; --teal-glow:#00c9a730;
+    --orange:#ff8c42; --orange-dim:#ff8c4215;
+    --text:#e6edf3; --muted:#7d8590; --danger:#f85149; --success:#3fb950;
+    --male:#58a6ff; --male-dim:#58a6ff18;
+    --female:#f778ba; --female-dim:#f778ba18;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { background:var(--bg); color:var(--text); font-family:'Sora',sans-serif; min-height:100vh; }
+
+  .view { display:none !important; min-height:100vh; }
+  .view.active { display:block !important; }
+  #view-paste { flex-direction:column; padding:36px 20px 48px; }
+  #view-paste.active { display:flex !important; }
+
+  /* paste view */
+  .logo { text-align:center; margin-bottom:28px; }
+  .logo-badge { display:inline-block; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.18em; color:var(--teal); border:1px solid var(--teal); border-radius:20px; padding:3px 14px; margin-bottom:12px; background:var(--teal-dim); }
+  h1 { font-size:30px; font-weight:800; background:linear-gradient(135deg,#fff 20%,var(--teal) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1.2; margin-bottom:8px; }
+  .logo p { color:var(--muted); font-size:13px; line-height:1.6; }
+  .paste-label { font-size:11px; font-family:'DM Mono',monospace; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; margin-bottom:8px; display:block; }
+  textarea { width:100%; background:#0a0e14; border:1px solid var(--border); border-radius:12px; color:var(--text); font-family:'DM Mono',monospace; font-size:12px; padding:14px; resize:none; outline:none; line-height:1.75; -webkit-appearance:none; transition:border-color 0.2s; }
+  textarea:focus { border-color:var(--teal); }
+  textarea::placeholder { color:#2a3040; }
+  #roster-input { height:200px; }
+  .parse-btn { margin-top:14px; width:100%; background:linear-gradient(135deg,var(--teal),#00a88e); color:#0d1117; border:none; border-radius:12px; font-family:'Sora',sans-serif; font-weight:800; font-size:16px; padding:16px; cursor:pointer; box-shadow:0 4px 24px var(--teal-glow); transition:transform 0.1s,opacity 0.1s; }
+  .parse-btn:active { transform:scale(0.98); opacity:0.88; }
+  .status-msg { font-size:12px; font-family:'DM Mono',monospace; padding:10px 14px; border-radius:8px; margin-top:12px; display:none; line-height:1.5; }
+  .status-msg.err { background:#f8514912; border:1px solid #f8514940; color:var(--danger); display:block; }
+  .status-msg.ok  { background:#3fb95012; border:1px solid #3fb95040; color:var(--success); display:block; }
+
+  /* nav tabs */
+  .nav-tabs { display:flex; margin-top:20px; background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  .nav-tab { flex:1; padding:11px 8px; font-size:12px; font-weight:600; font-family:'Sora',sans-serif; color:var(--muted); background:transparent; border:none; cursor:pointer; transition:all 0.15s; text-align:center; }
+  .nav-tab.active { background:var(--teal-dim); color:var(--teal); }
+  .tab-pane { display:none; margin-top:16px; }
+  .tab-pane.active { display:block; }
+
+  .settings-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; margin-top:4px; }
+  .settings-title { font-size:13px; font-weight:700; color:var(--text); margin-bottom:4px; }
+  .settings-sub { font-size:12px; color:var(--muted); line-height:1.5; margin-bottom:14px; }
+  .source-toggle { display:flex; gap:8px; margin-bottom:14px; }
+  .source-btn { flex:1; padding:10px 8px; border-radius:10px; border:1px solid var(--border); background:var(--bg); font-family:'Sora',sans-serif; font-weight:700; font-size:12px; color:var(--muted); cursor:pointer; text-align:center; transition:all 0.15s; }
+  .source-btn.active { background:var(--teal-dim); border-color:var(--teal); color:var(--teal); }
+  .url-row { display:flex; flex-direction:column; gap:6px; }
+  .url-label { font-size:11px; font-family:'DM Mono',monospace; color:var(--muted); letter-spacing:0.06em; }
+  .url-input { width:100%; background:#0a0e14; border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:'DM Mono',monospace; font-size:11px; padding:9px 12px; outline:none; transition:border-color 0.2s; }
+  .url-input:focus { border-color:var(--teal); }
+  .save-urls-btn { margin-top:10px; width:100%; padding:10px; background:var(--teal-dim); border:1px solid var(--teal); color:var(--teal); border-radius:8px; font-family:'Sora',sans-serif; font-weight:700; font-size:13px; cursor:pointer; }
+  .save-urls-btn:active { background:var(--teal); color:#0d1117; }
+
+  .feedback-editor-hint { font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:14px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 14px; }
+  .feedback-editor-hint strong { color:var(--orange); }
+  .ph-tag { display:inline-block; background:var(--surface2); border:1px solid var(--border); border-radius:4px; font-family:'DM Mono',monospace; font-size:10px; color:var(--orange); padding:1px 6px; margin:2px; }
+  .gender-tab-row { display:flex; gap:8px; margin-bottom:12px; }
+  .gender-tab-btn { flex:1; padding:9px; border-radius:8px; border:1px solid var(--border); background:var(--bg); font-family:'Sora',sans-serif; font-weight:700; font-size:12px; color:var(--muted); cursor:pointer; text-align:center; transition:all 0.15s; }
+  .gender-tab-btn.male.active  { background:var(--male-dim);   border-color:var(--male);   color:var(--male); }
+  .gender-tab-btn.female.active{ background:var(--female-dim); border-color:var(--female); color:var(--female); }
+  .feedback-list { display:flex; flex-direction:column; gap:10px; }
+  .feedback-item { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  .feedback-item-header { display:flex; align-items:center; justify-content:space-between; padding:9px 12px; border-bottom:1px solid var(--border); background:var(--surface2); }
+  .feedback-item-num { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); }
+  .feedback-item textarea { height:90px; border:none; border-radius:0; font-size:12px; background:var(--surface); padding:10px 12px; }
+  .feedback-item textarea:focus { border-color:transparent; }
+  .add-feedback-btn { width:100%; margin-top:12px; padding:12px; background:transparent; border:1px dashed var(--border); border-radius:10px; color:var(--muted); font-family:'Sora',sans-serif; font-size:13px; cursor:pointer; }
+  .add-feedback-btn:active { border-color:var(--teal); color:var(--teal); }
+
+  .home-hint { background:var(--surface); border:1px solid #ff8c4228; border-radius:10px; padding:12px 14px; margin-top:4px; display:flex; gap:10px; align-items:flex-start; }
+  .home-hint-icon { font-size:20px; flex-shrink:0; }
+  .home-hint-text { font-size:12px; color:var(--muted); line-height:1.6; }
+  .home-hint-text strong { color:var(--orange); }
+  .help-hint { background:var(--surface); border:1px solid #00c9a728; border-radius:10px; padding:12px 14px; margin-top:8px; display:flex; gap:10px; align-items:flex-start; }
+  .help-hint-text { font-size:12px; color:var(--muted); line-height:1.6; }
+  .help-hint-text strong { color:var(--teal); }
+
+  /* CREW VIEW */
+  #view-crew { background:var(--bg); padding-bottom:60px; }
+  .top-bar { display:flex; align-items:center; gap:12px; padding:14px 16px; background:var(--surface); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:20; }
+  .back-btn { background:var(--surface2); border:1px solid var(--border); color:var(--text); border-radius:8px; font-family:'Sora',sans-serif; font-size:13px; font-weight:600; padding:8px 14px; cursor:pointer; white-space:nowrap; }
+  .back-btn:active { opacity:0.7; }
+  .top-bar-info { flex:1; min-width:0; }
+  .top-bar-title { font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .top-bar-sub { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; margin-top:1px; }
+  .section-head { display:flex; align-items:center; gap:8px; padding:14px 16px 8px; }
+  .section-head-title { font-size:11px; font-family:'DM Mono',monospace; letter-spacing:0.12em; color:var(--muted); text-transform:uppercase; }
+  .section-head-count { font-size:11px; font-family:'DM Mono',monospace; color:var(--teal); background:var(--teal-dim); border:1px solid var(--teal); border-radius:10px; padding:1px 8px; }
+  .crew-scroll { padding:0 16px 20px; }
+
+  .crew-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; margin-bottom:14px; overflow:hidden; }
+  .crew-header { display:flex; align-items:center; gap:10px; padding:13px 16px 11px; border-bottom:1px solid var(--border); }
+  .crew-idx { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:2px 8px; flex-shrink:0; }
+  .crew-name-display { font-size:14px; font-weight:700; color:var(--text); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  .copy-row { display:flex; align-items:center; padding:11px 16px; border-bottom:1px solid var(--border); cursor:pointer; -webkit-user-select:none; user-select:none; transition:background 0.1s; }
+  .copy-row:active, .copy-row.flash { background:#00c9a712; }
+  .copy-row-left { flex:1; min-width:0; }
+  .copy-row-label { font-size:10px; font-family:'DM Mono',monospace; letter-spacing:0.08em; color:var(--muted); text-transform:uppercase; margin-bottom:3px; }
+  .copy-row-val { font-size:14px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:'DM Mono',monospace; }
+  .copy-row-val.name-val { font-family:'Sora',sans-serif; font-size:13px; }
+  .copy-pill { flex-shrink:0; margin-left:12px; background:var(--teal-dim); border:1px solid var(--teal); color:var(--teal); border-radius:20px; font-family:'DM Mono',monospace; font-size:11px; padding:5px 12px; white-space:nowrap; }
+  .copy-row.flash .copy-pill { background:var(--teal); color:#0d1117; }
+  .copy-row.flash .copy-row-label { color:var(--teal); }
+
+  .flight-section { border-bottom:1px solid var(--border); }
+  .flight-section-label { font-size:10px; font-family:'DM Mono',monospace; letter-spacing:0.08em; color:var(--muted); text-transform:uppercase; padding:10px 16px 4px; }
+  .flight-chips-row { display:flex; gap:8px; padding:4px 16px 10px; flex-wrap:wrap; }
+  .flight-chip { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:8px 14px; font-family:'DM Mono',monospace; font-size:13px; font-weight:600; color:var(--text); cursor:pointer; transition:background 0.12s,border-color 0.12s,color 0.12s; }
+  .flight-chip:active, .flight-chip.flash { background:var(--teal-dim); border-color:var(--teal); color:var(--teal); }
+
+  .gender-section { border-bottom:1px solid var(--border); padding:12px 16px; }
+  .gender-label { font-size:10px; font-family:'DM Mono',monospace; letter-spacing:0.08em; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+  .gender-toggle { display:flex; gap:8px; }
+  .gender-btn { flex:1; padding:10px 8px; border-radius:10px; border:1px solid var(--border); background:var(--bg); font-family:'Sora',sans-serif; font-weight:700; font-size:13px; color:var(--muted); cursor:pointer; text-align:center; transition:all 0.15s; }
+  .gender-btn.male.active  { background:var(--male-dim);   border-color:var(--male);   color:var(--male); }
+  .gender-btn.female.active{ background:var(--female-dim); border-color:var(--female); color:var(--female); }
+
+  .feedback-section { padding:12px 16px; border-bottom:1px solid var(--border); display:none; }
+  .feedback-section.show { display:block; }
+  .feedback-top-row { display:flex; align-items:center; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
+  .feedback-title { font-size:10px; font-family:'DM Mono',monospace; letter-spacing:0.08em; color:var(--muted); text-transform:uppercase; flex:1; }
+  .source-mini { display:flex; gap:4px; }
+  .source-mini-btn { font-size:10px; font-family:'DM Mono',monospace; padding:4px 9px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--muted); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .source-mini-btn.active { background:var(--teal-dim); border-color:var(--teal); color:var(--teal); }
+  .source-mini-btn.online.active { background:#58a6ff18; border-color:var(--male); color:var(--male); }
+  .refresh-btn { font-size:11px; font-family:'DM Mono',monospace; color:var(--teal); background:var(--teal-dim); border:1px solid var(--teal); border-radius:6px; padding:4px 10px; cursor:pointer; white-space:nowrap; }
+  .feedback-source-label { font-size:10px; font-family:'DM Mono',monospace; color:var(--muted); margin-bottom:6px; }
+  .feedback-source-label.online { color:var(--male); }
+  .feedback-box { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px 14px; font-size:13px; color:var(--text); line-height:1.7; margin-bottom:10px; }
+  .feedback-loading { color:var(--muted); font-family:'DM Mono',monospace; font-size:12px; font-style:italic; }
+  .copy-feedback-btn { width:100%; padding:11px; background:var(--teal-dim); border:1px solid var(--teal); color:var(--teal); border-radius:10px; font-family:'Sora',sans-serif; font-weight:700; font-size:13px; cursor:pointer; transition:background 0.15s,color 0.15s; }
+  .copy-feedback-btn:active { background:var(--teal); color:#0d1117; }
+  .copy-feedback-btn.copied { background:var(--success); border-color:var(--success); color:#0d1117; }
+
+  /* CPA styles (per‑category copy) */
+  .cpa-section { padding:12px 16px; border-top:1px solid var(--border); background:var(--surface2); margin-top:4px; }
+  .cpa-button-row { margin-bottom:12px; }
+  .cpa-btn { background:var(--orange-dim); border:1px solid var(--orange); color:var(--orange); border-radius:10px; padding:10px 16px; font-family:'Sora',sans-serif; font-weight:800; font-size:13px; cursor:pointer; transition:all 0.15s; width:100%; }
+  .cpa-btn:active { background:var(--orange); color:#0d1117; }
+  .cpa-output { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:14px; margin-top:8px; display:none; }
+  .cpa-output.show { display:block; }
+  .cpa-category { margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+  .cpa-category:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+  .cpa-category-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; flex-wrap:wrap; gap:8px; }
+  .cpa-category-title { font-size:13px; font-weight:800; font-family:'DM Mono',monospace; letter-spacing:0.05em; }
+  .cpa-category-title.appearance { color:var(--teal); }
+  .cpa-category-title.knowledge { color:var(--orange); }
+  .cpa-category-title.efficiency { color:var(--male); }
+  .cpa-category-title.communication { color:var(--female); }
+  .cpa-category-title.overall { color:var(--success); }
+  .cpa-copy-single { background:var(--teal-dim); border:1px solid var(--teal); color:var(--teal); border-radius:6px; font-size:10px; font-family:'DM Mono',monospace; padding:4px 10px; cursor:pointer; transition:0.1s; }
+  .cpa-copy-single:active { background:var(--teal); color:#0d1117; }
+  .cpa-category-text { font-size:12px; line-height:1.6; color:var(--text); margin-top:4px; white-space:pre-wrap; }
+  .cpa-warning { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; margin-top:8px; }
+
+  .open-form-strip { display:flex; align-items:center; justify-content:center; gap:8px; padding:13px 16px; background:linear-gradient(135deg,#1a2f2a,#1a2720); border-top:1px solid #00c9a725; text-decoration:none; }
+  .open-form-strip span { font-size:13px; font-weight:700; color:var(--teal); }
+
+  .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(16px); background:#161b22ee; border:1px solid var(--success); color:var(--success); font-family:'DM Mono',monospace; font-size:12px; padding:10px 20px; border-radius:20px; opacity:0; transition:opacity 0.2s,transform 0.2s; pointer-events:none; z-index:100; white-space:nowrap; backdrop-filter:blur(8px); }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Local feedback embedded (same as before) -->
+<div id="local-male-feedback" style="display:none"><f>[RANK] [FULLNAME] demonstrated an outstanding level of professionalism throughout the flight. His communication skills were excellent, he engaged with passengers in a warm and confident manner, ensuring all requests were attended to promptly. He showed strong teamwork by consistently supporting his fellow crew members during service, displaying great flexibility when the cabin workload increased. His grooming was impeccable and his overall conduct reflected the highest standards expected of our cabin crew. A truly commendable performance.</f>
+<f>It was a pleasure observing [RANK] [FULLNAME] in action during today's flight. He exhibited exceptional situational awareness and a proactive approach to passenger care, anticipating needs before they were verbalised. His knowledge of SOPs was clearly evident in how smoothly he managed both the service and safety procedures. [NAME] maintained a calm and composed demeanour throughout, earning positive remarks from several passengers. His dedication and positive attitude make him a valuable asset to the cabin crew team.</f>
+<f>[RANK] [FULLNAME] performed admirably on this flight, showcasing strong leadership qualities despite operating in a supporting role. He took initiative during the meal service, ensuring efficiency without compromising the quality of passenger interaction. His time management was impressive, tasks were completed methodically and within schedule. [NAME] demonstrated respect for his colleagues' viewpoints and contributed constructively during the pre-flight briefing. His professional grooming and courteous conduct reinforced a positive image of the airline throughout the journey.</f>
+<f>Throughout the flight, [RANK] [FULLNAME] displayed a commendable level of dedication and crew spirit. His ability to solve minor challenges quickly and without disruption highlighted his problem-solving capability and calm under pressure. He communicated effectively with both passengers and crew, ensuring smooth coordination during service. [NAME]'s grooming was well-maintained and his uniform presentation was spotless. He approached every task with a positive attitude, making him a reliable and dependable member of the cabin crew.</f>
+<f>[RANK] [FULLNAME] showed exceptional commitment to passenger safety and comfort on this flight. His conduct during the safety demonstration was precise and professional, and he maintained vigilance throughout all phases of the flight. During service he was attentive and personable, managing even demanding passengers with patience and grace. [NAME]'s teamwork and willingness to go beyond his assigned duties demonstrated a strong sense of responsibility. His performance today was a fine example of the standards we strive to uphold.</f>
+<f>[RANK] [FULLNAME] carried out his duties with remarkable efficiency and a consistently positive attitude. His interpersonal skills were on full display during the cabin service — he engaged passengers with genuine warmth and attentiveness, ensuring their comfort was prioritised at all times. He demonstrated good decision-making during a brief disruption mid-flight, handling the situation professionally and keeping the team well informed. [NAME]'s smart appearance, punctuality and cooperative nature made him a pleasure to work alongside on this flight.</f>
+<f>[RANK] [FULLNAME] continues to impress with his unwavering dedication and team-first mentality. He consistently goes above and beyond, assisting colleagues without hesitation and ensuring the cabin runs like clockwork. His ability to remain calm under pressure and handle unexpected situations with grace is a testament to his experience and professionalism. [NAME]'s positive energy is infectious, lifting the entire crew's morale. He is exactly the kind of crew member we must retain to maintain our high service standards.</f>
+<f>Observing [RANK] [FULLNAME] on this flight reinforced what an asset he is to the airline. He possesses a rare combination of technical knowledge and genuine empathy for passengers. Whether it's calming a nervous flyer or helping a new joiner with a tricky service sequence, he does it with a smile and total competence. His grooming and adherence to procedures are flawless. [NAME] has high potential and should be considered for future leadership roles.</f>
+<f>[RANK] [FULLNAME] handled a challenging flight with absolute professionalism. The cabin was full, and the service demands were high, yet he never faltered. He prioritised tasks efficiently, supported his teammates during peak moments, and ensured every passenger felt attended to. His proactive nature means he often spots issues before they arise. [NAME]'s dedication is evident in everything he does, and I strongly recommend that management recognise his contributions and secure his long-term retention.</f>
+<f>It is rare to see a crew member so consistently hardworking and positive as [RANK] [FULLNAME]. He approached every task, from the safety demo to the meal service, with the same high level of energy and precision. His teamwork is exemplary — he is always the first to offer help when a colleague is overwhelmed. Passengers frequently complimented his warm manner. [NAME] is a true professional, and losing him would be a significant loss to our cabin crew team.</f>
+<f>Throughout the flight, [RANK] [FULLNAME] demonstrated why he is considered a top performer. His situational awareness allowed him to anticipate passenger needs and address them swiftly, reducing wait times and enhancing the overall experience. He also took time to mentor a junior crew member, explaining procedures patiently and boosting their confidence. [NAME] embodies the values we look for in cabin crew, and it is vital that we create a pathway to retain him for years to come.</f>
+<f>[RANK] [FULLNAME] delivered a standout performance on this sector. His communication skills are exceptional — he engages passengers in a way that feels natural and caring, never scripted. He also coordinated seamlessly with the galley team, ensuring service flowed smoothly even during turbulence. [NAME]'s grooming and deportment were immaculate throughout. He is a team player who elevates everyone around him, and retaining him should be a priority for crew planning.</f>
+<f>I was particularly impressed by [RANK] [FULLNAME]'s resilience and positive mindset during this demanding rotation. Despite a late departure and some tired passengers, he maintained a cheerful demeanour and worked tirelessly to resolve any issues. His ability to defuse tension with a kind word or a smile is a skill that cannot be taught. [NAME] is a valuable member of our team, and I hope we can offer him opportunities that encourage him to stay with us.</f>
+<f>[RANK] [FULLNAME] is the kind of crew member every leading steward hopes to have on board. He is proactive, reliable, and always willing to go the extra mile. During the flight, he took ownership of his zone, ensuring every passenger was comfortable and well looked after. He also stepped in to help with a medical situation calmly and professionally. [NAME]'s potential is clear, and we must ensure he feels valued and retained within the company.</f>
+<f>From the pre-flight briefing to the final landing, [RANK] [FULLNAME] displayed a level of dedication that sets him apart. He contributed valuable ideas during the briefing and followed through with flawless execution. His teamwork was particularly evident during the second service when he voluntarily helped clear trays from another zone to reduce wait times. [NAME] is a hardworking individual with a bright future, and I strongly advocate for his retention.</f>
+<f>[RANK] [FULLNAME] handled a full flight with a diverse range of passengers, including several unaccompanied minors and a passenger with reduced mobility, with exceptional care and attention. He coordinated with the cabin team to ensure everyone's needs were met without disruption to the service flow. His patience and empathy were commendable. [NAME] consistently demonstrates the qualities we value most: hard work, teamwork, and genuine passenger focus. He is definitely someone we should retain.</f>
+<f>It was a pleasure to see [RANK] [FULLNAME] in his element today. He managed a complex meal service with multiple special meals efficiently, double-checking every detail to avoid mistakes. When a colleague dropped a tray, he was immediately there to help clean up and reassure the passenger. [NAME]'s positive attitude and resilience are exactly what we need in our crew. He is a keeper, and I hope management recognises his worth and ensures he stays.</f>
+<f>[RANK] [FULLNAME] consistently exceeds expectations. On this flight, he identified a potential safety hazard (an overhead bin that wasn't properly latched) and rectified it immediately, demonstrating his vigilance. He also engaged with passengers in a way that made them feel genuinely welcomed. His grooming and uniform presentation were excellent throughout. [NAME] is a hardworking, team-oriented crew member whose potential must be nurtured and retained for the benefit of the whole airline.</f>
+<f>I want to highlight the outstanding contribution of [RANK] [FULLNAME] on this flight. He took the lead during a particularly busy beverage service, ensuring that every passenger was served promptly while maintaining a friendly manner. He also assisted a new crew member with positioning the trolley correctly, preventing a potential injury. [NAME]'s dedication to both passenger safety and crew welfare is remarkable. He is exactly the type of crew member we should fight to keep.</f>
+<f>[RANK] [FULLNAME] continues to set an example for his peers. His work ethic is second to none — he is always moving, always looking for the next task, yet never appears rushed or stressed. He also takes time to share his knowledge with less experienced crew, patiently explaining the rationale behind certain procedures. [NAME] is a natural leader in the making. We must retain him to ensure our future leadership pipeline remains strong.</f>
+<f>Observing [RANK] [FULLNAME] over multiple flights, I am consistently impressed by his consistency and passion for the job. He treats every flight, every passenger, and every colleague with the same level of respect and attention. His ability to stay positive and motivated, even during long rotations, is a testament to his character. [NAME] is a valuable asset, and I strongly recommend that we take steps to ensure his long-term retention within the company.</f></div>
+
+<div id="local-female-feedback" style="display:none"><f>[RANK] [FULLNAME] delivered an exceptional standard of service throughout the flight. Her warm and approachable manner instantly put passengers at ease, and her communication skills, both with guests and fellow crew — were outstanding. She demonstrated excellent knowledge of the service procedures and handled all tasks with confidence and poise. [NAME]'s grooming was immaculate, and her cheerful yet professional demeanour throughout the flight reflected tremendous credit on both herself and the airline. A truly impressive performance.</f>
+<f>It was a genuine pleasure to observe [RANK] [FULLNAME] at work during today's flight. She showed a natural ability to connect with passengers, responding to their needs with empathy and efficiency. Her teamwork was exemplary, she proactively assisted colleagues during peak service periods without being asked, displaying the kind of selfless crew spirit that elevates the entire cabin environment. [NAME]'s attention to detail, from her presentation to her service delivery, was consistently of the highest standard.</f>
+<f>[RANK] [FULLNAME] demonstrated commendable professionalism and composure throughout the flight. Her time management during the service was impressive, and she ensured all passengers in her zone received timely and courteous attention. She handled a minor passenger concern with great sensitivity and problem-solving ability, resolving the situation calmly and effectively. [NAME]'s grooming and uniform presentation were flawless, and her positive energy was clearly felt across the cabin. She is undoubtedly a strong representative of our crew standards.</f>
+<f>Throughout this flight, [RANK] [FULLNAME] exemplified the qualities of an outstanding cabin crew member. Her situational awareness and proactive approach to passenger care were particularly noteworthy, she anticipated needs and acted upon them before passengers needed to ask. Her knowledge of SOPs was thorough and evident in her precise execution of both service and safety duties. [NAME] engaged respectfully with all colleagues and contributed a calm, uplifting presence to the team. Her dedication is sincerely commendable.</f>
+<f>[RANK] [FULLNAME] performed with great distinction on this flight, consistently going above and beyond the requirements of her role. Her leadership qualities were evident as she guided junior crew with patience and clear communication during the service sequence. She remained composed and focused throughout, managing the cabin with a quiet confidence that passengers clearly responded to positively. [NAME]'s impeccable grooming, cheerful attitude and thorough knowledge of procedures make her an excellent role model within the cabin crew team.</f>
+<f>[RANK] [FULLNAME] showed an impressive blend of warmth and professionalism from boarding through to arrival. Her passenger interactions were genuine and attentive, and she took personal ownership of ensuring every guest in her zone felt valued and well cared for. She coordinated seamlessly with fellow crew members, contributing to a highly efficient and pleasant cabin environment. [NAME]'s neat appearance and positive conduct throughout the entire flight were a credit to her personal standards and to the airline as a whole.</f>
+<f>[RANK] [FULLNAME] is a shining example of the dedication and professionalism we value in our crew. She handled a full flight with grace, ensuring every passenger felt individually cared for. Her teamwork was outstanding — she constantly checked in with colleagues, offering help with trays, drinks, and even tidying the galley without being asked. [NAME]'s positive attitude and resilience make her a joy to work with. She is exactly the kind of crew member we must retain to maintain our high standards.</f>
+<f>Observing [RANK] [FULLNAME] on this flight reaffirmed her status as a top performer. She has an innate ability to sense when a passenger is uncomfortable or needs assistance, often acting before they even speak. Her communication with the crew is clear and supportive, fostering a harmonious team environment. [NAME] also took the initiative to brief a new joiner on the specifics of our service, showing natural leadership. She is a valuable asset, and retaining her should be a priority.</f>
+<f>[RANK] [FULLNAME] demonstrated exceptional resilience during a challenging flight with significant turbulence and a demanding passenger load. She remained calm and focused, ensuring all safety protocols were followed while continuing to provide warm, attentive service. Her ability to multitask without compromising quality is remarkable. [NAME] is a hardworking individual who consistently goes above and beyond. I strongly believe she has high potential and should be retained and developed further.</f>
+<f>It was a pleasure to watch [RANK] [FULLNAME] interact with passengers today. Her genuine warmth and empathy shone through in every conversation, and several passengers specifically complimented her service. She also proved to be a great team player, volunteering to cover a colleague's section during a quick break so they could rest. [NAME]'s dedication to both passengers and crew is exactly what we look for. She is definitely someone we should keep in the team.</f>
+<f>[RANK] [FULLNAME] handled a complex service with multiple special meals and a tight turnaround with absolute professionalism. She double-checked every detail, ensuring no passenger received the wrong meal, and managed the time perfectly. Her teamwork was evident as she coordinated with the galley and assisted other zones once her own tasks were complete. [NAME] is a meticulous, hardworking crew member whose potential must be nurtured. Retaining her will benefit the entire cabin crew department.</f>
+<f>Throughout the flight, [RANK] [FULLNAME] displayed a level of commitment that is truly commendable. She was constantly on the move, yet always had a smile and a kind word for passengers and colleagues alike. During a medical situation, she assisted calmly and efficiently, following all procedures while reassuring the affected passenger. [NAME]'s ability to remain composed under pressure is a sign of her maturity and professionalism. She is an asset we cannot afford to lose.</f>
+<f>[RANK] [FULLNAME] continues to impress with her proactive approach and team spirit. She noticed that a fellow crew member was feeling unwell and quietly took over some of their duties, ensuring the service remained seamless and the colleague could rest. Her empathy extends to passengers as well — she spent extra time with an anxious flyer, helping them feel at ease. [NAME] embodies the values of our airline, and retaining her should be a key focus for management.</f>
+<f>I was particularly struck by [RANK] [FULLNAME]'s ability to lead by example. She handled a difficult passenger situation with patience and diplomacy, de-escalating the issue without any drama. Her colleagues look up to her, and she consistently encourages a positive, collaborative atmosphere. [NAME]'s grooming and presentation are always impeccable, reflecting her pride in the role. She has significant potential and should be retained to inspire future generations of crew.</f>
+<f>[RANK] [FULLNAME] delivered an outstanding performance on this flight. Her attention to detail was evident in every aspect, from the way she set up her trolley to how she engaged with each passenger. She also took the time to share tips with a junior crew member, boosting their confidence. [NAME] is a dedicated professional who consistently puts the team and passengers first. I strongly recommend that we take steps to ensure her long-term retention within the company.</f>
+<f>Observing [RANK] [FULLNAME] over multiple flights has shown me how consistently excellent she is. She approaches every task with the same high energy and precision, never cutting corners. Her ability to remain positive and motivate those around her is a rare gift. [NAME] also has a keen eye for safety, spotting a potential hazard and reporting it immediately. She is a valuable crew member who deserves recognition and retention opportunities.</f>
+<f>[RANK] [FULLNAME] handled a very busy flight with remarkable efficiency and a calm demeanour. She managed her zone flawlessly, ensuring all passengers were served promptly and with a smile. When a colleague struggled with a difficult passenger, she stepped in and resolved the situation with grace. [NAME]'s teamwork and problem-solving skills are exactly what we need in our cabin crew. She has high potential, and I hope we can retain her for many years.</f>
+<f>It is rare to find a crew member as dedicated and hardworking as [RANK] [FULLNAME]. She arrived early for the briefing, well-prepared and ready to contribute. Throughout the flight, she anticipated needs and acted on them, reducing wait times and enhancing the passenger experience. Her colleagues appreciate her willingness to help, and her positive energy lifts the whole team. [NAME] is a true professional, and losing her would be a significant loss.</f>
+<f>[RANK] [FULLNAME] demonstrated exceptional leadership qualities on this flight. She naturally took charge during a minor service disruption, coordinating with the galley and keeping everyone informed. Her communication is clear and supportive, and she always makes time to check in with newer crew members. [NAME]'s passion for the job is evident in everything she does. She is exactly the kind of crew member we should retain and promote.</f>
+<f>Throughout the flight, [RANK] [FULLNAME] maintained an impeccable standard of service and grooming. She handled a passenger with specific dietary requirements with great care, ensuring they received the correct meal and felt valued. She also helped a colleague with a difficult trolley manoeuvre, preventing a potential injury. [NAME] is a team player who consistently puts safety and service first. I strongly advocate for her retention within the airline.</f>
+<f>[RANK] [FULLNAME] is a credit to the cabin crew team. Her work ethic is second to none — she is always busy, always looking for the next way to help, yet she never appears rushed or stressed. She engages with passengers in a way that feels genuine and caring, earning praise from many. [NAME] has the potential to become a future leader, and we must ensure she feels valued and retained. She is a true asset.</f></div>
+
+<!-- VIEW 1: PASTE -->
+<div class="view active" id="view-paste">
+  <div class="logo"><div class="logo-badge">✈ e-CCPR TOOL</div><h1>e-CCPR Autofill + CPA</h1><p>Paste roster — tap any field to copy.</p></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('tab-roster',this)">📋 Roster</button>
+    <button class="nav-tab" onclick="switchTab('tab-settings',this)">⚙️ Settings</button>
+    <button class="nav-tab" onclick="switchTab('tab-local-fb',this)">✏️ Local FB</button>
+    <button class="nav-tab" onclick="switchTab('tab-help',this)">ℹ️ Help</button>
+  </div>
+  <div class="tab-pane active" id="tab-roster"><br><label class="paste-label">Paste pairing text</label><textarea id="roster-input" placeholder="Paste your full pairing text here"></textarea><button class="parse-btn" onclick="parseRoster()">⚡ Parse Roster</button><div class="status-msg" id="parse-status"></div></div>
+  <div class="tab-pane" id="tab-settings"><br><div class="settings-card"><div class="settings-title">Feedback Source</div><div class="settings-sub">Choose where feedback templates are loaded from.</div><div class="source-toggle"><button class="source-btn active" id="default-local-btn" onclick="setDefaultSource('local')">📱 Local</button><button class="source-btn" id="default-online-btn" onclick="setDefaultSource('online')">🌐 Online</button></div><div class="url-row"><span class="url-label">FS.html URL (male)</span><input class="url-input" id="url-fs" placeholder="https://.../FS.html"><span class="url-label" style="margin-top:8px;">FSS.html URL (female)</span><input class="url-input" id="url-fss" placeholder="https://.../FSS.html"></div><button class="save-urls-btn" onclick="saveURLs()">💾 Save Settings</button><div class="status-msg" id="url-status" style="margin-top:10px;"></div></div></div>
+  <div class="tab-pane" id="tab-local-fb"><br><div class="feedback-editor-hint">Edit local templates. Placeholders: <span class="ph-tag">[NAME]</span> <span class="ph-tag">[FULLNAME]</span> <span class="ph-tag">[RANK]</span></div><div class="gender-tab-row"><button class="gender-tab-btn male active" onclick="switchLocalFBTab('male',this)">👨 Male</button><button class="gender-tab-btn female" onclick="switchLocalFBTab('female',this)">👩 Female</button></div><div class="feedback-list" id="local-fb-editor"></div><button class="add-feedback-btn" onclick="addLocalFBItem()">+ Add New Template</button></div>
+  <div class="tab-pane" id="tab-help"><br><div class="home-hint"><div class="home-hint-icon">📱</div><div class="home-hint-text"><strong>Save as app:</strong> Chrome menu → Add to Home screen.</div></div><div class="help-hint"><div class="home-hint-icon">🌐</div><div class="help-hint-text"><strong>Online mode:</strong> Host FS.html / FSS.html with &lt;f&gt; templates.</div></div><div class="help-hint"><div class="home-hint-icon">✏️</div><div class="help-hint-text"><strong>CPA button:</strong> Generates 5 performance remarks (random from 10 per category). Tap the small “Copy” next to each category to copy only that remark.</div></div></div>
+</div>
+
+<!-- VIEW 2: CREW -->
+<div class="view" id="view-crew">
+  <div class="top-bar"><button class="back-btn" onclick="goBack()">← Back</button><div class="top-bar-info"><div class="top-bar-title" id="topbar-title">Crew List</div><div class="top-bar-sub" id="topbar-sub"></div></div></div>
+  <div class="section-head"><span class="section-head-title">Crew Members</span><span class="section-head-count" id="crew-count-badge">0</span></div>
+  <div class="crew-scroll" id="crew-list"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ======================== CPA REMARKS (10 per category, ~100 words each) ========================
+const CPA_REMARKS = {
+  appearance: [
+    "[RANK] [FULLNAME] presents an impeccable professional image at all times. The uniform is always crisp, shoes highly polished, and grooming follows every guideline—from neatly styled hair to subtle makeup (for female crew) or clean‑shaven/well‑trimmed beard (for male crew). The warm, genuine smile and confident posture instantly reassure passengers. This attention to detail reflects deep pride in our brand and sets a benchmark for junior crew. The overall appearance elevates cabin ambience and passenger trust, making [NAME] a true ambassador of Malaysia Airlines.",
+    "[RANK] [FULLNAME]’s grooming is flawless every single flight. The uniform fits perfectly, the name badge is prominently displayed, and there is never a wrinkle or smudge. The personal warmth combined with immaculate presentation creates an immediate sense of professionalism. Passengers notice the elegance and attention to detail, which contributes significantly to the premium image of our airline. [NAME] consistently exceeds the grooming standards and inspires colleagues to do the same.",
+    "First impressions matter, and [RANK] [FULLNAME] masters them completely. From the polished footwear to the perfectly tied hair (or neatly styled short hair), every element of appearance is checked and rechecked. The posture is upright, movements graceful, and the overall look is both approachable and authoritative. This level of grooming is not accidental—it shows discipline and respect for the role. [NAME] embodies the saying 'dress for success' and makes the cabin look more professional.",
+    "[RANK] [FULLNAME] understands that appearance is the first message a crew member sends. The uniform is always worn with pride, accessories minimal and appropriate, and the overall look is fresh even after long hours. The genuine smile never fades, and the eye contact is confident. During boarding, passengers immediately feel reassured because [NAME] looks like a true professional. This consistency in grooming is a hallmark of excellence and greatly enhances the airline’s reputation.",
+    "Spotless grooming is [RANK] [FULLNAME]’s trademark. Every detail—from nail length to fragrance choice—adheres to the highest standards. The uniform is pressed to perfection, and the shoes could be used as a mirror. Even after a full flight, [NAME] manages to maintain a tidy, professional look. This dedication to appearance is a form of respect for passengers and colleagues alike. It sets a powerful example and reinforces the premium service promise of Malaysia Airlines.",
+    "[RANK] [FULLNAME] looks every bit a leading steward. The grooming is meticulous: hair neatly styled, uniform without a single crease, and the overall presentation is both elegant and functional. The warm, confident smile and upright posture command respect while remaining approachable. Passengers frequently compliment [NAME]’s professional look. Such consistent attention to appearance is rare and highly valuable. It directly influences passenger satisfaction and brand perception.",
+    "When [RANK] [FULLNAME] walks through the cabin, passengers take notice of the impeccable presentation. The uniform is always crisp, the grooming fresh, and the overall demeanour radiates professionalism. Even during early‑morning flights or long‑haul rotations, [NAME] never lets standards slip. This dedication to appearance shows pride in the role and respect for the airline. It is a key reason why passengers feel they are in good hands. Truly outstanding.",
+    "[RANK] [FULLNAME] sets the gold standard for cabin crew appearance. The hair is always perfectly styled, the uniform fits flawlessly, and the shoes are mirror‑polished. The subtle use of accessories (watch, name badge, scarf for female crew) is spot on. The overall look is both welcoming and authoritative. This level of grooming is achieved through discipline and attention to detail. [NAME] inspires peers to raise their own standards and consistently earns praise from supervisors.",
+    "First‑class grooming defines [RANK] [FULLNAME]’s professional image. The uniform is immaculate, the posture confident, and the smile genuine. There is never a hint of fatigue or neglect, even after hours of service. This consistency is remarkable and shows deep commitment to the role. Passengers feel respected because the crew member looks the part. [NAME]’s appearance alone reassures and delights, making the flight experience noticeably better.",
+    "[RANK] [FULLNAME] understands that appearance is non‑negotiable in premium aviation. The grooming is always fresh, the uniform perfectly pressed, and the overall look is polished from head to toe. The name badge is visible, the tie/scarf sits correctly, and the shoes shine. This attention to detail extends to every flight, regardless of length or workload. [NAME] is a walking advertisement for excellence and a role model for the entire cabin team."
+  ],
+  knowledge: [
+    "[RANK] [FULLNAME] demonstrates solid command of safety protocols, service flows, aircraft layouts, and emergency equipment. Most passenger queries are answered accurately and promptly. To reach true excellence, I encourage [NAME] to proactively study new destination updates, cultural sensitivities, and product innovations. The foundation is strong; with continued curiosity and self‑learning through internal modules, [NAME] will soon master every nuance. Keep embracing every learning opportunity—the potential is limitless.",
+    "[RANK] [FULLNAME] has a reliable grasp of first aid, security procedures, and inflight service standards. The correct use of galley equipment and meal pairing knowledge is good. However, to grow further, I recommend exploring advanced courses on aircraft systems and passenger psychology. Keeping a personal learning journal of new insights will help transition from good to great. [NAME]’s willingness to learn is evident—sustained effort will make an undisputed expert.",
+    "[RANK] [FULLNAME] knows the safety demonstration by heart and handles most special meal requests without error. The understanding of duty‑free operations and coordination with the cockpit is adequate. To reach mastery, I suggest seeking regular feedback from senior crew and reviewing updated manuals monthly. Attending workshops on emerging aviation trends will sharpen the edge further. [NAME] has the foundation; now consistent, curious learning will make exceptional performance. Keep pushing boundaries.",
+    "[RANK] [FULLNAME] shows strong knowledge of emergency commands, evacuation procedures, and the location of all safety equipment. The service sequence is memorised well, and the handling of passenger documentation is accurate. For even greater depth, I encourage [NAME] to shadow more experienced crew during irregular operations and study real‑life case studies. The current level is very good, but the next level requires proactive research. [NAME] has the discipline to achieve that.",
+    "[RANK] [FULLNAME] answers passenger questions about connections, meal ingredients, and flight times confidently. The safety and security manuals are referenced correctly when needed. To elevate to outstanding, [NAME] should set a personal goal to learn one new thing per week (e.g., destination highlights, aircraft variant differences). Small daily learning habits will compound into deep expertise. The potential is clearly there—just a bit more structured study will make [NAME] a walking encyclopedia.",
+    "[RANK] [FULLNAME] has a solid foundation in all mandatory training areas. The knowledge of child restraint systems, mobility aid handling, and medical equipment is reliable. However, the aviation industry evolves fast. I recommend [NAME] subscribe to internal newsletters and participate in voluntary workshops. Curiosity is the bridge from good to great. [NAME]’s positive attitude suggests this is easily achievable. With a few extra hours per month, [NAME] will become a go‑to expert on board.",
+    "[RANK] [FULLNAME] knows the service standards for each class and performs safety duties without prompting. The understanding of disruptive passenger management is adequate. To reach the top tier, I encourage [NAME] to review the last six months of safety bulletins and practice scenario‑based learning with peers. The raw ability is there; now it’s about polishing the edges. [NAME] should be proud of current knowledge but also excited about the journey to mastery. Keep learning, keep growing.",
+    "[RANK] [FULLNAME] demonstrates good knowledge of pre‑flight briefings, galley loading, and post‑flight procedures. The handling of passenger medical incidents follows protocol well. For continuous improvement, [NAME] could create a personal checklist of rarely‑used procedures (e.g., fire fighting, ditching) and review it monthly. Consistent reinforcement will turn knowledge into instinct. [NAME] has the right attitude—just add a structured learning plan, and excellence will follow naturally.",
+    "[RANK] [FULLNAME]’s knowledge of onboard products, from wines to amenity kits, is commendable. The ability to troubleshoot IFE issues is helpful. To move from good to great, I suggest [NAME] attend product launch briefings and read trade publications. The goal is not just to know but to anticipate. [NAME] already has the curiosity; now channel it into regular, focused learning. The result will be a crew member who never says 'I don't know' but instead 'let me find out for you'.",
+    "[RANK] [FULLNAME] knows all critical safety and service procedures well. There is room to deepen knowledge of destination entry requirements, interline agreements, and special assistance categories. I recommend using downtime to browse the crew portal and participate in online quizzes. The foundation is solid; the next step is to build a library of 'nice‑to‑know' facts that delight passengers. [NAME] has the drive and intelligence—small consistent efforts will unlock that next level."
+  ],
+  efficiency: [
+    "[RANK] [FULLNAME] works with remarkable speed and precision. During turbulence, [NAME] secured loose items while calmly reassuring nervous flyers. Call lights are answered within seconds, tray collection is lightning‑fast yet graceful, and galley restocking happens seamlessly between services. [NAME] never misses a beat, balancing urgency with safety. The proactive nature means issues are often solved before passengers notice them. This level of efficiency directly improves on‑time performance and passenger satisfaction.",
+    "[RANK] [FULLNAME] moves with purposeful speed, reorganising galley clutter instantly and responding to call bells within seconds. During boarding, [NAME] assists with overhead bin stowage without delaying the queue. The multitasking ability is impressive—pouring drinks, answering questions, and monitoring cabin safety simultaneously. No passenger ever feels ignored. This efficiency is a force multiplier for the whole team, reducing stress and allowing everyone to focus on hospitality rather than firefighting.",
+    "[RANK] [FULLNAME] is remarkably agile. The pre‑set trays during climb, clearing trash before descent, and never leaving passengers waiting. During meal rush, [NAME] coordinates with the galley like a conductor leading an orchestra. The responsiveness to crew requests is equally swift, assisting teammates without being asked. The minimisation of downtime turns high‑pressure moments into smooth, quiet operations. Efficiency like this saves minutes per flight, which adds up to hours of punctuality over a month.",
+    "[RANK] [FULLNAME] demonstrates exceptional time management. The service sequence flows perfectly because [NAME] anticipates bottlenecks and proactively addresses them. The galley is kept organised, reducing search time for items. The call light response time is consistently under ten seconds. This efficiency does not feel rushed—it feels effortless, which is the hallmark of mastery. [NAME] makes the whole cabin operation look easy, and that is the highest compliment for any crew member.",
+    "[RANK] [FULLNAME] is a model of efficiency without sacrificing warmth. The meal service is completed ahead of schedule because [NAME] works methodically, never backtracking. The drink rounds are quick but thorough, and special requests are noted and delivered promptly. The ability to handle multiple passenger needs simultaneously is impressive. [NAME] also helps less experienced crew with their zones once the own work is done. This generosity combined with speed is rare and highly valuable.",
+    "[RANK] [FULLNAME] turns chaos into order. On a full flight with turbulence and last‑minute changes, [NAME] kept the service flowing smoothly. The galley was restocked without disrupting passenger movement, and call bells were answered almost instantly. The secret is preparation: [NAME] thinks three steps ahead. This forward‑looking efficiency reduces stress for the whole team and ensures that even the most demanding passengers feel well cared for. A true professional.",
+    "[RANK] [FULLNAME] is consistently the most efficient crew member in the cabin. The pre‑service setup is completed early, the beverage cart moves at an optimal pace, and the post‑service clean‑up is lightning fast. [NAME] also keeps an eye on the clock, reminding the team of remaining flight time without nagging. This efficiency is not rushed—it is smooth, calm, and precise. Passengers notice that everything happens without delay, and that enhances their overall experience.",
+    "[RANK] [FULLNAME] handles high workload periods with grace and speed. During the second service on a short sector, [NAME] managed to complete all tasks while also helping a passenger with a medical issue. The ability to reprioritise on the fly is impressive. The galley handovers are concise and complete, ensuring no task falls through cracks. This efficiency comes from experience and a genuine desire to serve. [NAME] sets a pace that others admire and try to follow.",
+    "[RANK] [FULLNAME] is a master of the galley. The organisation is so good that everything has a place and is always restocked immediately after use. The turnaround time between services is cut by nearly 30% because [NAME] works silently and efficiently. The responsiveness to the cabin is immediate—call lights are answered before the second ring. This level of efficiency is not natural; it is trained and practiced. [NAME] makes the whole team look good.",
+    "[RANK] [FULLNAME] demonstrates that efficiency and hospitality can coexist. The meal service is completed with time to spare, yet [NAME] never appears rushed or dismissive. The key is smart sequencing: serving rows in a logical order, pre‑pouring drinks for the next row, and cleaning as you go. [NAME] also anticipates passenger needs, bringing a second coffee before being asked. This proactive efficiency is the highest form of service. Truly outstanding."
+  ],
+  communication: [
+    "[RANK] [FULLNAME]’s verbal and non‑verbal communication is exceptional. The tone is adapted effortlessly—gentle with elderly passengers, cheerful with children, and professional with VIPs. The announcements are clear and empathetic, de‑escalating conflicts peacefully. [NAME] also excels at teamwork, giving concise handovers and using subtle gestures to coordinate mid‑flight. This ability to read the room and respond appropriately is a rare gift. [NAME] truly represents Malaysian hospitality at its finest.",
+    "[RANK] [FULLNAME] communicates with exceptional clarity and empathy. Delays are explained patiently, connecting gate information is announced proactively, and each passenger is thanked personally. The hand signals and brief verbal cues with teammates are highly efficient. [NAME] builds instant rapport, making even economy class feel special. Passengers frequently name [NAME] in compliment letters for the thoughtful, reassuring communication style. This skill directly drives satisfaction scores.",
+    "[RANK] [FULLNAME] is a natural communicator. The pre‑flight safety briefing is delivered with confidence and clarity, putting passengers at ease. During service, [NAME] uses open‑ended questions to understand preferences and follows up with genuine interest. The teamwork communication is equally strong—[NAME] never assumes, always confirms. This reduces errors and fosters a supportive atmosphere. In tense situations, [NAME] remains calm and uses de‑escalation language effectively. A true asset.",
+    "[RANK] [FULLNAME] speaks with warmth and authority in equal measure. The announcements are crisp, the passenger interactions are personalised, and the crew coordination is seamless. [NAME] has a talent for remembering names and small details, which delights passengers. The non‑verbal communication—eye contact, nodding, open posture—reinforces the spoken word. This holistic communication style builds trust and loyalty. [NAME] is exactly the kind of communicator every airline wants on board.",
+    "[RANK] [FULLNAME] handles difficult conversations with grace. When a passenger was upset about a meal choice, [NAME] listened actively, apologised sincerely, and offered a creative solution. The passenger ended the interaction smiling. This emotional intelligence is rare. [NAME] also communicates effectively with the cockpit, using proper terminology and brevity. The team benefits from [NAME]’s clear, calm, and kind communication. This skill cannot be taught; it comes from genuine care.",
+    "[RANK] [FULLNAME] is a master of inclusive language. Every passenger feels seen and respected, regardless of age, culture, or language ability. [NAME] slows down when needed, uses simple words, and checks for understanding. The crew handovers are detailed yet concise, leaving no ambiguity. This reduces mistakes and improves safety. [NAME] also gives and receives feedback gracefully, contributing to a positive team culture. Communication like this is the glue of high‑performing crews.",
+    "[RANK] [FULLNAME] communicates with a calm confidence that reassures everyone. During moderate turbulence, [NAME] made an announcement that was both informative and soothing, preventing panic. The ability to adjust tone based on the situation is remarkable. With colleagues, [NAME] uses respectful, clear language and always acknowledges contributions. This builds trust and cooperation. Passengers feel safe because [NAME] sounds like a professional who has seen it all. Excellent communication.",
+    "[RANK] [FULLNAME] turns routine interactions into memorable moments. The greeting at the door is warm, the safety briefing is engaging, and the farewell is sincere. [NAME] asks open‑ended questions ('How can I make your flight better?') and listens actively. The non‑verbal cues—smiling eyes, open stance, leaning in—invite connection. The crew benefits too: [NAME] shares updates clearly and asks for help politely. Communication of this quality elevates the entire flight experience.",
+    "[RANK] [FULLNAME] is a bridge between passengers, crew, and the cockpit. The language is always professional yet warm, and the message is tailored to the audience. With nervous flyers, [NAME] uses calming words and offers reassurance. With the cabin team, [NAME] uses clear, task‑oriented language and confirms understanding. This adaptability is a sign of high emotional intelligence. [NAME] makes everyone feel heard and valued. Outstanding communication skills.",
+    "[RANK] [FULLNAME] demonstrates that communication is not just words—it is presence. The eye contact, the nod, the slight lean forward—all signal 'I am listening'. The verbal responses are thoughtful and complete. The teamwork communication is efficient: 'Galley, we need two more juices in 3B' followed by 'Received, thank you'. This closed‑loop communication prevents errors. [NAME] also communicates appreciation to colleagues, boosting morale. A complete communicator in every sense."
+  ],
+  overall: [
+    "[RANK] [FULLNAME] is a top‑tier crew member who consistently exceeds all expectations. The flawless appearance, growing knowledge, lightning efficiency, and superb communication make [NAME] a role model. Every flight’s passenger experience is elevated, and peers are inspired. With this dedication, [NAME] is on track for future leadership roles. The combination of hard skills and soft skills is rare. [NAME] is an asset to any cabin team and a credit to the airline.",
+    "[RANK] [FULLNAME] delivers consistently outstanding service. The blend of flawless appearance, solid knowledge base, lightning efficiency, and empathetic communication creates memorable flight experiences. [NAME] is an asset to any long‑haul or short‑haul crew and consistently earns passenger compliments. The standard set is one that others aspire to. There is no hesitation in recommending [NAME] for additional responsibilities. A truly remarkable crew member.",
+    "[RANK] [FULLNAME] is a complete professional. The consistent top ratings across all categories demonstrate genuine dedication and passion. Pressure is handled with grace, junior crew are informally mentored, and passengers rave about their flight. [NAME] is undeniably future senior crew material. The performance is a gift to any cabin team. The airline is fortunate to have such a committed and skilled individual. Overall, an exemplary performance.",
+    "[RANK] [FULLNAME] shines in every aspect of the role. The appearance is immaculate, the knowledge is solid with room to grow, the efficiency is remarkable, and the communication is warm and clear. Passengers feel safe, valued, and well entertained. Colleagues enjoy working with [NAME] because of the positive attitude and reliability. This holistic excellence is what defines a leading steward. [NAME] is already performing at a level expected of much more experienced crew.",
+    "[RANK] [FULLNAME] is a standout performer. The grooming sets a benchmark, the knowledge is dependable, the responsiveness is immediate, and the interpersonal skills are top‑notch. [NAME] also shows leadership potential by helping new joiners and volunteering for extra duties. The overall contribution to the flight’s success cannot be overstated. It is a pleasure to have [NAME] on any crew. Retention of such talent should be a priority. Simply excellent.",
+    "[RANK] [FULLNAME] represents the very best of our cabin crew. Every category—appearance, knowledge, efficiency, communication, and overall conduct—is consistently strong. [NAME] treats every flight as an opportunity to excel, never cutting corners. The passenger feedback is overwhelmingly positive. The team spirit is infectious. [NAME] is a role model for peers and a credit to Malaysia Airlines. I would confidently assign [NAME] to any VIP or complex flight.",
+    "[RANK] [FULLNAME] is a true professional. The attention to detail in grooming, the hunger to learn, the speed of service, and the clarity of communication all point to someone who takes pride in the job. [NAME] also demonstrates resilience during challenging flights and empathy toward passengers and crew alike. The overall performance is not just good—it is inspiring. [NAME] has a bright future in aviation, and we should nurture this talent actively.",
+    "[RANK] [FULLNAME] delivers excellence consistently, flight after flight. The uniform is always perfect, the knowledge is always applied correctly, the service is always swift, and the passengers are always treated with respect and warmth. There are no weak areas. [NAME] also goes beyond the call of duty, helping with galley deep‑cleaning and staying late to assist with reports. This level of dedication is rare and should be recognised. Overall, a superb crew member.",
+    "[RANK] [FULLNAME] is an all‑round star. The appearance is flawless, the knowledge is strong (with clear appetite to learn more), the efficiency is impressive, and the communication is heartfelt. [NAME] also contributes to a positive team culture by sharing praise and offering help without being asked. The overall performance is far above average. [NAME] has the potential to become a trainer or a purser. I strongly recommend continued investment in this individual.",
+    "[RANK] [FULLNAME] exceeded all expectations on this flight and every flight observed. The professional image, sound knowledge base, rapid responsiveness, and empathetic communication create an exceptional passenger experience. [NAME] also demonstrates leadership by example, staying calm under pressure and encouraging teammates. The overall performance is a model of what we want every crew member to achieve. [NAME] is a keeper—someone we should retain and develop for senior roles."
+  ]
+};
+
+// ======================== EXISTING TOOL LOGIC (unchanged except CPA generation) ========================
+let parsedCrew = [];
+let parsedFlight = {};
+let toastTimer;
+let localFBGender = 'male';
+let localUserTemplates = { male: [], female: [] };
+let settings = { defaultSource: 'local', urlFS: 'FS.html', urlFSS: 'FSS.html' };
+const FORM_URL = 'https://forms.office.com/Pages/ResponsePage.aspx?id=Z6XDj-gelEmAnEn1DNttSNWMXr9O3ahPn8sWvEVsAaxUMTVYRkNMREc2MksyV0NHUU1YUjNOUktXQy4u';
+const SETTINGS_KEY = 'eccpr_settings';
+const LOCAL_FB_KEY  = 'eccpr_local_fb';
+
+function loadSettings() { try { const s = localStorage.getItem(SETTINGS_KEY); if (s) settings = { ...settings, ...JSON.parse(s) }; } catch(e) {} document.getElementById('url-fs').value = settings.urlFS; document.getElementById('url-fss').value = settings.urlFSS; document.getElementById('default-local-btn').classList.toggle('active', settings.defaultSource === 'local'); document.getElementById('default-online-btn').classList.toggle('active', settings.defaultSource === 'online'); }
+function setDefaultSource(src) { settings.defaultSource = src; document.getElementById('default-local-btn').classList.toggle('active', src === 'local'); document.getElementById('default-online-btn').classList.toggle('active', src === 'online'); try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch(e) {} }
+function saveURLs() { settings.urlFS = document.getElementById('url-fs').value.trim() || 'FS.html'; settings.urlFSS = document.getElementById('url-fss').value.trim() || 'FSS.html'; try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); document.getElementById('url-status').className='status-msg ok'; document.getElementById('url-status').textContent='✓ Settings saved.'; showToast('✓ Settings saved.'); } catch(e) { showToast('Save failed.'); } }
+
+function loadLocalUserTemplates() { try { const s = localStorage.getItem(LOCAL_FB_KEY); if (s) localUserTemplates = { male:[], female:[], ...JSON.parse(s) }; } catch(e) {} }
+function saveLocalUserTemplates() { try { localStorage.setItem(LOCAL_FB_KEY, JSON.stringify(localUserTemplates)); } catch(e) {} }
+function getLocalEmbedded(gender) { const id = gender === 'male' ? 'local-male-feedback' : 'local-female-feedback'; return Array.from(document.querySelectorAll(`#${id} f`)).map(el => el.textContent.trim()).filter(t => t.length > 10); }
+function getAllLocalTemplates(gender) { return [...getLocalEmbedded(gender), ...(localUserTemplates[gender] || [])]; }
+
+let onlineCache = { male: null, female: null };
+async function fetchOnlineTemplates(gender) { if (onlineCache[gender]) return onlineCache[gender]; const url = gender === 'male' ? settings.urlFS : settings.urlFSS; try { const resp = await fetch(url, { cache: 'no-cache' }); if (!resp.ok) throw new Error('HTTP ' + resp.status); const html = await resp.text(); const jsonMatch = html.match(/<script[^>]+id="json-output"[^>]*>(\[.*?\])<\/script>/s); if (jsonMatch) { const arr = JSON.parse(jsonMatch[1]); if (arr.length) { onlineCache[gender] = arr; return arr; } } const parser = new DOMParser(); const doc = parser.parseFromString(html, 'text/html'); const items = Array.from(doc.querySelectorAll('f')).map(el => el.textContent.trim()).filter(t => t.length > 10); if (items.length) { onlineCache[gender] = items; return items; } throw new Error('No templates'); } catch(e) { return null; } }
+
+function genderedRank(rawRank, gender) { if (!rawRank) return rawRank; const r = rawRank.toUpperCase().trim(); if (gender === 'female') { const maleRanks = ['FS','LS','CS','CC','IFS','SCCM','CCM','PUR']; if (maleRanks.includes(r)) return r + 'S'; return r; } return r; }
+
+function applyPlaceholders(template, crew, gender) { const firstName = crew.name.split(' ')[0]; const rank = genderedRank(crew.rank, gender); return template.replace(/\[NAME\]/g, firstName).replace(/\[FULLNAME\]/g, crew.name).replace(/\[RANK\]/g, rank || ''); }
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 1800); }
+function copyText(text, el) { const flash = () => { if (el) { el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 900); } showToast('✓ Copied'); }; if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(flash).catch(() => fallbackCopy(text, flash)); } else fallbackCopy(text, flash); }
+function fallbackCopy(text, cb) { const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;font-size:16px;'; document.body.appendChild(ta); ta.focus(); ta.select(); try { document.execCommand('copy'); } catch(e) {} document.body.removeChild(ta); if (cb) cb(); }
+
+function showView(id) { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+function goBack() { showView('view-paste'); }
+function switchTab(paneId, btn) { document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active')); document.getElementById(paneId).classList.add('active'); btn.classList.add('active'); if (paneId === 'tab-local-fb') renderLocalFBEditor(localFBGender); }
+
+function switchLocalFBTab(gender, btn) { localFBGender = gender; document.querySelectorAll('.gender-tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderLocalFBEditor(gender); }
+function renderLocalFBEditor(gender) { const list = document.getElementById('local-fb-editor'); const embedded = getLocalEmbedded(gender); const userAdded = localUserTemplates[gender] || []; list.innerHTML = ''; [...embedded, ...userAdded].forEach((text, i) => { const isEmbed = i < embedded.length; const item = document.createElement('div'); item.className = 'feedback-item'; item.dataset.gender = gender; item.innerHTML = `<div class="feedback-item-header"><span class="feedback-item-num">#${i+1} ${isEmbed ? '· Built-in' : '· Custom'}</span>${!isEmbed ? `<button style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;font-size:11px;padding:2px 8px;cursor:pointer;" onclick="deleteLocalTemplate('${gender}',${i - embedded.length})">✕</button>` : ''}</div><textarea data-idx="${i}" data-embed="${isEmbed}" ${isEmbed ? 'readonly' : ''} oninput="onLocalFBEdit(this,'${gender}')">${text.replace(/</g, '&lt;')}</textarea>`; list.appendChild(item); }); }
+function onLocalFBEdit(ta, gender) { const embedded = getLocalEmbedded(gender); const userIdx = parseInt(ta.dataset.idx) - embedded.length; if (userIdx >= 0) { if (!localUserTemplates[gender]) localUserTemplates[gender] = []; localUserTemplates[gender][userIdx] = ta.value; saveLocalUserTemplates(); } }
+function deleteLocalTemplate(gender, userIdx) { localUserTemplates[gender].splice(userIdx, 1); saveLocalUserTemplates(); renderLocalFBEditor(gender); showToast('Template deleted.'); }
+function addLocalFBItem() { if (!localUserTemplates[localFBGender]) localUserTemplates[localFBGender] = []; localUserTemplates[localFBGender].push(''); saveLocalUserTemplates(); renderLocalFBEditor(localFBGender); const items = document.querySelectorAll('#local-fb-editor .feedback-item'); const last = items[items.length-1]; if (last) { last.querySelector('textarea').focus(); last.scrollIntoView({ behavior:'smooth', block:'center' }); } }
+
+function parseRoster() { const raw = document.getElementById('roster-input').value.trim(); const status = document.getElementById('parse-status'); if (!raw) { status.className='status-msg err'; status.textContent='Please paste roster text.'; return; } let flightDate='', flightDateRaw=''; const dm = raw.match(/Pairing\s*Date\s*(\d{1,2})[-\/]([A-Z]{3})[-\/](\d{4})/i); if (dm) { const mo={JAN:'1',FEB:'2',MAR:'3',APR:'4',MAY:'5',JUN:'6',JUL:'7',AUG:'8',SEP:'9',OCT:'10',NOV:'11',DEC:'12'}; flightDate=`${mo[dm[2].toUpperCase()]||dm[2]}/${parseInt(dm[1])}/${dm[3]}`; flightDateRaw=`${parseInt(dm[1])} ${dm[2].toUpperCase()} ${dm[3]}`; } let pairingNo=''; const pm=raw.match(/Pairing\s*No\s*([A-Z0-9\-]+)/i); if (pm) pairingNo=pm[1]; const flightNums=[]; const seenF=new Set(); for (const m of raw.matchAll(/\b(MH|AK|QZ|OD|FY|MXD)\s*(\d{3,4})\b/gi)) { const key=m[1].toUpperCase()+m[2]; if (!seenF.has(key)) { seenF.add(key); flightNums.push(m[1].toUpperCase()+' '+m[2]); } } const crew=[]; for (const line of raw.split('\n')) { const sm=line.match(/\b(\d{7})\b/); if (!sm) continue; const staffNo=sm[1]; const parts=line.split('\t').map(s=>s.trim()); const si=parts.findIndex(p=>p===staffNo); if (si<0) continue; const name=(parts[si+1]||'').trim().toUpperCase(); let rank=(parts[si+2]||'').trim().toUpperCase(); if (!name||name.includes('CREW NAME')||name.length<3) continue; if (rank.length>10) rank=''; if (crew.find(c=>c.staffNo===staffNo)) continue; crew.push({name,staffNo,rank}); } if (!crew.length) { status.className='status-msg err'; status.textContent='No crew found.'; return; } parsedCrew=crew; parsedFlight={flightDate,flightDateRaw,pairingNo,flightNums}; status.className='status-msg ok'; status.textContent=`✓ ${crew.length} crew member(s) found. Opening...`; setTimeout(renderCrewView, 250); }
+
+async function setGender(cardEl, gender, crewIdx) { const crew = parsedCrew[crewIdx]; cardEl.querySelector('.gender-btn.male').classList.toggle('active', gender==='male'); cardEl.querySelector('.gender-btn.female').classList.toggle('active', gender==='female'); cardEl._gender = gender; cardEl._crew = crew; await loadFeedbackForCard(cardEl); }
+async function loadFeedbackForCard(cardEl) { const gender = cardEl._gender; const crew = cardEl._crew; const source = cardEl._source || settings.defaultSource; const fbBox = cardEl.querySelector('.feedback-box'); const fbCopyBtn = cardEl.querySelector('.copy-feedback-btn'); const srcLabel = cardEl.querySelector('.feedback-source-label'); cardEl.querySelector('.feedback-section').classList.add('show'); fbBox.innerHTML = '<span class="feedback-loading">Loading...</span>'; fbCopyBtn.style.display = 'none'; let templates = null; if (source === 'online') { srcLabel.textContent = '🌐 Online source'; srcLabel.className = 'feedback-source-label online'; templates = await fetchOnlineTemplates(gender); if (!templates) { srcLabel.textContent = '⚠️ Online failed — using Local'; srcLabel.className = 'feedback-source-label'; templates = getAllLocalTemplates(gender); } } else { srcLabel.textContent = '📱 Local source'; srcLabel.className = 'feedback-source-label'; templates = getAllLocalTemplates(gender); } if (!templates || !templates.length) { fbBox.textContent = 'No feedback templates found.'; return; } let chosen; let attempts=0; do { chosen = pickRandom(templates); attempts++; } while (chosen === cardEl._rawFeedback && templates.length > 1 && attempts < 10); cardEl._rawFeedback = chosen; const rendered = applyPlaceholders(chosen, crew, gender); fbBox.textContent = rendered; cardEl._feedback = rendered; fbCopyBtn.style.display = 'block'; fbCopyBtn.classList.remove('copied'); fbCopyBtn.textContent = 'TAP TO COPY FEEDBACK (Q10)'; }
+function setFeedbackSource(cardEl, source) { cardEl._source = source; cardEl.querySelector('.source-mini-btn.local').classList.toggle('active', source==='local'); cardEl.querySelector('.source-mini-btn.online').classList.toggle('active', source==='online'); if (source === 'online') onlineCache[cardEl._gender] = null; if (cardEl._gender) loadFeedbackForCard(cardEl); }
+function refreshFeedback(cardEl) { if (cardEl._gender) { if (cardEl._source === 'online') onlineCache[cardEl._gender] = null; loadFeedbackForCard(cardEl); } }
+function copyFeedback(btn) { const card = btn.closest('.crew-card'); if (!card._feedback) return; copyText(card._feedback, null); btn.classList.add('copied'); btn.textContent='✓ COPIED!'; setTimeout(()=>{ btn.classList.remove('copied'); btn.textContent='TAP TO COPY FEEDBACK (Q10)'; }, 2000); }
+
+// ======================== NEW CPA GENERATION (per‑category copy buttons) ========================
+function generateCPAForCard(cardEl) {
+  const gender = cardEl._gender;
+  const crew = cardEl._crew;
+  const outputDiv = cardEl.querySelector('.cpa-output');
+  if (!gender || !crew) {
+    outputDiv.innerHTML = '<div style="color:var(--danger); padding:10px;">⚠️ Please select gender (Male/Female) first.</div>';
+    outputDiv.classList.add('show');
+    return;
+  }
+  const firstName = crew.name.split(' ')[0];
+  const fullName = crew.name;
+  const rank = genderedRank(crew.rank, gender);
+  const apply = (text) => text.replace(/\[NAME\]/g, firstName).replace(/\[FULLNAME\]/g, fullName).replace(/\[RANK\]/g, rank);
+  
+  // pick random from each category
+  const appearanceText = apply(pickRandom(CPA_REMARKS.appearance));
+  const knowledgeText  = apply(pickRandom(CPA_REMARKS.knowledge));
+  const efficiencyText = apply(pickRandom(CPA_REMARKS.efficiency));
+  const communicationText = apply(pickRandom(CPA_REMARKS.communication));
+  const overallText = apply(pickRandom(CPA_REMARKS.overall));
+  
+  // Build HTML with per‑category copy buttons
+  const html = `
+    <div class="cpa-category">
+      <div class="cpa-category-header">
+        <span class="cpa-category-title appearance">👔 Appearance (5)</span>
+        <button class="cpa-copy-single" onclick="copyText(this.parentElement.nextElementSibling.innerText, this)">📋 Copy</button>
+      </div>
+      <div class="cpa-category-text">${appearanceText}</div>
+    </div>
+    <div class="cpa-category">
+      <div class="cpa-category-header">
+        <span class="cpa-category-title knowledge">📚 Knowledge (4)</span>
+        <button class="cpa-copy-single" onclick="copyText(this.parentElement.nextElementSibling.innerText, this)">📋 Copy</button>
+      </div>
+      <div class="cpa-category-text">${knowledgeText}</div>
+    </div>
+    <div class="cpa-category">
+      <div class="cpa-category-header">
+        <span class="cpa-category-title efficiency">⚡ Efficiency & Responsiveness (5)</span>
+        <button class="cpa-copy-single" onclick="copyText(this.parentElement.nextElementSibling.innerText, this)">📋 Copy</button>
+      </div>
+      <div class="cpa-category-text">${efficiencyText}</div>
+    </div>
+    <div class="cpa-category">
+      <div class="cpa-category-header">
+        <span class="cpa-category-title communication">💬 Communication (5)</span>
+        <button class="cpa-copy-single" onclick="copyText(this.parentElement.nextElementSibling.innerText, this)">📋 Copy</button>
+      </div>
+      <div class="cpa-category-text">${communicationText}</div>
+    </div>
+    <div class="cpa-category">
+      <div class="cpa-category-header">
+        <span class="cpa-category-title overall">🏆 Overall Performance (5)</span>
+        <button class="cpa-copy-single" onclick="copyText(this.parentElement.nextElementSibling.innerText, this)">📋 Copy</button>
+      </div>
+      <div class="cpa-category-text">${overallText}</div>
+    </div>
+  `;
+  outputDiv.innerHTML = html;
+  outputDiv.classList.add('show');
+}
+
+// ======================== RENDER CREW VIEW (with CPA button) ========================
+function renderCrewView() {
+  const {flightDate,flightDateRaw,pairingNo,flightNums} = parsedFlight;
+  document.getElementById('topbar-title').textContent = pairingNo ? `Pairing ${pairingNo}` : 'Crew List';
+  document.getElementById('topbar-sub').textContent = flightDateRaw || '';
+  document.getElementById('crew-count-badge').textContent = parsedCrew.length;
+  const listEl = document.getElementById('crew-list');
+  listEl.innerHTML = '';
+  parsedCrew.forEach((c,i) => {
+    const card = document.createElement('div');
+    card.className = 'crew-card';
+    card._source = settings.defaultSource;
+    const flightHTML = flightNums.length ? `<div class="flight-section"><div class="flight-section-label">Flight Number — tap to copy</div><div class="flight-chips-row">${flightNums.map(fn=>`<div class="flight-chip" onclick="copyFlightChip(this,'${fn.replace(/^[A-Z]+\s*/i,'')}')">${fn}</div>`).join('')}</div></div>` : '';
+    const dateHTML = flightDate ? `<div class="copy-row" onclick="copyText('${flightDate}',this)"><div class="copy-row-left"><div class="copy-row-label">Flight Date (Q7)</div><div class="copy-row-val">${flightDate}</div></div><div class="copy-pill">TAP TO COPY</div></div>` : '';
+    const safeName = c.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const safeRank = c.rank.replace(/'/g,"\\'");
+    const defaultSrcActive = settings.defaultSource;
+    card.innerHTML = `
+      <div class="crew-header"><div class="crew-idx">#${i+1}</div><div class="crew-name-display">${c.name}</div></div>
+      <div class="copy-row" onclick="copyText('${safeName}',this)"><div class="copy-row-left"><div class="copy-row-label">Crew Name (Q3)</div><div class="copy-row-val name-val">${c.name}</div></div><div class="copy-pill">TAP TO COPY</div></div>
+      <div class="copy-row" onclick="copyText('${c.staffNo}',this)"><div class="copy-row-left"><div class="copy-row-label">Staff Number (Q4)</div><div class="copy-row-val">${c.staffNo}</div></div><div class="copy-pill">TAP TO COPY</div></div>
+      <div class="copy-row" onclick="copyText('${safeRank}',this)"><div class="copy-row-left"><div class="copy-row-label">Rank (Q5)</div><div class="copy-row-val">${c.rank||'—'}</div></div><div class="copy-pill">TAP TO COPY</div></div>
+      ${flightHTML}
+      ${dateHTML}
+      <div class="gender-section"><div class="gender-label">Feedback — choose gender to load Q10</div><div class="gender-toggle"><div class="gender-btn male" onclick="setGender(this.closest('.crew-card'),'male',${i})">👨 Male (FS)</div><div class="gender-btn female" onclick="setGender(this.closest('.crew-card'),'female',${i})">👩 Female (FSS)</div></div></div>
+      <div class="feedback-section"><div class="feedback-top-row"><span class="feedback-title">Q10 Feedback</span><div class="source-mini"><button class="source-mini-btn local ${defaultSrcActive==='local'?'active':''}" onclick="setFeedbackSource(this.closest('.crew-card'),'local')">📱 Local</button><button class="source-mini-btn online ${defaultSrcActive==='online'?'active':''}" onclick="setFeedbackSource(this.closest('.crew-card'),'online')">🌐 Online</button></div><button class="refresh-btn" onclick="refreshFeedback(this.closest('.crew-card'))">↺</button></div><div class="feedback-source-label"></div><div class="feedback-box"></div><button class="copy-feedback-btn" style="display:none" onclick="copyFeedback(this)">TAP TO COPY FEEDBACK (Q10)</button></div>
+      <div class="cpa-section"><div class="cpa-button-row"><button class="cpa-btn" onclick="generateCPAForCard(this.closest('.crew-card'))">📋 CPA Assessment</button></div><div class="cpa-output"></div><div class="cpa-warning">⚠️ Select gender first, then click CPA. Each category has its own Copy button.</div></div>
+      <a class="open-form-strip" href="${FORM_URL}" target="_blank" rel="noopener"><span>↗ Open e-CCPR Form</span></a>
+    `;
+    listEl.appendChild(card);
+  });
+  showView('view-crew');
+}
+function copyFlightChip(el, fn) { copyText(fn, el); }
+
+loadSettings();
+loadLocalUserTemplates();
+</script>
+</body>
+</html>

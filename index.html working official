@@ -7,8 +7,1190 @@
     <title>Passenger Meal & Tier Report - by *2100551*</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💺</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💺</text></svg>">
-    <link rel="stylesheet" href="style.css">
-   
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        h1 {
+            background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            text-align: center;
+            font-size: 18px;
+        }
+        
+        .help-section {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f0f4ff;
+            border-radius: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .help-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 25px;
+            border: 1px solid #CBD5E1;
+        }
+        
+        .help-toggle-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1E3A8A;
+            cursor: pointer;
+        }
+        
+        .help-content {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 12px;
+            line-height: 1.5;
+            display: none;
+        }
+        
+        .help-content h3 {
+            color: #1E3A8A;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+        
+        .help-content ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .help-content li {
+            margin-bottom: 5px;
+        }
+        
+        .input-section {
+            padding: 20px;
+            background: #F8FAFC;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        
+        .paste-hint {
+            font-size: 11px;
+            color: #64748B;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 150px;
+            font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+            font-size: 12px;
+            padding: 10px;
+            border: 2px solid #E2E8F0;
+            border-radius: 6px;
+            resize: vertical;
+            background: white;
+            transition: all 0.2s ease;
+        }
+        
+        textarea:focus {
+            border-color: #2563EB;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary { background: #DC2626; color: white; }
+        .btn-secondary { background: #64748B; color: white; }
+        .btn-info { background: #1E3A8A; color: white; }
+        .btn-success { background: #059669; color: white; }
+        .btn-small { padding: 8px 12px; font-size: 12px; }
+        
+        .advanced-settings {
+            margin-top: 15px;
+            padding: 16px;
+            border: 2px solid #CBD5E1;
+            border-radius: 6px;
+            background: #F1F5F9;
+            display: none;
+        }
+        
+        .advanced-settings.open { display: block; }
+        
+        .settings-header {
+            color: #1E3A8A;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #E2E8F0;
+            padding-bottom: 8px;
+        }
+        
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #E2E8F0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .custom-zones {
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px dashed #666;
+            border-radius: 4px;
+            background: #f0f0f0;
+            display: none;
+        }
+        
+        .custom-zones.open { display: block; }
+        
+        .zone-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .zone-name { width: 120px; }
+        .zone-start, .zone-end { width: 70px; }
+        
+        .zone-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .zone-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #CBD5E1;
+            transition: .3s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #2563EB;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        .toggle-label {
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #334155;
+        }
+        
+        .font-size-controls, .print-layout-controls, .table-controls {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #E2E8F0;
+        }
+        
+        .font-size-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .font-size-presets {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .print-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        
+        .print-option:last-of-type {
+            border-bottom: none;
+        }
+        
+        .option-description {
+            font-size: 10px;
+            color: #64748B;
+            font-weight: 400;
+            display: block;
+            margin-top: 2px;
+        }
+        
+        .control-group {
+            margin-bottom: 10px;
+        }
+        
+        .control-group label {
+            font-size: 12px;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+        }
+        
+        .output-section {
+            padding: 20px;
+        }
+        
+        .flight-info {
+            background: #FEF7CD;
+            color: #1E3A8A;
+            border: 2px solid #D4AF37;
+            border-radius: 6px;
+            font-weight: 600;
+            text-align: center;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            background: #F0F4FF;
+            border: 1px solid #2563EB;
+            border-radius: 4px;
+            border-left: 4px solid #2563EB;
+            font-size: 10px;
+            padding: 6px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .side-stats {
+            background: #F8FAFC;
+            border: 1px solid #CBD5E1;
+            border-radius: 4px;
+            border-left: 4px solid #64748B;
+            font-size: 9px;
+            padding: 4px;
+            margin-bottom: 5px;
+        }
+        
+        .zone-section {
+            margin-bottom: 15px;
+        }
+        
+        .zone-section.page-break {
+            page-break-before: always;
+        }
+        
+        .zone-header {
+            background: linear-gradient(135deg, #1E3A8A, #2563EB);
+            color: white;
+            font-weight: 600;
+            border-radius: 6px 6px 0 0;
+            text-align: center;
+            font-size: 12px;
+            padding: 6px;
+            margin-bottom: 5px;
+        }
+        
+        .tables-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .table-wrapper {
+            flex: 1;
+            max-width: 50%;
+        }
+        
+        .table-title {
+            background: linear-gradient(135deg, #1E3A8A, #2563EB);
+            color: white;
+            font-weight: 600;
+            border-radius: 6px 6px 0 0;
+            text-align: center;
+            font-size: 11px;
+            padding: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            border: 1px solid #E2E8F0;
+            table-layout: fixed;
+        }
+        
+        th, td {
+            border: 1px solid #E2E8F0;
+            padding: 3px 4px;
+            text-align: left;
+        }
+        
+        th {
+            font-weight: bold;
+            background: #F1F5F9;
+            color: #1E3A8A;
+            text-align: center;
+        }
+        
+        tbody tr:nth-child(even) { background-color: #f8f8f8; }
+        tbody tr:nth-child(odd) { background-color: #ffffff; }
+        
+        .narrowbody-table th:nth-child(1), .narrowbody-table td:nth-child(1) { width: 8%; text-align: center; }
+        .narrowbody-table th:nth-child(2), .narrowbody-table td:nth-child(2) { width: 10%; }
+        .narrowbody-table th:nth-child(3), .narrowbody-table td:nth-child(3) { width: 52%; }
+        .narrowbody-table th:nth-child(4), .narrowbody-table td:nth-child(4) { width: 10%; text-align: center; }
+        .narrowbody-table th:nth-child(5), .narrowbody-table td:nth-child(5) { width: 20%; }
+        
+        .widebody-table th:nth-child(1), .widebody-table td:nth-child(1) { width: 10%; text-align: center; }
+        .widebody-table th:nth-child(2), .widebody-table td:nth-child(2) { width: 12%; }
+        .widebody-table th:nth-child(3), .widebody-table td:nth-child(3) { width: 48%; }
+        .widebody-table th:nth-child(4), .widebody-table td:nth-child(4) { width: 12%; text-align: center; }
+        .widebody-table th:nth-child(5), .widebody-table td:nth-child(5) { width: 18%; }
+        
+        .class-divider {
+            border-top: 2px solid #E2E8F0;
+            font-weight: bold;
+            text-align: center;
+            background: #fff !important;
+        }
+        
+        .error { color: #DC2626; background: #FEF2F2; border: 2px solid #DC2626; padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { color: #059669; background: #F0FDF4; border: 2px solid #059669; padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .zone-error { color: #DC2626; font-size: 11px; margin: 5px 0; padding: 5px; border: 1px solid #DC2626; background: #FEF2F2; display: none; border-radius: 4px; }
+        .zone-error.show { display: block; }
+        
+        .infant-meal {
+            font-size: 8px;
+            color: #666;
+            display: block;
+            margin-top: 2px;
+        }
+        
+        .upgrade-indicator {
+            font-size: 7px;
+            color: #059669;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 3px;
+        }
+        
+        .downgrade-indicator {
+            font-size: 7px;
+            color: #DC2626;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 3px;
+        }
+        
+        /* Seat Chart Styles */
+        .seat-chart-container {
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+        
+        .seat-chart {
+            border-collapse: collapse;
+            min-width: 100%;
+            border: 2px solid #1E3A8A !important;
+            transition: all 0.3s ease;
+        }
+        
+        .seat-chart th, .seat-chart td {
+            border: 1px solid #E2E8F0 !important;
+            padding: 0;
+            text-align: center;
+            vertical-align: top;
+            height: 35px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        /* UPDATED: Seat chart headers - consistent WebView and Print */
+        .seat-chart th {
+            background: #1E3A8A !important;
+            color: white !important;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #1E3A8A !important;
+            padding: 0;
+        }
+        
+        .seat-chart .row-header {
+            background: #1E3A8A !important;
+            color: white !important;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #1E3A8A !important;
+            padding: 0;
+        }
+        
+        .seat-chart .aisle {
+            background: #1E3A8A !important;
+            border-left: 2px solid #E2E8F0 !important;
+            border-right: 2px solid #E2E8F0 !important;
+        }
+        
+        /* Optimized column widths */
+        .seat-chart .row-header {
+            width: 12px !important;
+            min-width: 15px !important;
+            max-width: 15px !important;
+        }
+        
+        .seat-chart .aisle {
+            width: 10px !important;
+            min-width: 10px !important;
+            max-width: 10px !important;
+        }
+        
+        /* WIDER COLUMNS FOR 737 BUSINESS CLASS (A, C, D, F) */
+        .seat-chart.narrowbody-business td:not(.row-header):not(.aisle) {
+            width: 65px !important;
+            min-width: 65px !important;
+            max-width: 65px !important;
+        }
+        
+        .seat-chart.narrowbody-economy td:not(.row-header):not(.aisle) {
+            width: 50px !important;
+            min-width: 50px !important;
+            max-width: 50px !important;
+        }
+        
+        .seat-chart.widebody td:not(.row-header):not(.aisle) {
+            width: 55px !important;
+            min-width: 55px !important;
+            max-width: 55px !important;
+        }
+        
+        /* Optimized seat cell styling */
+        .seat-cell {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1px;
+            line-height: 1.1;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        /* DYNAMIC HEIGHT FOR BUSINESS CLASS */
+        .seat-cell.business-class {
+            justify-content: flex-start;
+            padding-top: 2px;
+            height: auto;
+            min-height: 45px;
+        }
+        
+        /* UPDATED: Seat chart passenger names - BLACK & BOLD */
+        .seat-line1 {
+            line-height: 1.1;
+            margin: 0;
+            padding: 0;
+            font-weight: bold;
+            color: #000000 !important;
+        }
+        
+        /* UPDATED: Seat chart ALL meals - BLACK & BOLDER in WebView */
+        .seat-line2 {
+            line-height: 1.1;
+            margin: 0;
+            padding: 0;
+            font-weight: bolder;
+            color: #000000 !important;
+        }
+        
+        /* NEW: Third line for business class meals - ALWAYS VISIBLE */
+        .seat-line3 {
+            line-height: 1.1;
+            margin: 0;
+            padding: 0;
+            font-weight: bolder;
+            color: #000000 !important;
+            margin-top: 1px;
+            min-height: 12px; /* Ensure blank line has height */
+        }
+        
+        /* Layer 1: Base alternating rows for seat chart */
+        .seat-chart tr.row-even { background-color: #FFFFFF !important; }
+        .seat-chart tr.row-odd { background-color: #FFFFFF !important; }
+        
+        /* Layer 2: Occupancy states (override row colors) */
+        .seat-occupied { 
+            background: #e0e0e0 !important; 
+            border: 1px solid #000000 !important;
+        }
+        .seat-empty { 
+            background: #FFFFFF !important; 
+            color: #6B7280;
+            border: 1px solid #E2E8F0 !important;
+        }
+        
+        /* Business class regular passenger styling */
+        .seat-business-regular { 
+            background: #FFFFFF !important; 
+            border: 1px solid #E2E8F0 !important;
+        }
+        
+        /* Layer 3: Tier overrides (highest priority - override everything) */
+        .seat-tier-emer { 
+            background: #d4d4d4 !important; 
+            border: 1px solid #000000 !important;
+        }
+        .seat-tier-plat { 
+            background: #d4d4d4 !important; 
+            border: 1px solid #000000 !important;
+        }
+        .seat-tier-gold { 
+            background: #FFFFFF !important; 
+            border: 1px solid #E2E8F0 !important;
+        }
+        
+        /* Layer 3: Meal indicators */
+        .seat-meal { color: #000000 !important; font-weight: bold; }
+        
+        .seat-name {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        
+        .seat-tier {
+            font-weight: bold;
+            color: #1E3A8A;
+        }
+        
+        .seat-tier-emer .seat-tier,
+        .seat-tier-plat .seat-tier {
+            font-weight: 900;
+        }
+        
+        .seat-meal-info {
+            color: #000000;
+            font-weight: bolder;
+        }
+        
+        .zone-boundary {
+            border-bottom: 1px solid #1E3A8A !important;
+        }
+        
+        .seat-chart-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #F8FAFC;
+            border-radius: 6px;
+        }
+        
+        .seat-chart-controls label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .seat-chart-controls input[type="range"] {
+            width: 150px;
+        }
+        
+        .magic-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .magic-option .toggle-switch {
+            width: 40px;
+            height: 20px;
+        }
+        
+        .magic-option .toggle-slider:before {
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+        
+        .magic-description {
+            font-size: 10px;
+            font-style: italic;
+        }
+        
+        body.compact-print-mode .stats { padding: 3px; font-size: 8px; }
+        body.avoid-orphan-rows tr { page-break-inside: avoid; }
+        body.landscape-mode::before {
+            content: "";
+            display: none;
+        }
+        
+        /* Dynamic font sizes */
+        .output-section[data-font-size="7"] table, .output-section[data-font-size="7"] th, .output-section[data-font-size="7"] td { font-size: 7px !important; }
+        .output-section[data-font-size="8"] table, .output-section[data-font-size="8"] th, .output-section[data-font-size="8"] td { font-size: 8px !important; }
+        .output-section[data-font-size="9"] table, .output-section[data-font-size="9"] th, .output-section[data-font-size="9"] td { font-size: 9px !important; }
+        .output-section[data-font-size="10"] table, .output-section[data-font-size="10"] th, .output-section[data-font-size="10"] td { font-size: 10px !important; }
+        .output-section[data-font-size="11"] table, .output-section[data-font-size="11"] th, .output-section[data-font-size="11"] td { font-size: 11px !important; }
+        .output-section[data-font-size="12"] table, .output-section[data-font-size="12"] th, .output-section[data-font-size="12"] td { font-size: 12px !important; }
+        .output-section[data-font-size="13"] table, .output-section[data-font-size="13"] th, .output-section[data-font-size="13"] td { font-size: 13px !important; }
+        .output-section[data-font-size="14"] table, .output-section[data-font-size="14"] th, .output-section[data-font-size="14"] td { font-size: 14px !important; }
+        
+        /* Dynamic table width */
+        .output-section[data-table-width="50"] { width: 50%; }
+        .output-section[data-table-width="60"] { width: 60%; }
+        .output-section[data-table-width="70"] { width: 70%; }
+        .output-section[data-table-width="80"] { width: 80%; }
+        .output-section[data-table-width="90"] { width: 90%; }
+        .output-section[data-table-width="100"] { width: 100%; }
+        .output-section[data-table-width="110"] { width: 110%; }
+        .output-section[data-table-width="120"] { width: 120%; }
+        .output-section[data-table-width="130"] { width: 130%; }
+        .output-section[data-table-width="140"] { width: 140%; }
+        .output-section[data-table-width="150"] { width: 150%; }
+        
+        /* Dynamic seat chart font sizes - THE PRIMARY TRUTH */
+        .seat-chart[data-font-size="8"] .seat-line1 { font-size: 8px !important; }
+        .seat-chart[data-font-size="8"] .seat-line2 { font-size: 10px !important; }
+        .seat-chart[data-font-size="8"] .seat-line3 { font-size: 10px !important; }
+        .seat-chart[data-font-size="9"] .seat-line1 { font-size: 9px !important; }
+        .seat-chart[data-font-size="9"] .seat-line2 { font-size: 11px !important; }
+        .seat-chart[data-font-size="9"] .seat-line3 { font-size: 11px !important; }
+        .seat-chart[data-font-size="10"] .seat-line1 { font-size: 10px !important; }
+        .seat-chart[data-font-size="10"] .seat-line2 { font-size: 12px !important; }
+        .seat-chart[data-font-size="10"] .seat-line3 { font-size: 12px !important; }
+        .seat-chart[data-font-size="11"] .seat-line1 { font-size: 11px !important; }
+        .seat-chart[data-font-size="11"] .seat-line2 { font-size: 13px !important; }
+        .seat-chart[data-font-size="11"] .seat-line3 { font-size: 13px !important; }
+        .seat-chart[data-font-size="12"] .seat-line1 { font-size: 12px !important; }
+        .seat-chart[data-font-size="12"] .seat-line2 { font-size: 14px !important; }
+        .seat-chart[data-font-size="12"] .seat-line3 { font-size: 14px !important; }
+        .seat-chart[data-font-size="13"] .seat-line1 { font-size: 13px !important; }
+        .seat-chart[data-font-size="13"] .seat-line2 { font-size: 15px !important; }
+        .seat-chart[data-font-size="13"] .seat-line3 { font-size: 15px !important; }
+        .seat-chart[data-font-size="14"] .seat-line1 { font-size: 14px !important; }
+        .seat-chart[data-font-size="14"] .seat-line2 { font-size: 16px !important; }
+        .seat-chart[data-font-size="14"] .seat-line3 { font-size: 16px !important; }
+        .seat-chart[data-font-size="15"] .seat-line1 { font-size: 15px !important; }
+        .seat-chart[data-font-size="15"] .seat-line2 { font-size: 15px !important; }
+        .seat-chart[data-font-size="15"] .seat-line3 { font-size: 15px !important; }
+        .seat-chart[data-font-size="16"] .seat-line1 { font-size: 16px !important; }
+        .seat-chart[data-font-size="16"] .seat-line2 { font-size: 16px !important; }
+        .seat-chart[data-font-size="16"] .seat-line3 { font-size: 16px !important; }
+        
+        @media (max-width: 768px) {
+            .seat-chart .row-header {
+                width: 20px !important;
+                min-width: 20px !important;
+                max-width: 20px !important;
+            }
+            
+            .seat-chart .aisle {
+                width: 8px !important;
+                min-width: 8px !important;
+                max-width: 8px !important;
+            }
+            
+            .seat-chart.narrowbody-business td:not(.row-header):not(.aisle) {
+                width: 55px !important;
+                min-width: 55px !important;
+                max-width: 55px !important;
+            }
+            
+            .seat-chart.narrowbody-economy td:not(.row-header):not(.aisle) {
+                width: 45px !important;
+                min-width: 45px !important;
+                max-width: 45px !important;
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .seat-chart.narrowbody-business td:not(.row-header):not(.aisle) {
+                width: 70px !important;
+                min-width: 70px !important;
+                max-width: 70px !important;
+            }
+            
+            .seat-chart.narrowbody-economy td:not(.row-header):not(.aisle) {
+                width: 55px !important;
+                min-width: 55px !important;
+                max-width: 55px !important;
+            }
+            
+            .seat-chart.widebody td:not(.row-header):not(.aisle) {
+                width: 60px !important;
+                min-width: 60px !important;
+                max-width: 60px !important;
+            }
+        }
+        
+        /* Fixed widths for print */
+        @media print {
+            /* Ultra-minimal margins for maximum printable area */
+            @page {
+                margin: 0 !important;
+                size: auto;
+            }
+            
+            /* Fallback for printers that enforce minimum margins */
+            @page :left {
+                margin: 0.1cm !important;
+            }
+            
+            @page :right {
+                margin: 0.1cm !important;
+            }
+            
+            @page :first {
+                margin: 0.1cm !important;
+            }
+            
+            /* Remove all container spacing */
+            body, .container, .output-section {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            /* NEW: Hide success messages and unassigned tables in print */
+            .success, .no-print {
+                display: none !important;
+            }
+            
+            /* NEW: Show unassigned seats section when enabled */
+            .zone-section.unassigned-print {
+                display: block !important;
+            }
+            
+            /* Hide unassigned seats section by default */
+            .zone-section.unassigned-no-print {
+                display: none !important;
+            }
+            
+            /* Seat chart specific optimizations */
+            .seat-chart-container {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+            
+            .seat-chart {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                border: 2px solid #1E3A8A !important;
+            }
+            
+            /* UPDATED: Seat chart headers - consistent in print */
+            .seat-chart th {
+                background: #1E3A8A !important;
+                color: white !important;
+                font-weight: bold;
+                text-align: center;
+                border: 1px solid #1E3A8A !important;
+                padding: 0;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+                height: 20px;
+            }
+            
+            .seat-chart .row-header {
+                background: #1E3A8A !important;
+                color: white !important;
+                font-weight: bold;
+                text-align: center;
+                border: 1px solid #1E3A8A !important;
+                padding: 0;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+                height: 20px;
+            }
+            
+            /* UPDATED: Seat chart passenger names - BLACK & BOLD in print */
+            .seat-line1 {
+                color: #000000 !important;
+                font-weight: bold !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+
+            /* UPDATED: Seat chart ALL meals - BLACK & BOLDER in print */
+            .seat-line2, .seat-line3 {
+                color: #000000 !important;
+                font-weight: bolder !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            /* Let seat charts use dynamic font sizes from slider */
+            .seat-chart[data-font-size] .seat-line1,
+            .seat-chart[data-font-size] .seat-line2,
+            .seat-chart[data-font-size] .seat-line3 {
+                /* Font sizes are controlled by data-font-size attribute - no overrides */
+            }
+            
+            /* Remove any spacing around zone sections */
+            .zone-section {
+                margin: 0 !important;
+                padding: 0 !important;
+                page-break-inside: avoid;
+            }
+            
+            .zone-header {
+                margin: 2px 0 !important;
+                padding: 2px !important;
+            }
+            
+            /* Keep dynamic font sizes for tables */
+            .output-section[data-font-size] table,
+            .output-section[data-font-size] th,
+            .output-section[data-font-size] td {
+                /* Font sizes are controlled by data-font-size attribute */
+            }
+            
+            body { background: white; padding: 0; }
+            .input-section, button, .help-section, .help-content, .seat-chart-controls { display: none; }
+            body.landscape-mode @page { size: A4 landscape; }
+            body.compact-print-mode @page { margin: 0.1cm !important; }
+            body.avoid-orphan-rows tr { page-break-inside: avoid; }
+            .zone-section.page-break { page-break-before: always; }
+            body.compact-print-mode .stats { font-size: 7px !important; padding: 2px !important; }
+            
+            /* Print optimization for seat charts */
+            .seat-chart th, .seat-chart td {
+                padding: 0;
+                height: 20px;
+                border: 1px solid #E2E8F0 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            /* Business class rows should be taller in print */
+            .seat-cell.business-class {
+                min-height: 35px;
+                padding-top: 1px;
+            }
+            
+            .seat-occupied {
+                background: #e0e0e0 !important;
+                border: 1px solid #000000 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            /* Ensure alternating rows are visible in print */
+            .seat-chart tr.row-even { 
+                background-color: #FFFFFF !important; 
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .seat-chart tr.row-odd { 
+                background-color: #FFFFFF !important; 
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .seat-tier-emer { 
+                background: #d4d4d4 !important; 
+                border: 1px solid #000000 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            .seat-tier-plat { 
+                background: #d4d4d4 !important; 
+                border: 1px solid #000000 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            .seat-tier-gold { 
+                background: #FFFFFF !important;
+                border: 1px solid #E2E8F0 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .seat-business-regular {
+                background: #FFFFFF !important;
+                border: 1px solid #E2E8F0 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .seat-empty {
+                background: #FFFFFF !important;
+                border: 1px solid #E2E8F0 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .seat-meal {
+                font-weight: bold;
+            }
+            /* CRITICAL: Port-Starboard print layout - Portrait & Landscape */
+
+/* Portrait mode: Force side-by-side for port-starboard tables */
+.tables-container {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 2mm !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.tables-container .table-wrapper {
+    flex: 1 1 48% !important;
+    max-width: 48% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.tables-container table {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+
+.tables-container th,
+.tables-container td {
+    padding: 0.5mm 1mm !important;
+    word-wrap: break-word !important;
+}
+
+/* Landscape mode: Larger fonts and spacing */
+body.landscape-mode .tables-container {
+    gap: 8mm !important;
+}
+
+body.landscape-mode .tables-container th,
+body.landscape-mode .tables-container td {
+    padding: 2mm 3mm !important;
+}
+
+body.landscape-mode .tables-container table {
+    font-size: 1.4em !important;
+}
+
+body.landscape-mode .tables-container th,
+body.landscape-mode .tables-container td {
+    font-size: 1.4em !important;
+}
+            /* Hide acknowledgments section when printing */
+            .acknowledgments {
+                display: none !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .button-group { flex-direction: column; }
+            button { width: 100%; min-height: 44px; }
+            .tables-container { flex-direction: column; }
+            .table-wrapper { max-width: 100%; }
+            .help-section { flex-direction: column; }
+            .seat-chart-controls { flex-direction: column; align-items: flex-start; }
+        }
+
+        .column-width-controls {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+
+        .column-control {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .column-control label {
+            width: 80px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .column-control input[type="range"] {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .column-control span {
+            width: 40px;
+            font-size: 11px;
+            text-align: right;
+            font-weight: 600;
+            color: #1E3A8A;
+        }
+
+        .auto-badge {
+            display: inline-block;
+            background: #10B981;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            font-weight: 600;
+        }
+
+        /* New Acknowledgments Styles */
+        .acknowledgments {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .acknowledgments h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 8px;
+        }
+        
+        .acknowledgments ul {
+            margin-bottom: 15px;
+        }
+        
+        .acknowledgments li {
+            margin-bottom: 5px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .acknowledgments a {
+            color: #FEF3C7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .acknowledgments a:hover {
+            text-decoration: underline;
+        }
+        
+        .acknowledgments .version-info {
+            text-align: center;
+            font-size: 10px;
+            opacity: 0.8;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -42,129 +1224,209 @@
                 </button>
             </div>
         </div>
-        <!-- NEW: Dual Chart Toggle -->
-<div class="help-toggle">
-    <button class="dual-chart-toggle" onclick="toggleDualChartMode()">
-        <span>🔄</span>
-        <span id="dualChartLabel">Dual Chart Mode</span>
-        <label class="toggle-switch">
-            <input type="checkbox" id="dualChartToggle">
-            <span class="toggle-slider"></span>
-        </label>
-    </button>
-</div>
+        
        <div id="tutorialContent" class="help-content">
-    <h3>Quick Start Guide - 4 Simple Steps</h3>
+    <h3>How to Use This Passenger Meal & Tier Report Tool</h3>
     
-    <!-- Quick Platform Summary -->
-    <div class="platform-summary">
-        <div class="platform-card mini">
-            <h4>💻 PC/Mac</h4>
-            <p>1. Ctrl+A (select all)<br>2. Ctrl+C (copy)<br>3. Ctrl+V (paste here)<br>4. Ctrl+Enter (generate)</p>
-        </div>
+    <p><strong>Quick Path (Recommended for 90% of users):</strong></p>
+    <ol>
+        <li><strong>Step 1:</strong> Copy the passenger manifest from BPM using platform-specific instructions below</li>
+        <li><strong>Step 2:</strong> Paste the manifest data into the text area</li>
+        <li><strong>Step 3:</strong> Click <strong>"Generate Report"</strong> or press Ctrl+Enter (Cmd+Enter on Mac)</li>
+        <li><strong>Step 4:</strong> Click "Print Report" when ready</li>
+    </ol>
+    
+    <p><strong>Advanced Path (For Customization):</strong></p>
+    <ul>
+        <li>Open "Advanced Settings" for more customization options</li>
+        <li>All changes update the preview automatically - no need to click "Apply"</li>
+        <li>Click <strong>"Print report with current settings"</strong>, <strong>CHECK</strong> the print surface area, <strong>CHECK</strong> the pages number you want to print unless you want to include all the names in the manifest in the unassigned table.</li>
+        <li>Use "Reset to Defaults" to return to auto-detection</li>
+    
+    </ul>
+    
+    <div class="platform-instructions">
+        <h4>📋 Platform-Specific Copy Instructions</h4>
+        <p><em>Due to different operating system limitations, here's how to copy the manifest data properly:</em></p>
         
-        <div class="platform-card mini">
-            <h4>📱 Android</h4>
-            <p>1. Install XClipper<br>2. Select all<br>3. XCopy<br>4. Paste here</p>
-        </div>
-        
-        <div class="platform-card mini">
-            <h4>🍎 iOS</h4>
-            <p>1. Tap & hold FLT NBR<br>2. Drag to select all<br>3. Copy<br>4. Paste here</p>
+        <div class="platform-steps">
+            <div class="platform-step">
+                <span class="badge">ANDROID</span>
+                <h5>Must use XClipper (available on Play Store)</h5>
+                <p>Due to Android copy limit restrictions:</p>
+                <ol style="margin-left: 15px; font-size: 11px;">
+                    <li>Long press on "FLT NBR"</li>
+                    <li>Select all text</li>
+                    <li>Use "XCopy" from XClipper</li>
+                    <li>Or drag to select all passenger data down to "Showing X entries"</li>
+                </ol>
+            </div>
+            
+            <div class="platform-step">
+                <span class="badge">iOS</span>
+                <h5>Standard Selection Method</h5>
+                <p>For iPhone/iPad users:</p>
+                <ol style="margin-left: 15px; font-size: 11px;">
+                    <li>Tap and hold on "FLT NBR"</li>
+                    <li>Drag selection handles to select from "FLT NBR" until "End of PAX List" or "Showing X entries"</li>
+                    <li>Copy the selected text</li>
+                </ol>
+            </div>
+            
+            <div class="platform-step">
+                <span class="badge">WINDOWS/MAC</span>
+                <h5>Keyboard & Mouse Method</h5>
+                <p>For desktop computers:</p>
+                <ol style="margin-left: 15px; font-size: 11px;">
+                    <li>Click before "FLT NBR"</li>
+                    <li>Hold Shift key</li>
+                    <li>Scroll down and click after "Showing X entries"</li>
+                    <li>Press Ctrl+C (Cmd+C on Mac) to copy</li>
+                </ol>
+            </div>
         </div>
     </div>
     
-    <div class="simple-steps">
-        <div class="step-simple">
-            <div class="step-icon">📋</div>
-            <div class="step-text">
-                <strong>Step 1:</strong> Copy entire manifest in BPM from "FLT NBR" to "Showing X entries"
-            </div>
-        </div>
-        
-        <div class="step-simple">
-            <div class="step-icon">📝</div>
-            <div class="step-text">
-                <strong>Step 2:</strong> Paste into the text box below
-            </div>
-        </div>
-        
-        <div class="step-simple">
-            <div class="step-icon">🚀</div>
-            <div class="step-text">
-                <strong>Step 3:</strong> Click "Generate Report" or press Ctrl+Enter. Use advance settings for seat chart and more custom configuration
-            </div>
-        </div>
-        
-        <div class="step-simple">
-            <div class="step-icon">🖨️</div>
-            <div class="step-text">
-                <strong>Step 4:</strong> Click "Print Report" and set margins "Fit to page/minimum/custom" depending on your printer
-            </div>
-        </div>
-    </div>
-    
-    <div class="critical-note">
-        <strong>🚨 Android Users:</strong> You MUST install "XClipper" from Play Store to copy long manifests!
-    </div>
-    
-    <!-- Embedded Full Tutorial -->
-    <div class="full-tutorial">
-        <h4>📖 Complete Guide & Troubleshooting</h4>
-        <div class="iframe-container">
-            <div id="iframe-loading">
-                <div class="spinner"></div>
-                <p>Loading complete tutorial...</p>
-            </div>
-            <iframe 
-                src="tutorial.html" 
-                id="tutorialIframe"
-                title="Complete Tutorial & Troubleshooting"
-                scrolling="yes"
-                loading="lazy"
-                onload="hideIframeLoading()">
-            </iframe>
-        </div>
-        
-        <div class="iframe-controls">
-            <button onclick="reloadIframe()" class="btn-small btn-info">🔄 Reload</button>
-            <button onclick="openTutorialInNewTab()" class="btn-small btn-success">🔗 Open in New Tab</button>
-        </div>
-    </div>
+    <p><strong>Pro Tips:</strong></p>
+    <ul>
+        <li>Use <strong>Ctrl+Enter</strong> (Cmd+Enter on Mac) to quickly generate reports after pasting data</li>
+        <li>The tool auto-detects aircraft type and selects the optimal layout</li>
+        <li>Seat Chart view shows visual seating with color-coded tiers and meals</li>
+        <li>Adjust font sizes and table width for perfect printing</li>
+        <li>Try the <strong>Aft Perspective View</strong> for perfect cabin views from the back!</li>
+        <li>Business class passengers now show on multiple lines with better name display</li>
+        <li><strong>737 Business Class</strong> now has blank lines for meals to write in standard meals</li>
+        <li><strong>NEW:</strong> Toggle to show unassigned passengers in print view</li>
+    </ul>
 </div>
         
         <div id="versionContent" class="help-content">
-            <h3>Version History - Complete Release Notes</h3>
-            
-            <!-- Embedded Version History -->
-            <div class="full-tutorial">
-                <h4>📚 Complete Version History</h4>
-                <div class="iframe-container">
-                    <div id="iframe-loading-version">
-                        <div class="spinner"></div>
-                        <p>Loading version history...</p>
-                    </div>
-                    <iframe 
-                        src="versions.html" 
-                        id="versionIframe"
-                        title="Complete Version History"
-                        scrolling="yes"
-                        loading="lazy"
-                        onload="hideVersionIframeLoading()">
-                    </iframe>
-                </div>
-                
-                <div class="iframe-controls">
-                    <button onclick="reloadVersionIframe()" class="btn-small btn-info">🔄 Reload</button>
-                    <button onclick="openVersionsInNewTab()" class="btn-small btn-success">🔗 Open in New Tab</button>
-                </div>
-            </div>
-        </div>
-        <!-- NEW: Dual Chart Mode Indicator -->
-<div id="dualChartIndicator" class="dual-chart-indicator">
-    <span>🔄</span>
-    <span><strong>Dual Chart Mode Active:</strong> Generate first chart → Clear → Paste second manifest → Generate second chart</span>
-</div>
+     <h3>Version History - Complete Release Notes</h3>
+     <!-- NEW VERSION 3.8 -->
+<h4>🚀 Version 3.8 - Smart Aircraft Registration Detection</h4>
+<p><strong>Release Date:</strong> Current Version</p>
+<p><strong>New Features:</strong></p>
+<ul>
+    <li><strong>9MM Registration Auto-Detection</strong> - Automatically identifies aircraft type from registration numbers</li>
+    <li><strong>737NR Detection</strong> - Smart detection of extended business class (rows 1-4) when row 4 has J class passengers</li>
+    <li><strong>Widebody Port-Starboard Default</strong> - All widebody aircraft now default to port-starboard split layout</li>
+    <li><strong>Flight Number in Zone Headers</strong> - Flight number now displays on every zone header for easy identification</li>
+    <li><strong>Enhanced Configuration Mapping</strong> - Precise aircraft configuration based on registration patterns</li>
+</ul>
+<p><strong>Aircraft Detection Patterns:</strong></p>
+<ul>
+    <li><strong>737</strong>: 9MM(X,L,V,F) + any letter</li>
+    <li><strong>A330-200</strong>: 9MM(T) + U-Z</li>
+    <li><strong>A330-300</strong>: 9MM(T) + A-S</li>
+    <li><strong>A330-900neo</strong>: 9MM(N) + any letter</li>
+    <li><strong>A350-900</strong>: 9MM(A) + A-G</li>
+    <li><strong>A350-MAH</strong>: 9MMAH (exact match)</li>
+</ul>
+     <h4>🚀 Version 3.7 - Show Unassigned Table in Print</h4>
+     <p><strong>Release Date:</strong> Current Version</p>
+     <p><strong>New Features:</strong></p>
+     <ul>
+         <li><strong>Show Unassigned Table in Print</strong> - New toggle option to include unassigned passengers in print view</li>
+         <li><strong>Print Control</strong> - Choose whether to include unassigned passengers in printed reports</li>
+         <li><strong>Flexible Workflows</strong> - Print with or without unassigned table based on your needs</li>
+     </ul>
+     
+     <h4>🚀 Version 3.6 - 737 Business Class Blank Meal Lines</h4>
+     <p><strong>Release Date:</strong> Previous Version</p>
+     <p><strong>New Features:</strong></p>
+     <ul>
+         <li><strong>737 Business Class Blank Meal Lines</strong> - Always show meal line even when no special meal</li>
+         <li><strong>Write-In Space</strong> - Blank space for writing standard meals manually</li>
+         <li><strong>Consistent Layout</strong> - All business class seats maintain same 3-line structure</li>
+         <li><strong>Better Print Format</strong> - Blank lines maintain proper spacing for handwriting</li>
+     </ul>
+     
+     <h4>🚀 Version 3.5 - Business Class Seat Chart Improvements</h4>
+     <p><strong>Release Date:</strong> Previous Version</p>
+     <p><strong>New Features:</strong></p>
+     <ul>
+         <li><strong>Business Class Multi-line Display</strong> - Names on two lines, meals on third line</li>
+         <li><strong>Dynamic Cell Height</strong> - Business class cells automatically adjust height</li>
+         <li><strong>Name Truncation</strong> - Names truncated to 15 characters for better fit</li>
+         <li><strong>737 Business Class Wider Columns</strong> - A, C, D, F seats now wider (65px vs 50px)</li>
+         <li><strong>Font Size Consistency</strong> - Seat chart font slider works for both business and economy</li>
+         <li><strong>737 Business Class Layout</strong> - No B and E seats in 737 business class</li>
+         <li><strong>Aft Perspective View Restored</strong> - Flip seat chart option is back!</li>
+     </ul>
+     
+     <h4>🎯 Version 3.4 - Aft Perspective View</h4>
+     <p><strong>Release Date:</strong> Previous Version</p>
+     <p><strong>New Features:</strong></p>
+     <ul>
+         <li><strong>Aft Perspective View</strong> - Flip seat chart 180° (rows and columns reversed)</li>
+         <li><strong>Perfect Cabin Perspective</strong> - Print, to view from bottom for exact view from crew perspective</li>
+         <li><strong>Simple Toggle</strong> - Easy on/off switch for flipped view</li>
+         <li><strong>Preserved Readability</strong> - Text stays normal, only layout changes</li>
+     </ul>
+     
+     <h4>🎯 Version 3.3 - Seat Chart Font Optimization</h4>
+     <p><strong>Release Date:</strong> Previous Version</p>
+     <p><strong>New Features:</strong></p>
+     <ul>
+         <li><strong>Seat Chart Font Size Slider</strong> - Adjust font size from 8px to 16px</li>
+         <li><strong>Optimized 2-Line Display</strong> - Better use of space with larger fonts</li>
+         <li><strong>Tier Icon Display</strong> - ❤️ for PLAT, 🔴 for EMER only</li>
+         <li><strong>All Caps Format</strong> - Maximum readability in seat cells</li>
+         <li><strong>Business Class Zone Fix</strong> - Show All Business option now only affects B/J zones</li>
+     </ul>
+     
+     <h4>📊 Version 3.2 - Advanced Column Controls</h4>
+     <p><strong>Release Date:</strong> Previous Version</p>
+     <p><strong>New Features:</strong></p>
+     <ul>
+         <li><strong>Individual Column Width Controls</strong> - Adjust each column width independently</li>
+         <li><strong>Auto-detect Badge</strong> - Visual indicator for auto-detection mode</li>
+         <li><strong>Responsive Column Layout</strong> - Better mobile experience</li>
+         <li><strong>Print Optimization</strong> - Better column proportions for printed reports</li>
+     </ul>
+     
+     <h4>🖨️ Version 3.1 - Print Optimization</h4>
+     <p><strong>Release Date:</strong> Previous Version</p>
+     <p><strong>New Features:</strong></p>
+     <ul>
+         <li><strong>Ultra-Minimal Margins</strong> - Maximum printable area utilization</li>
+         <li><strong>Compact Print Mode</strong> - Save 20-30% paper for large lists</li>
+         <li><strong>Landscape Mode</strong> - Better for wide tables and larger fonts</li>
+         <li><strong>Page Break Control</strong> - Smart page breaks between zones</li>
+         <li><strong>Orphan Row Prevention</strong> - Keep related rows together</li>
+     </ul>
+     
+     <h4>✨ Version 3.0 - Major Overhaul</h4>
+     <p><strong>Release Date:</strong> Previous Version</p>
+     <p><strong>New Features:</strong></p>
+     <ul>
+         <li><strong>Complete UI Redesign</strong> - Modern, professional interface</li>
+         <li><strong>Real-time Preview</strong> - All changes update instantly</li>
+         <li><strong>Advanced Aircraft Detection</strong> - Smart auto-detection from manifest</li>
+         <li><strong>Custom Zone Configuration</strong> - Full control over cabin zones</li>
+         <li><strong>Enhanced Seat Charts</strong> - Visual seating with color-coded tiers</li>
+         <li><strong>Download Offline Version</strong> - Work without internet connection</li>
+     </ul>
+     
+     <h4>🛠️ Version 2.0 - Core Features</h4>
+     <p><strong>Release Date:</strong> Previous Version</p>
+     <p><strong>New Features:</strong></p>
+     <ul>
+         <li><strong>Basic Manifest Parsing</strong> - Extract passenger data from BPM</li>
+         <li><strong>Meal & Tier Filtering</strong> - Show only special meals and EMER/PLAT tiers</li>
+         <li><strong>Basic Seat Chart</strong> - Initial visual seating layout</li>
+         <li><strong>Simple Printing</strong> - Basic print functionality</li>
+     </ul>
+     
+     <h4>🎉 Version 1.0 - Initial Release</h4>
+     <p><strong>Release Date:</strong> Foundation</p>
+     <p><strong>Basic Functionality:</strong></p>
+     <ul>
+         <li><strong>Text-based Reporting</strong> - Simple passenger lists</li>
+         <li><strong>Manual Configuration</strong> - Basic aircraft type selection</li>
+         <li><strong>Foundation</strong> - Core parsing engine and UI structure</li>
+     </ul>
+ </div>
         
         <div class="input-section">
             <div class="paste-hint">💡 Paste manifest → Generate (Ctrl+Enter) → Print - Fast & Simple!</div>
@@ -174,31 +1436,8 @@
                 <button class="btn-secondary" onclick="clearAll()">Clear</button>
                 <button class="btn-info" id="toggleAdvanced" onclick="toggleSettings()">▼ Advanced Settings</button>
                 <button class="btn-success" onclick="window.print()">Print Report</button>
-                <button class="btn-info" onclick="toggleSavedSection()">📋Saved (<span id="savedCount">0</span>)</button>
             </div>
-            <!-- ============================================
-     SIMPLE SAVED REPORTS SECTION
-     ============================================ -->
-<div class="saved-reports-simple" id="savedReportsSimple" style="display: none;">
-    <div class="saved-header">
-        <h2>📋 Saved Reports (<span id="savedCount">0</span>)</h2>
-        <button class="btn-secondary btn-small" onclick="toggleSavedSection()">Hide</button>
-    </div>
-    
-    <div class="saved-list" id="savedList">
-        <!-- Reports will appear here -->
-    </div>
-    
-    <div class="saved-actions">
-        <button class="btn-primary" onclick="printAllSelected()">🖨️ Print Selected Reports</button>
-        <button class="btn-danger btn-small" onclick="clearAllSaved()">Clear All</button>
-    </div>
-</div>
-
-<!-- Save button that appears after generating a report -->
-<div id="savePrompt" style="display: none; margin: 15px 0; text-align: center;">
-    <button class="btn-success" onclick="saveCurrentReport()">💾 Save This Report</button>
-</div>
+            
             <div id="advancedSettings" class="advanced-settings">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <div class="settings-header">Advanced Configuration</div>
@@ -213,7 +1452,7 @@
                         <option value="737NR">737NR: J:1-4, Y:5-30</option>
                     </optgroup>
                     <optgroup label="Widebody">
-                        <option value="333">A330-300: J:1-7, C:9-27, D:28-44</option>
+                        <option value="333">A330-300: J:1-8, C:9-27, D:28-44</option>
                         <option value="332">A330-200: J:1-6, C:14-30, D:31-50</option>
                         <option value="339">A330-900: J:1-8, C:9-26, D:27-44</option>
                         <option value="359">A350-900: J:1-11, C:12-22, D:23-32, E:33-41</option>
@@ -232,27 +1471,11 @@
                 
                 <div class="settings-header" style="margin-top: 15px;">Layout Style</div>
                 <select id="layoutStyle">
-    <option value="auto">Auto (Smart Default)</option>
-    <option value="single">Traditional Single Column</option>
-    <option value="port-starboard">Port/Starboard Split</option>
-    <option value="seat-chart">Seat Chart (Alpha VainGlory)</option>
-    <!-- NEW: Business Class Seat Chart Option -->
-    <option value="seat-chart-business">Seat Chart - Business Class</option>
-    <!-- NEW: Dual Chart Option for 737 -->
-    <option value="dual-chart-737">Dual Service Chart - 737 Business Class</option>
-</select>
-<!-- NEW: Dual Chart Instructions -->
-<div id="dualChartInstructions" class="dual-chart-instructions" style="display: none;">
-    <strong>📋 Dual Chart Instructions:</strong>
-    <ul class="dual-chart-steps">
-        <li>1. Select your 737 aircraft type (NG, MAX, or NR)</li>
-        <li>2. Paste <strong>FIRST SERVICE</strong> manifest and click "Generate Report"</li>
-        <li>3. Popup opens with first service chart. Wait for "Chart ready" message.</li>
-        <li>4. Clear the text box, paste <strong>SECOND SERVICE</strong> manifest</li>
-        <li>5. Click "Generate Report" again - it will send to existing popup</li>
-        <li>6. Print both services on one page!</li>
-    </ul>
-</div>
+                    <option value="auto">Auto (Smart Default)</option>
+                    <option value="single">Traditional Single Column</option>
+                    <option value="port-starboard">Port/Starboard Split</option>
+                    <option value="seat-chart">Seat Chart (Beta)</option>
+                </select>
                 
                 <div class="settings-header" style="margin-top: 15px;">Font Size</div>
                 <div class="font-size-controls">
@@ -283,7 +1506,7 @@
                         <label>Seat Chart Font Size: <span id="seatChartFontValue">14px</span></label>
                         <input type="range" id="seatChartFontSlider" min="8" max="16" value="14" step="1">
                         <div style="font-size: 10px; color: #64748B; margin-top: 5px;">
-                            Line 1: Name/Tier | Line 2: Meal (2px larger for emphasis) | Line 3: Meal/Blank | Line 4: Blank line for writing in business class
+                            Line 1: Name/Tier | Line 2: Meal (2px larger for emphasis) | Line 3: Always shown in business class for writing meals
                         </div>
                     </div>
                     
@@ -393,392 +1616,19 @@
                 <li><strong>LS Batch 3/25</strong> - For inspiring this project and testing</li>
                 <li><a href="https://spck.io/" target="_blank"><strong>SPCK editor</strong></a> - Spck editor for coding and git</li>
                 <li><a href="https://kaustubhpatange.github.io/XClipper/" target="_blank"><strong>Xclipper</strong></a> - Must have for android mobile</li>
-                <li><a href="https://adimudzamil.github.io/ftl/" target="_blank"><strong>FTL calculator and Roster with FTL timer and info</strong></a> - if you wanna test it out for me, feedback needed</li>
+                <li><a href="https://adimudzamil.github.io/ftl/" target="_blank"><strong>FTL calculator</strong></a> - if you wanna test it out for me, feedback needed</li>
                 <li><a href="https://adimudzamil.github.io/roster/" target="_blank"><strong>Roster to Calendar</strong></a> - How i add roster to my calendar and set alarm for every flight</li>
                 <li><a href="https://adimudzamil.github.io/log/" target="_blank"><strong>ICC Timestamp Logger</strong></a> - Time stamp logger for ICC, still testing and debugging</li>
             </ul>
             <p style="margin-top: 10px; font-style: italic; text-align: center;">Thank you all for your help during testing and for helping make this tool better for everyone! ✈️</p>
             
             <div class="version-info">
-                Version 4.0 | 4th Line for Business Class Writing | Left-Aligned Empty Seat Numbers | Show Unassigned Table in Print
+                Version 3.7 | Show Unassigned Table in Print | Always Show Meal Line for Writing
                 <br>Any bugs or feedback please contact Zayn Ikhlas when he is 21. I only do this when i'm babysitting Zayn or n/s lol XP
             </div>
         </div>
     </div>
-    <script>
-    
-// =================== DUAL CHART GLOBAL VARIABLES ===================
-let seatChartWindow = null;
-let chartReadyForSecondManifest = false;
-let isDualChartMode = false;
 
-// =================== NEW: AUTO DETECTION & AUTO LAYOUT ===================
-
-// NEW: Enhanced generateQuickReport to auto-set aircraft and layout
-function generateQuickReport() {
-    const input = document.getElementById('manifestInput').value;
-    if (!input.trim()) {
-        showError('Please paste passenger manifest data.');
-        return;
-    }
-    
-    try {
-        const { flightInfo, passengers } = parseManifest(input);
-        
-        // Detect aircraft type from manifest
-        const detectedType = detectAircraftType(passengers, flightInfo);
-        const effectiveAircraftConfig = getEffectiveAircraftConfig(detectedType, flightInfo, passengers);
-        const effectiveLayout = getEffectiveLayout(detectedType);
-        
-        // Auto-set the aircraft type dropdown
-        const aircraftDropdown = document.getElementById('aircraftType');
-        aircraftDropdown.value = effectiveAircraftConfig;
-        
-        // Auto-set the layout style dropdown
-        const layoutDropdown = document.getElementById('layoutStyle');
-        layoutDropdown.value = effectiveLayout;
-        
-        // Update settings and generate report
-        updateSettingsFromControls();
-        generateReportWithCurrentSettings();
-        
-        // Show detection message
-        let layoutName = effectiveLayout === 'port-starboard' ? 'Port/Starboard Split' : 'Single Column';
-        showSuccess(`✓ Auto-detected: ${effectiveAircraftConfig} | Layout: ${layoutName}`);
-        
-    } catch (error) {
-        showError(`Error: ${error.message}`);
-    }
-}
-
-// NEW: Update getEffectiveLayout to always use port-starboard for widebody when auto
-function getEffectiveLayout(detectedType) {
-    // If layout is set to auto in settings
-    if (currentSettings.layoutStyle === 'auto') {
-        // Always use port-starboard for widebody when auto is selected
-        return detectedType === 'widebody' ? 'port-starboard' : 'single';
-    }
-    return currentSettings.layoutStyle;
-}
-
-// NEW: Enhanced aircraft detection with better registration logic
-function detectAircraftType(passengers, flightInfo) {
-    // First try to detect from aircraft registration in flight info
-    if (flightInfo.aircraft) {
-        const acft = flightInfo.aircraft.toUpperCase();
-        
-        // Check for 9MM registrations (MH aircraft)
-        console.log("Checking aircraft registration:", acft);
-        
-        if (acft.startsWith('9MM')) {
-            const fourthChar = acft[3];
-            const fifthChar = acft[4];
-            
-            // 737: 9MM(X,L,V,F) + any letter
-            if (['X', 'L', 'V', 'F'].includes(fourthChar)) {
-                console.log("Detected: 737 aircraft (narrowbody)");
-                return 'narrowbody';
-            }
-            // A330-900neo: 9MM(N) + any letter
-            else if (fourthChar === 'N') {
-                console.log("Detected: A330-900neo (widebody)");
-                return 'widebody';
-            }
-            // A350-900: 9MM(A) + A-G
-            else if (fourthChar === 'A' && fifthChar && fifthChar >= 'A' && fifthChar <= 'G') {
-                console.log("Detected: A350-900 (widebody)");
-                return 'widebody';
-            }
-            // A350-MAH: 9MMAH
-            else if (acft === '9MMAH') {
-                console.log("Detected: A350-MAH (widebody)");
-                return 'widebody';
-            }
-            // A330-300: 9MM(T) + A-S
-            else if (fourthChar === 'T' && fifthChar && fifthChar >= 'A' && fifthChar <= 'S') {
-                console.log("Detected: A330-300 (widebody)");
-                return 'widebody';
-            }
-            // A330-200: 9MM(T) + U-Z
-            else if (fourthChar === 'T' && fifthChar && fifthChar >= 'U' && fifthChar <= 'Z') {
-                console.log("Detected: A330-200 (widebody)");
-                return 'widebody';
-            }
-        }
-        
-        // Check for other registration patterns
-        if (acft.includes('737')) return 'narrowbody';
-        if (acft.includes('A330') || acft.includes('A350') || acft.includes('A340')) return 'widebody';
-        if (acft.includes('777') || acft.includes('787')) return 'widebody';
-    }
-    
-    // Fallback: detect from seat letters
-    for (const pax of passengers) {
-        if (pax.seat) {
-            const seatLetter = pax.seat.slice(-1).toUpperCase();
-            // Widebody aircraft have seats beyond F (G, H, J, K)
-            if (['G', 'H', 'J', 'K'].includes(seatLetter)) {
-                console.log("Detected: Widebody from seat letter", seatLetter);
-                return 'widebody';
-            }
-        }
-    }
-    
-    console.log("Defaulting to: narrowbody (737)");
-    return 'narrowbody'; // default to 737 if no widebody indicators found
-}
-
-// NEW: Enhanced aircraft configuration detection with better fallbacks
-function getEffectiveAircraftConfig(detectedType, flightInfo, passengers) {
-    // First check if user has manually selected a specific type
-    const manualAircraftType = document.getElementById('aircraftType').value;
-    if (manualAircraftType !== 'auto') {
-        console.log("Using manual selection:", manualAircraftType);
-        return manualAircraftType;
-    }
-    
-    // Auto-detection logic
-    if (flightInfo.aircraft) {
-        const acft = flightInfo.aircraft.toUpperCase();
-        
-        // 737 Aircraft Detection
-        if (acft.startsWith('9MM') && ['X', 'L', 'V', 'F'].includes(acft[3])) {
-            // Check if this is 737NR (Business Class extends to row 4)
-            const hasRow4Business = passengers.some(p => {
-                if (p.seat && p.class === 'J') {
-                    const rowNum = parseInt(p.seat.substring(0, 2));
-                    return rowNum === 4;
-                }
-                return false;
-            });
-            
-            // If row 4 has Business Class passengers, use 737NR configuration
-            if (hasRow4Business) {
-                console.log("Detected: 737NR (Business class in row 4)");
-                return '737NR'; // J:1-4, Y:5-30
-            } else {
-                // Try to distinguish between NG and MAX if possible
-                if (acft.includes('MAX') || (acft[3] === 'V' || acft[3] === 'F')) {
-                    console.log("Detected: 737MAX");
-                    return '737MAX';
-                }
-                console.log("Detected: 737NG");
-                return '737NG'; // default 737
-            }
-        }
-        
-        // Widebody Aircraft Detection
-        if (acft.startsWith('9MM')) {
-            const fourthChar = acft[3];
-            const fifthChar = acft[4];
-            
-            if (fourthChar === 'N') {
-                console.log("Detected: A330-900neo (339)");
-                return '339';
-            }
-            if (fourthChar === 'A' && fifthChar && fifthChar >= 'A' && fifthChar <= 'G') {
-                console.log("Detected: A350-900 (359)");
-                return '359';
-            }
-            if (acft === '9MMAH') {
-                console.log("Detected: A350-MAH (350)");
-                return '350';
-            }
-            if (fourthChar === 'T') {
-                if (fifthChar && fifthChar >= 'A' && fifthChar <= 'S') {
-                    console.log("Detected: A330-300 (333)");
-                    return '333';
-                }
-                if (fifthChar && fifthChar >= 'U' && fifthChar <= 'Z') {
-                    console.log("Detected: A330-200 (332)");
-                    return '332';
-                }
-            }
-        }
-    }
-    
-    // Fallback based on detected type
-    const fallback = detectedType === 'widebody' ? '333' : '737NG';
-    console.log("Using fallback:", fallback);
-    return fallback;
-}
-
-// NEW: Auto-detection indicator
-function showAutoDetectionIndicator() {
-    const input = document.getElementById('manifestInput').value;
-    if (!input.trim()) return;
-    
-    try {
-        const { flightInfo, passengers } = parseManifest(input);
-        const detectedType = detectAircraftType(passengers, flightInfo);
-        const effectiveAircraftConfig = getEffectiveAircraftConfig(detectedType, flightInfo, passengers);
-        const effectiveLayout = getEffectiveLayout(detectedType);
-        
-        // Update page estimate with detection info
-        const pageEstimate = document.getElementById('pageEstimate');
-        if (pageEstimate) {
-            const aircraftType = document.getElementById('aircraftType').value;
-            const layoutStyle = document.getElementById('layoutStyle').value;
-            
-            let detectionInfo = '';
-            if (aircraftType === 'auto') {
-                detectionInfo += `<div><strong>Aircraft:</strong> <span style="color: #059669;">${effectiveAircraftConfig}</span> (Auto-detected)</div>`;
-            }
-            if (layoutStyle === 'auto') {
-                const layoutName = effectiveLayout === 'port-starboard' ? 'Port/Starboard' : 'Single Column';
-                detectionInfo += `<div><strong>Layout:</strong> <span style="color: #059669;">${layoutName}</span> (Auto)</div>`;
-            }
-            
-            if (detectionInfo) {
-                pageEstimate.innerHTML = `<div style="margin-bottom: 5px;"><strong>📊 Auto-detection Preview:</strong></div>${detectionInfo}`;
-            }
-        }
-    } catch (error) {
-        // Ignore errors in indicator
-        console.log("Auto-detection preview error:", error);
-    }
-}
-// =================== DUAL CHART FUNCTIONS ===================
-function toggleDualChartMode() {
-const toggle = document.getElementById('dualChartToggle');
-isDualChartMode = !toggle.checked;
-toggle.checked = isDualChartMode;
-
-const label = document.getElementById('dualChartLabel');
-const indicator = document.getElementById('dualChartIndicator');
-
-if (isDualChartMode) {
-label.textContent = 'Dual Chart Mode ON';
-indicator.classList.add('active');
-// Auto-select dual chart layout
-document.getElementById('layoutStyle').value = 'dual-chart-737';
-showDualChartInstructions();
-} else {
-label.textContent = 'Dual Chart Mode';
-indicator.classList.remove('active');
-hideDualChartInstructions();
-}
-
-console.log('Dual chart mode:', isDualChartMode ? 'ON' : 'OFF');
-}
-
-function showDualChartInstructions() {
-const instructions = document.getElementById('dualChartInstructions');
-if (instructions) instructions.style.display = 'block';
-}
-
-function hideDualChartInstructions() {
-const instructions = document.getElementById('dualChartInstructions');
-if (instructions) instructions.style.display = 'none';
-}
-
-// Dual chart specific generate function
-function generateDualChart(passengers, flightInfo, aircraftType) {
-// Parse manifest and create chartData...
-const chartData = {
-flightInfo: flightInfo,
-passengers: passengers,
-zoneSummary: generateZoneSummaryForDualChart(passengers),
-config: {
-aircraftType: aircraftType,
-timestamp: Date.now()
-}
-};
-
-if (!seatChartWindow || seatChartWindow.closed) {
-// First manifest - open new popup
-const timestamp = Date.now();
-const dataKey = `chartData_${timestamp}`;
-localStorage.setItem(dataKey, JSON.stringify(chartData));
-
-// Determine which HTML file to open
-let popupFile = '';
-if (aircraftType === '737NG' || aircraftType === '737MAX') {
-popupFile = 'sc-737.html';
-} else if (aircraftType === '737NR') {
-popupFile = 'sc-737.html'; // Use the same file for NR
-}
-
-// Open popup
-seatChartWindow = window.open(
-`${popupFile}?data=${dataKey}&chart=top`,
-'seatChart',
-'width=1200,height=900,scrollbars=yes'
-);
-
-// Clear input for second manifest
-document.getElementById('manifestInput').value = '';
-
-// Show success message
-showSuccess('First service chart opened! Clear and paste second manifest for second service.');
-
-} else if (chartReadyForSecondManifest) {
-// Second manifest - send to existing popup
-const timestamp = Date.now();
-const dataKey = `chartData_bottom_${timestamp}`;
-localStorage.setItem(dataKey, JSON.stringify(chartData));
-
-// Send message to popup
-seatChartWindow.postMessage({
-type: 'loadBottomChart',
-dataKey: dataKey
-}, '*');
-
-// Clear input
-document.getElementById('manifestInput').value = '';
-chartReadyForSecondManifest = false;
-
-// Show success message
-showSuccess('Second service sent to existing chart window!');
-} else {
-showError('First chart is still loading. Please wait a moment and try again.');
-}
-}
-
-function generateZoneSummaryForDualChart(passengers) {
-const totalPassengers = passengers.length;
-const specialMeals = passengers.filter(p => p.meal).length;
-const emerPlat = passengers.filter(p => p.tier === 'EMER' || p.tier === 'PLAT').length;
-
-// Count meal types
-const mealCounts = {};
-passengers.forEach(p => {
-if (p.meal) {
-const meals = p.meal.split(',').map(m => m.trim());
-meals.forEach(meal => {
-if (meal !== 'BBML') {
-mealCounts[meal] = (mealCounts[meal] || 0) + 1;
-}
-});
-}
-});
-
-const mealBreakdown = Object.entries(mealCounts)
-.sort((a, b) => b[1] - a[1])
-.map(([meal, count]) => `${meal}: ${count}`)
-.join(', ');
-
-const bbml = passengers.filter(p => p.meal && p.meal.includes('BBML')).length;
-
-return {
-totalPassengers: totalPassengers,
-specialMeals: specialMeals,
-emerPlat: emerPlat,
-mealBreakdown: mealBreakdown,
-bbml: bbml
-};
-}
-
-// Listen for chart ready message from popup
-window.addEventListener('message', function(event) {
-if (event.data && event.data.type === 'chartReady') {
-chartReadyForSecondManifest = true;
-// Optional: Show message to user that they can paste second manifest
-showSuccess('First chart loaded successfully. You can now paste the second manifest for the second service.');
-}
-});
-
-</script>
     <script>
         // Global state with smart defaults
         const CONFIG = {
@@ -793,111 +1643,11 @@ showSuccess('First chart loaded successfully. You can now paste the second manif
             '737NG': [{ name: 'B', start: 1, end: 3 }, { name: 'EY', start: 4, end: 31 }],
             '737MAX': [{ name: 'B', start: 1, end: 3 }, { name: 'EY', start: 4, end: 31 }],
             '737NR': [{ name: 'B', start: 1, end: 4 }, { name: 'EY', start: 5, end: 30 }],
-            '333': [{ name: 'B', start: 1, end: 7 }, { name: 'C', start: 9, end: 27 }, { name: 'D', start: 28, end: 44 }],
+            '333': [{ name: 'B', start: 1, end: 8 }, { name: 'C', start: 9, end: 27 }, { name: 'D', start: 28, end: 44 }],
             '332': [{ name: 'B', start: 1, end: 6 }, { name: 'C', start: 14, end: 30 }, { name: 'D', start: 31, end: 50 }],
             '339': [{ name: 'B', start: 1, end: 8 }, { name: 'C', start: 9, end: 26 }, { name: 'D', start: 27, end: 44 }],
             '359': [{ name: 'B', start: 1, end: 11 }, { name: 'C', start: 12, end: 22 }, { name: 'D', start: 23, end: 32 }, { name: 'E', start: 33, end: 41 }],
             '350': [{ name: 'B', start: 1, end: 10 }, { name: 'C', start: 20, end: 35 }, { name: 'D', start: 36, end: 46 }, { name: 'E', start: 47, end: 55 }]
-        };
-        
-        // UPDATED: Complete Business Class Templates Configuration for ALL aircraft types
-        const BUSINESS_CLASS_TEMPLATES = {
-            '333': {
-                template: 'sc-a333.html',
-                businessRows: [1, 2, 4, 5, 6, 7],
-                seatMap: {
-                    '1': ['A', 'D', 'G', 'K'],
-                    '2': ['A', 'D', 'G', 'H', 'K'],
-                    '4': ['A', 'D', 'G', 'K'],
-                    '5': ['A', 'D', 'G', 'H', 'K'],
-                    '6': ['A', 'D', 'G', 'K'],
-                    '7': ['A', 'D', 'G', 'H', 'K']
-                }
-            },
-            '332': {
-                template: 'sc-a332.html',
-                businessRows: [1, 2, 3, 4, 5, 6],
-                seatMap: {
-                    '1': ['E', 'F'],
-                    '2': ['A', 'D', 'G', 'K'],
-                    '3': ['C', 'E', 'F', 'H'],
-                    '4': ['A', 'D', 'G', 'K'],
-                    '5': ['C', 'E', 'F', 'H'],
-                    '6': ['A']
-                }
-            },
-            '359': {
-                template: 'sc-a359.html',
-                businessRows: [2, 3, 5, 6, 7, 8, 9, 10, 11],
-                seatMap: {
-                    '2': ['A', 'D', 'G', 'K'],
-                    '3': ['A', 'D', 'G', 'H', 'K'],
-                    '5': ['A', 'D', 'G', 'K'],
-                    '6': ['A', 'D', 'G', 'H', 'K'],
-                    '7': ['A', 'D', 'G'],
-                    '8': ['A'],
-                    '9': ['A', 'D', 'G', 'K'],
-                    '10': ['A', 'D', 'G', 'H', 'K'],
-                    '11': ['A', 'D', 'G', 'K']
-                }
-            },
-            '350': {
-                template: 'sc-a350.html',
-                businessRows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                seatMap: {
-                    '1': ['A', 'D', 'F', 'H'],
-                    '2': ['A', 'D', 'F', 'H'],
-                    '3': ['A', 'D', 'F', 'H'],
-                    '4': ['A', 'D', 'F', 'H'],
-                    '5': ['A', 'D', 'F', 'H'],
-                    '6': ['A', 'D', 'F', 'H'],
-                    '7': ['A', 'D', 'F', 'H'],
-                    '8': ['A', 'D', 'F', 'H'],
-                    '9': ['A', 'D', 'F', 'H'],
-                    '10': ['A', 'D', 'F', 'H']
-                }
-            },
-            '339': {
-                template: 'sc-a339.html',
-                businessRows: [1, 2, 3, 5, 6, 7, 8],
-                seatMap: {
-                    '1': ['A', 'D', 'G', 'K'],
-                    '2': ['A', 'D', 'G', 'K'],
-                    '3': ['A', 'D', 'G', 'K'],
-                    '5': ['A', 'D', 'G', 'K'],
-                    '6': ['A', 'D', 'G', 'K'],
-                    '7': ['A', 'D', 'G', 'K'],
-                    '8': ['A', 'D', 'G', 'K']
-                }
-            },
-            '737NG': {
-                template: 'sc-737.html',
-                businessRows: [1, 2, 3],
-                seatMap: {
-                    '1': ['A', 'C', 'D', 'F'],
-                    '2': ['A', 'C', 'D', 'F'],
-                    '3': ['A', 'C', 'D', 'F']
-                }
-            },
-            '737MAX': {
-                template: 'sc-737.html',
-                businessRows: [1, 2, 3],
-                seatMap: {
-                    '1': ['A', 'C', 'D', 'F'],
-                    '2': ['A', 'C', 'D', 'F'],
-                    '3': ['A', 'C', 'D', 'F']
-                }
-            },
-            '737NR': {
-                template: 'sc-737.html',
-                businessRows: [1, 2, 3, 4],
-                seatMap: {
-                    '1': ['A', 'C', 'D', 'F'],
-                    '2': ['A', 'C', 'D', 'F'],
-                    '3': ['A', 'C', 'D', 'F'],
-                    '4': ['A', 'C', 'D', 'F']
-                }
-            }
         };
         
         // Seat maps for each aircraft configuration - UPDATED for 737 business class
@@ -982,115 +1732,6 @@ showSuccess('First chart loaded successfully. You can now paste the second manif
         
         let customZones = [];
         let debounceTimer;
-        
-        // Iframe management
-        let tutorialIframeLoaded = false;
-
-        function reloadIframe() {
-            const iframe = document.getElementById('tutorialIframe');
-            iframe.src = iframe.src; // Reload iframe
-            tutorialIframeLoaded = false;
-            showIframeLoading();
-            showSuccess('Tutorial reloaded');
-        }
-
-        function openTutorialInNewTab() {
-            window.open('tutorial.html', '_blank');
-        }
-
-        function showIframeLoading() {
-            const loadingDiv = document.getElementById('iframe-loading');
-            if (loadingDiv) {
-                loadingDiv.style.display = 'flex';
-            }
-        }
-
-        function hideIframeLoading() {
-            const loadingDiv = document.getElementById('iframe-loading');
-            if (loadingDiv) {
-                loadingDiv.style.display = 'none';
-                tutorialIframeLoaded = true;
-            }
-        }
-
-        // Version iframe management
-        let versionIframeLoaded = false;
-
-        function reloadVersionIframe() {
-            const iframe = document.getElementById('versionIframe');
-            iframe.src = iframe.src; // Reload iframe
-            versionIframeLoaded = false;
-            showVersionIframeLoading();
-            showSuccess('Version history reloaded');
-        }
-
-        function openVersionsInNewTab() {
-            window.open('versions.html', '_blank');
-        }
-
-        function showVersionIframeLoading() {
-            const loadingDiv = document.getElementById('iframe-loading-version');
-            if (loadingDiv) {
-                loadingDiv.style.display = 'flex';
-            }
-        }
-
-        function hideVersionIframeLoading() {
-            const loadingDiv = document.getElementById('iframe-loading-version');
-            if (loadingDiv) {
-                loadingDiv.style.display = 'none';
-                versionIframeLoaded = true;
-            }
-        }
-
-        // Update the toggleHelp function to handle version iframe
-        function toggleHelp(type) {
-            const tutorial = document.getElementById('tutorialContent');
-            const version = document.getElementById('versionContent');
-            const tutorialLabel = document.getElementById('tutorialLabel');
-            const versionLabel = document.getElementById('versionLabel');
-            
-            if (type === 'tutorial') {
-                const isChecked = document.getElementById('toggleTutorial').checked;
-                tutorial.style.display = isChecked ? 'block' : 'none';
-                tutorialLabel.textContent = isChecked ? 'Hide' : 'Show';
-                
-                if (isChecked) {
-                    // Show loading if iframe hasn't loaded yet
-                    if (!tutorialIframeLoaded) {
-                        showIframeLoading();
-                    }
-                    
-                    document.getElementById('toggleVersion').checked = false;
-                    version.style.display = 'none';
-                    versionLabel.textContent = 'Show';
-                }
-            } else {
-                const isChecked = document.getElementById('toggleVersion').checked;
-                version.style.display = isChecked ? 'block' : 'none';
-                versionLabel.textContent = isChecked ? 'Hide' : 'Show';
-                
-                if (isChecked) {
-                    // Show loading if version iframe hasn't loaded yet
-                    if (!versionIframeLoaded) {
-                        showVersionIframeLoading();
-                    }
-                    
-                    document.getElementById('toggleTutorial').checked = false;
-                    tutorial.style.display = 'none';
-                    tutorialLabel.textContent = 'Show';
-                }
-            }
-        }
-        
-        // Listen for iframe messages from version history and tutorial
-        window.addEventListener('message', function(event) {
-            if (event.data === 'versionsLoaded') {
-                hideVersionIframeLoading();
-            } else if (event.data === 'tutorialLoaded') {
-                hideIframeLoading();
-            }
-        });
         
         // NEW: Enhanced Aircraft Detection with Registration Logic
         function detectAircraftType(passengers, flightInfo) {
@@ -1291,120 +1932,6 @@ showSuccess('First chart loaded successfully. You can now paste the second manif
             }).join('/');
         }
         
-        // NEW: Business Class Seat Chart Functions
-        function getBusinessClassPassengers(passengers, aircraftConfig) {
-            // Check if we have business class template for this aircraft
-            const businessConfig = BUSINESS_CLASS_TEMPLATES[aircraftConfig];
-            if (!businessConfig) {
-                return []; // No template available
-            }
-            
-            return passengers.filter(p => {
-                // Must have class J and seat assignment
-                if (p.class !== 'J' || !p.seat) return false;
-                
-                // Check if seat is in business class rows for this aircraft
-                const seatNumber = p.seat.toUpperCase();
-                const rowNum = parseInt(seatNumber.replace(/[A-Z]/g, ''));
-                
-                return businessConfig.businessRows.includes(rowNum);
-            });
-        }
-        
-        // NEW: Function to open business class seat chart
-        function openBusinessClassSeatChart(aircraftType, passengers, flightInfo, zoneSummary) {
-            // Get business class passengers
-            const businessPassengers = getBusinessClassPassengers(passengers, aircraftType);
-            
-            if (businessPassengers.length === 0) {
-                showError(`No business class passengers found for ${aircraftType}.`);
-                return;
-            }
-            
-            // Create zone summary for business class
-            const businessZoneSummary = {
-                totalPassengers: businessPassengers.length,
-                specialMeals: businessPassengers.filter(p => p.meal).length,
-                emerPlat: businessPassengers.filter(p => p.tier === 'EMER' || p.tier === 'PLAT').length,
-                mealBreakdown: getMealBreakdown(businessPassengers),
-                bbml: businessPassengers.filter(p => p.meal && p.meal.includes('BBML')).length
-            };
-            
-            // Prepare data for popup
-            const businessChartData = {
-                flightInfo: flightInfo,
-                zoneSummary: businessZoneSummary,
-                passengers: businessPassengers,
-                config: {
-                    aircraftType: aircraftType,
-                    templateFile: BUSINESS_CLASS_TEMPLATES[aircraftType]?.template || 'sc-a333.html',
-                    timestamp: Date.now(),
-                    showAllBusiness: currentSettings.showAllBusiness
-                }
-            };
-            
-            // Store data in localStorage with unique key
-            const dataKey = 'business_chart_' + Date.now();
-            localStorage.setItem(dataKey, JSON.stringify(businessChartData));
-            
-            // Clean up old data (keep only last 5 entries)
-            cleanupLocalStorage('business_chart_', 5);
-            
-            // Open template in new window
-            const templateFile = BUSINESS_CLASS_TEMPLATES[aircraftType]?.template || 'sc-a333.html';
-            const popupWindow = window.open(
-                `${templateFile}?data=${dataKey}`, 
-                '_blank',
-                'width=1200,height=800,resizable=yes,scrollbars=yes,location=no,toolbar=no'
-            );
-            
-            if (!popupWindow) {
-                showError('Popup blocked! Please allow popups for this site.');
-                return;
-            }
-            
-            showSuccess(`Business class seat chart opened in new window with ${businessPassengers.length} passengers.`);
-        }
-        
-        // NEW: Helper function to cleanup localStorage
-        function cleanupLocalStorage(prefix, keepCount) {
-            const keys = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith(prefix)) {
-                    keys.push({ key, timestamp: parseInt(key.split('_').pop()) });
-                }
-            }
-            
-            // Sort by timestamp (oldest first)
-            keys.sort((a, b) => a.timestamp - b.timestamp);
-            
-            // Remove old entries
-            for (let i = 0; i < keys.length - keepCount; i++) {
-                localStorage.removeItem(keys[i].key);
-            }
-        }
-        
-        // NEW: Get meal breakdown
-        function getMealBreakdown(passengers) {
-            const mealCounts = {};
-            passengers.forEach(p => {
-                if (p.meal) {
-                    const meals = p.meal.split(',').map(m => m.trim());
-                    meals.forEach(meal => {
-                        if (meal !== 'BBML') {
-                            mealCounts[meal] = (mealCounts[meal] || 0) + 1;
-                        }
-                    });
-                }
-            });
-            
-            return Object.entries(mealCounts)
-                .sort((a, b) => b[1] - a[1])
-                .map(([meal, count]) => `${meal}: ${count}`)
-                .join(', ');
-        }
-        
         // Configuration validation helper
         function _0x2a4e(_0x7b3f) {
             if (!_0x7b3f) return false;
@@ -1503,35 +2030,10 @@ showSuccess('First chart loaded successfully. You can now paste the second manif
             
             // Apply visual settings
             const outputSection = document.querySelector('.output-section');
-if (outputSection) {
-  outputSection.setAttribute('data-font-size', currentSettings.fontSize);
-  outputSection.setAttribute('data-table-width', currentSettings.tableWidth);
-  
-  // Apply table width directly to all tables
-  const tables = outputSection.querySelectorAll('table');
-  tables.forEach(table => {
-    table.style.width = currentSettings.tableWidth + '%';
-  });
-  
-  // Apply width to flight info, global summary, and zone summaries
-  const flightInfo = outputSection.querySelector('.flight-info');
-  if (flightInfo) {
-    flightInfo.style.width = currentSettings.tableWidth + '%';
-    //flightInfo.style.margin = '0 auto';  Center it if width < 100%
-  }
-  
-  const stats = outputSection.querySelectorAll('.stats, .side-stats');
-  stats.forEach(stat => {
-    stat.style.width = currentSettings.tableWidth + '%';
-    //stat.style.margin = '10px auto';  Center it if width < 100%
-  });
-  
-  const zoneHeaders = outputSection.querySelectorAll('.zone-header');
-  zoneHeaders.forEach(header => {
-    header.style.width = currentSettings.tableWidth + '%';
-  //  header.style.margin = '0 auto';  Center it if width < 100%
-  });
-}
+            if (outputSection) {
+                outputSection.setAttribute('data-font-size', currentSettings.fontSize);
+                outputSection.setAttribute('data-table-width', currentSettings.tableWidth);
+            }
             
             // Apply print settings
             document.body.classList.toggle('compact-print-mode', currentSettings.compactPrint);
@@ -1580,6 +2082,42 @@ if (outputSection) {
         }
         
         // UI Controls
+        function toggleHelp(type) {
+            const tutorial = document.getElementById('tutorialContent');
+            const version = document.getElementById('versionContent');
+            const tutorialLabel = document.getElementById('tutorialLabel');
+            const versionLabel = document.getElementById('versionLabel');
+            
+            if (type === 'tutorial') {
+                const isChecked = document.getElementById('toggleTutorial').checked;
+                tutorial.style.display = isChecked ? 'block' : 'none';
+                tutorialLabel.textContent = isChecked ? 'Hide' : 'Show';
+                
+                if (isChecked) {
+                    document.getElementById('toggleVersion').checked = false;
+                    version.style.display = 'none';
+                    versionLabel.textContent = 'Show';
+                }
+            } else {
+                const isChecked = document.getElementById('toggleVersion').checked;
+                version.style.display = isChecked ? 'block' : 'none';
+                versionLabel.textContent = isChecked ? 'Hide' : 'Show';
+                
+                if (isChecked) {
+                    document.getElementById('toggleTutorial').checked = false;
+                    tutorial.style.display = 'none';
+                    tutorialLabel.textContent = 'Show';
+                }
+            }
+        }
+        
+        function toggleSettings() {
+            const settings = document.getElementById('advancedSettings');
+            const button = document.getElementById('toggleAdvanced');
+            settings.classList.toggle('open');
+            button.textContent = settings.classList.contains('open') ? '▲ Advanced Settings' : '▼ Advanced Settings';
+        }
+        
         function onAircraftChange() {
             const aircraftType = document.getElementById('aircraftType').value;
             const customZonesDiv = document.getElementById('customZones');
@@ -1813,43 +2351,33 @@ if (outputSection) {
             return { flightInfo, passengers };
         }
         
+        function generateQuickReport() {
+            const input = document.getElementById('manifestInput').value;
+            if (!input.trim()) {
+                showError('Please paste passenger manifest data.');
+                return;
+            }
+            
+            try {
+                const { flightInfo, passengers } = parseManifest(input);
+                currentSettings.detectedAircraftType = detectAircraftType(passengers, flightInfo);
+                
+                document.getElementById('aircraftType').value = 'auto';
+                document.getElementById('layoutStyle').value = 'auto';
+                
+                updateSettingsFromControls();
+                generateReportWithCurrentSettings();
+            } catch (error) {
+                showError(`Error: ${error.message}`);
+            }
+        }
+        
         function generateReportWithCurrentSettings() {
             const input = document.getElementById('manifestInput').value;
             if (!input.trim()) return;
             
             try {
                 const { flightInfo, passengers } = parseManifest(input);
-                // Check if dual chart mode is enabled and layout is dual-chart-737
-const layoutStyle = document.getElementById('layoutStyle').value;
-
-if (isDualChartMode || layoutStyle === 'dual-chart-737') {
-    // Get business class passengers only for 737
-    const businessPassengers = getBusinessClassPassengers(passengers, currentSettings.aircraftType);
-    
-    if (businessPassengers.length === 0) {
-        showError('No business class passengers found. Dual chart requires business class passengers.');
-        return;
-    }
-    
-    // Generate dual chart
-    generateDualChart(businessPassengers, flightInfo, currentSettings.aircraftType);
-    return;
-}
-                // NEW: Handle Business Class Seat Chart layout
-                if (currentSettings.layoutStyle === 'seat-chart-business') {
-                    const effectiveAircraftConfig = getEffectiveAircraftConfig(currentSettings.detectedAircraftType, flightInfo, passengers);
-                    
-                    // Check if we have a business class template for this aircraft
-                    if (!BUSINESS_CLASS_TEMPLATES[effectiveAircraftConfig]) {
-                        showError(`Business class seat chart not available for ${effectiveAircraftConfig}. Please select a different layout.`);
-                        return;
-                    }
-                    
-                    // Open business class seat chart popup
-                    openBusinessClassSeatChart(effectiveAircraftConfig, passengers, flightInfo, {});
-                    return;
-                }
-                
                 const filtered = passengers.filter(p => p.meal || p.tier === 'EMER' || p.tier === 'PLAT');
                 
                 if (filtered.length === 0 && !currentSettings.showAllBusiness) {
@@ -2049,6 +2577,7 @@ if (isDualChartMode || layoutStyle === 'dual-chart-737') {
                             tableContent += generateSideStats(starboardPax, 'Starboard');
                             tableContent += generateTable(starboardPax, true, currentSettings.detectedAircraftType);
                             tableContent += `</div>`;
+                            tableContent += `</div>`;
                             
                             if (unassigned.length > 0) {
                                 // NEW: Use the showUnassignedInPrint setting to determine which class to use
@@ -2081,6 +2610,7 @@ if (isDualChartMode || layoutStyle === 'dual-chart-737') {
                             tableContent += `<div class="table-title">STARBOARD SIDE (DEF)</div>`;
                             tableContent += generateSideStats(starboardPax, 'Starboard');
                             tableContent += generateTable(starboardPax, true, currentSettings.detectedAircraftType);
+                            tableContent += `</div>`;
                             tableContent += `</div>`;
                             
                             if (unassigned.length > 0) {
@@ -2312,27 +2842,9 @@ if (isDualChartMode || layoutStyle === 'dual-chart-737') {
             
             return mealDisplay;
         }
-        // Helper function to get business class passengers for dual chart
-function getBusinessClassPassengers(passengers, aircraftConfig) {
-    // Check if we have business class template for this aircraft
-    const businessConfig = BUSINESS_CLASS_TEMPLATES[aircraftConfig];
-    if (!businessConfig) {
-        return []; // No template available
-    }
-    
-    return passengers.filter(p => {
-        // Must have class J and seat assignment
-        if (p.class !== 'J' || !p.seat) return false;
         
-        // Check if seat is in business class rows for this aircraft
-        const seatNumber = p.seat.toUpperCase();
-        const rowNum = parseInt(seatNumber.replace(/[A-Z]/g, ''));
-        
-        return businessConfig.businessRows.includes(rowNum);
-    });
-}
         // UPDATED: Generate seat chart with optimized multi-line format for business class and 737 business class layout
-        // NOW WITH 4TH BLANK LINE FOR WRITING IN BUSINESS CLASS
+        // NOW WITH ALWAYS-SHOW MEAL LINE IN BUSINESS CLASS
         function generateSeatChart(passengers, zone, aircraftConfig) {
             const seatMap = SEAT_MAPS[aircraftConfig];
             if (!seatMap) {
@@ -2465,7 +2977,7 @@ function getBusinessClassPassengers(passengers, aircraftConfig) {
                                     const tierIcon = passenger.tier === 'PLAT' ? '❤️ ' : (passenger.tier === 'EMER' ? '🔴 ' : '');
                                     
                                     if (isBusinessZone) {
-                                        // BUSINESS CLASS: Multi-line format with 4TH BLANK LINE FOR WRITING
+                                        // BUSINESS CLASS: Multi-line format with ALWAYS-SHOW meal line
                                         const businessName = truncateNameForBusinessClass(passenger.name);
                                         const nameParts = businessName.split('/');
                                         const firstName = nameParts[0] || '';
@@ -2475,7 +2987,6 @@ function getBusinessClassPassengers(passengers, aircraftConfig) {
                                             <div class="seat-line1">${tierIcon + passenger.title + '/' + firstName.toUpperCase()}</div>
                                             ${lastName ? `<div class="seat-line2">${lastName.toUpperCase()}</div>` : ''}
                                             <div class="seat-line3">${mealDisplay ? mealDisplay.toUpperCase() : '&nbsp;'}</div>
-                                            <div class="seat-line4">&nbsp;</div>
                                         </div>`;
                                     } else {
                                         // ECONOMY: Standard 2-line format - only show meal if exists
@@ -2523,7 +3034,7 @@ function getBusinessClassPassengers(passengers, aircraftConfig) {
                                 const tierIcon = passenger.tier === 'PLAT' ? '❤️ ' : (passenger.tier === 'EMER' ? '🔴 ' : '');
                                 
                                 if (isBusinessZone) {
-                                    // BUSINESS CLASS: Multi-line format with 4TH BLANK LINE FOR WRITING
+                                    // BUSINESS CLASS: Multi-line format with ALWAYS-SHOW meal line
                                     const businessName = truncateNameForBusinessClass(passenger.name);
                                     const nameParts = businessName.split('/');
                                     const firstName = nameParts[0] || '';
@@ -2533,7 +3044,6 @@ function getBusinessClassPassengers(passengers, aircraftConfig) {
                                         <div class="seat-line1">${tierIcon + passenger.title + '/' + firstName.toUpperCase()}</div>
                                         ${lastName ? `<div class="seat-line2">${lastName.toUpperCase()}</div>` : ''}
                                         <div class="seat-line3">${mealDisplay ? mealDisplay.toUpperCase() : '&nbsp;'}</div>
-                                        <div class="seat-line4">&nbsp;</div>
                                     </div>`;
                                 } else {
                                     // ECONOMY: Standard 2-line format - only show meal if exists
@@ -2581,7 +3091,7 @@ function getBusinessClassPassengers(passengers, aircraftConfig) {
                                 const tierIcon = passenger.tier === 'PLAT' ? '❤️ ' : (passenger.tier === 'EMER' ? '🔴 ' : '');
                                 
                                 if (isBusinessZone) {
-                                    // BUSINESS CLASS: Multi-line format with 4TH BLANK LINE FOR WRITING
+                                    // BUSINESS CLASS: Multi-line format with ALWAYS-SHOW meal line
                                     const businessName = truncateNameForBusinessClass(passenger.name);
                                     const nameParts = businessName.split('/');
                                     const firstName = nameParts[0] || '';
@@ -2591,7 +3101,6 @@ function getBusinessClassPassengers(passengers, aircraftConfig) {
                                         <div class="seat-line1">${tierIcon + passenger.title + '/' + firstName.toUpperCase()}</div>
                                         ${lastName ? `<div class="seat-line2">${lastName.toUpperCase()}</div>` : ''}
                                         <div class="seat-line3">${mealDisplay ? mealDisplay.toUpperCase() : '&nbsp;'}</div>
-                                        <div class="seat-line4">&nbsp;</div>
                                     </div>`;
                                 } else {
                                     // ECONOMY: Standard 2-line format - only show meal if exists
@@ -2636,43 +3145,11 @@ function getBusinessClassPassengers(passengers, aircraftConfig) {
             showSuccess('✓ Offline version downloaded as bpm-pro.html');
         }
         
-        function toggleSettings() {
-            const settings = document.getElementById('advancedSettings');
-            const button = document.getElementById('toggleAdvanced');
-            settings.classList.toggle('open');
-            button.textContent = settings.classList.contains('open') ? '▲ Advanced Settings' : '▼ Advanced Settings';
-        }
-        
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateZoneCheckboxes();
             updateUIFromSettings();
-            // Initialize dual chart mode
-const layoutValue = document.getElementById('layoutStyle').value;
-if (layoutValue === 'dual-chart-737') {
-    isDualChartMode = true;
-    document.getElementById('dualChartToggle').checked = true;
-    document.getElementById('dualChartLabel').textContent = 'Dual Chart Mode ON';
-    document.getElementById('dualChartIndicator').classList.add('active');
-    showDualChartInstructions();
-}
-// Add event listener for layout style change
-document.getElementById('layoutStyle').addEventListener('change', function() {
-    const layoutValue = this.value;
-    if (layoutValue === 'dual-chart-737') {
-        isDualChartMode = true;
-        document.getElementById('dualChartToggle').checked = true;
-        document.getElementById('dualChartLabel').textContent = 'Dual Chart Mode ON';
-        document.getElementById('dualChartIndicator').classList.add('active');
-        showDualChartInstructions();
-    } else {
-        isDualChartMode = false;
-        document.getElementById('dualChartToggle').checked = false;
-        document.getElementById('dualChartLabel').textContent = 'Dual Chart Mode';
-        document.getElementById('dualChartIndicator').classList.remove('active');
-        hideDualChartInstructions();
-    }
-});
+            
             // Set up live preview for all controls
             const controls = [
                 'aircraftType', 'layoutStyle', 'fontSizeSlider', 'tableWidthSlider',
@@ -2692,57 +3169,7 @@ document.getElementById('layoutStyle').addEventListener('change', function() {
                     }, 300));
                 }
             });
-            // NEW: Auto-detection preview when user pastes manifest
-const manifestInput = document.getElementById('manifestInput');
-manifestInput.addEventListener('input', debounce(() => {
-    if (manifestInput.value.trim()) {
-        showAutoDetectionIndicator();
-    }
-}, 500));
-
-// webview and print view mismatch colour fix
-function printWithColors() {
-    // Store print event listener
-    const beforePrint = () => {
-        // Force background colors before printing
-        document.body.style.webkitPrintColorAdjust = 'exact';
-        document.body.style.printColorAdjust = 'exact';
-    };
-    
-    const afterPrint = () => {
-        // Restore after printing
-        document.body.style.webkitPrintColorAdjust = '';
-        document.body.style.printColorAdjust = '';
-    };
-    
-    // Set up event listeners
-    if (window.matchMedia) {
-        const mediaQueryList = window.matchMedia('print');
-        mediaQueryList.addListener((mql) => {
-            if (mql.matches) {
-                beforePrint();
-            } else {
-                afterPrint();
-            }
-        });
-    }
-    
-    // Override the print button
-    const printButtons = document.querySelectorAll('[onclick*="window.print()"]');
-    printButtons.forEach(btn => {
-        btn.onclick = (e) => {
-            e.preventDefault();
-            beforePrint();
-            setTimeout(() => {
-                window.print();
-                setTimeout(afterPrint, 100);
-            }, 100);
-        };
-    });
-}
-
-// Call this function on page load
-document.addEventListener('DOMContentLoaded', printWithColors);
+            
             // Keyboard shortcut
             document.addEventListener('keydown', (e) => {
                 if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -2754,257 +3181,6 @@ document.addEventListener('DOMContentLoaded', printWithColors);
                 }
             });
         });
-        // ============================================
-// SIMPLE SAVE & PRINT MULTIPLE REPORTS
-// ============================================
-
-let savedReportsSimple = [];
-let currentReportData = null;
-
-// Initialize from localStorage
-function initSavedReports() {
-    const stored = localStorage.getItem('bpm_saved_reports_simple');
-    if (stored) {
-        try {
-            savedReportsSimple = JSON.parse(stored);
-            updateSavedList();
-            if (savedReportsSimple.length > 0) {
-                document.getElementById('savedReportsSimple').style.display = 'block';
-            }
-        } catch (e) {
-            console.error('Error loading saved reports:', e);
-            savedReportsSimple = [];
-        }
-    }
-}
-
-// Save to localStorage
-function saveToStorage() {
-    try {
-        localStorage.setItem('bpm_saved_reports_simple', JSON.stringify(savedReportsSimple));
-    } catch (e) {
-        if (e.name === 'QuotaExceededError') {
-            alert('Storage full! Please delete some old reports.');
-        } else {
-            alert('Error saving: ' + e.message);
-        }
-    }
-}
-
-// Save current report
-function saveCurrentReport() {
-    if (!currentReportData) {
-        alert('No report to save. Generate a report first.');
-        return;
-    }
-    
-    const name = prompt('Name this report:', currentReportData.flightInfo.flightNumber + ' - ' + currentReportData.flightInfo.sector);
-    if (!name) return;
-    
-    const report = {
-        id: 'report_' + Date.now(),
-        name: name,
-        timestamp: Date.now(),
-        flightInfo: currentReportData.flightInfo,
-        html: document.getElementById('reportContent').innerHTML,
-        settings: {
-            fontSize: currentSettings.fontSize,
-            layoutStyle: currentSettings.layoutStyle,
-            aircraftType: currentSettings.aircraftType
-        }
-    };
-    
-    savedReportsSimple.push(report);
-    saveToStorage();
-    updateSavedList();
-    
-    document.getElementById('savedReportsSimple').style.display = 'block';
-    showSuccess('✓ Report saved: ' + name);
-}
-
-// Update the saved reports list
-function updateSavedList() {
-    const list = document.getElementById('savedList');
-    const count = document.getElementById('savedCount');
-    
-    count.textContent = savedReportsSimple.length;
-    
-    if (savedReportsSimple.length === 0) {
-        list.innerHTML = '<p style="text-align: center; color: #64748B; padding: 20px;">No saved reports. Generate and save a report to get started!</p>';
-        return;
-    }
-    
-    list.innerHTML = '';
-    
-    savedReportsSimple.forEach(report => {
-        const date = new Date(report.timestamp);
-        const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        
-        const item = document.createElement('div');
-        item.className = 'saved-item';
-        item.innerHTML = `
-            <input type="checkbox" id="check_${report.id}" onchange="toggleSelection('${report.id}')">
-            <div class="saved-item-info">
-                <div class="saved-item-name">${report.name}</div>
-                <div class="saved-item-details">
-                    ${report.flightInfo.flightNumber} | ${report.flightInfo.sector} | 
-                    Saved: ${dateStr}
-                </div>
-            </div>
-            <div class="saved-item-actions">
-                <button class="btn-info btn-small" onclick="previewReport('${report.id}')">👁️</button>
-                <button class="btn-danger btn-small" onclick="deleteReport('${report.id}')">🗑️</button>
-            </div>
-        `;
-        
-        list.appendChild(item);
-    });
-}
-
-// Toggle selection
-function toggleSelection(reportId) {
-    const checkbox = document.getElementById('check_' + reportId);
-    const item = checkbox.closest('.saved-item');
-    
-    if (checkbox.checked) {
-        item.classList.add('selected');
-    } else {
-        item.classList.remove('selected');
-    }
-}
-
-// Preview a saved report
-function previewReport(reportId) {
-    const report = savedReportsSimple.find(r => r.id === reportId);
-    if (!report) return;
-    
-    const content = document.getElementById('reportContent');
-    content.innerHTML = report.html;
-    content.scrollIntoView({ behavior: 'smooth' });
-    
-    showSuccess('Previewing: ' + report.name);
-}
-
-// Delete a report
-function deleteReport(reportId) {
-    if (!confirm('Delete this report?')) return;
-    
-    savedReportsSimple = savedReportsSimple.filter(r => r.id !== reportId);
-    saveToStorage();
-    updateSavedList();
-    
-    showSuccess('✓ Report deleted');
-}
-
-// Clear all saved reports
-function clearAllSaved() {
-    if (!confirm('Delete ALL saved reports? This cannot be undone.')) return;
-    
-    savedReportsSimple = [];
-    saveToStorage();
-    updateSavedList();
-    
-    showSuccess('✓ All reports cleared');
-}
-
-// Toggle saved section visibility
-function toggleSavedSection() {
-    const section = document.getElementById('savedReportsSimple');
-    if (section.style.display === 'none') {
-        section.style.display = 'block';
-    } else {
-        section.style.display = 'none';
-    }
-}
-
-// Print all selected reports (each on separate page)
-function printAllSelected() {
-    const checkboxes = document.querySelectorAll('.saved-item input[type="checkbox"]:checked');
-    
-    if (checkboxes.length === 0) {
-        alert('Please select at least one report to print.');
-        return;
-    }
-    
-    const selectedReports = Array.from(checkboxes).map(cb => {
-        const reportId = cb.id.replace('check_', '');
-        return savedReportsSimple.find(r => r.id === reportId);
-    }).filter(r => r);
-    
-    if (selectedReports.length === 0) return;
-    
-    // Create print window with all reports
-    const printContent = selectedReports.map((report, index) => {
-        return `
-            <div class="report-page">
-                ${report.html}
-            </div>
-        `;
-    }).join('');
-    
-    // Create a temporary div to hold all reports
-    const printDiv = document.createElement('div');
-    printDiv.className = 'print-multiple-reports';
-    printDiv.innerHTML = printContent;
-    printDiv.style.display = 'none';
-    
-    // Add to body
-    document.body.appendChild(printDiv);
-    
-    // Hide main content
-    const mainContent = document.getElementById('reportContent');
-    const originalDisplay = mainContent.style.display;
-    mainContent.style.display = 'none';
-    
-    // Show print div
-    printDiv.style.display = 'block';
-    
-    // Print
-    window.print();
-    
-    // Cleanup after print
-    setTimeout(() => {
-        document.body.removeChild(printDiv);
-        mainContent.style.display = originalDisplay;
-    }, 500);
-    
-    showSuccess(`✓ Printing ${selectedReports.length} report(s)...`);
-}
-
-// Modify the existing generateReportWithCurrentSettings to capture data
-const originalGenerate = generateReportWithCurrentSettings;
-generateReportWithCurrentSettings = function() {
-    originalGenerate.call(this);
-    
-    // Capture the report data
-    const input = document.getElementById('manifestInput').value;
-    if (input.trim()) {
-        try {
-            const { flightInfo, passengers } = parseManifest(input);
-            currentReportData = { flightInfo, passengers };
-            
-            // Show save button
-            document.getElementById('savePrompt').style.display = 'block';
-        } catch (e) {
-            // Error already handled by original function
-        }
-    }
-};
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    initSavedReports();
-});
-
-// Keyboard shortcut: Ctrl+S to save
-document.addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        if (currentReportData) {
-            saveCurrentReport();
-        }
-    }
-});
     </script>
     <script src="https://gnrcounter.com/counter.php?accId=5a888a8c18748f69460d5c4fc6b40d8f"></script>
 </body>

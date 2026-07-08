@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            background: #000;
+            position: relative;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 8vw, 6rem);
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 30px #00ffff,
+                0 0 40px #ff00ff,
+                0 0 70px #ff00ff,
+                0 0 80px #ff00ff,
+                0 0 100px #ff00ff;
+            animation: flicker 3s infinite alternate, glow 2s ease-in-out infinite;
+            letter-spacing: 0.1em;
+            margin-bottom: 30px;
+        }
+
+        .subtitle {
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            color: #ff00ff;
+            text-shadow: 
+                0 0 10px #ff00ff,
+                0 0 20px #ff00ff,
+                0 0 30px #ff00ff,
+                0 0 40px #ff00ff;
+            animation: slideIn 1s ease-out, pulse 2s ease-in-out infinite;
+            letter-spacing: 0.2em;
+            opacity: 0;
+            animation-fill-mode: forwards;
+            animation-delay: 0.5s;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .shutdown-notice {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            color: #ff0000;
+            text-shadow: 
+                0 0 10px #ff0000,
+                0 0 20px #ff0000,
+                0 0 30px #ff0000,
+                0 0 40px #ff0000,
+                0 0 50px #ff0000;
+            animation: slideIn 1.5s ease-out, warning 0.8s ease-in-out infinite;
+            letter-spacing: 0.15em;
+            opacity: 0;
+            animation-fill-mode: forwards;
+            animation-delay: 1s;
+            border: 2px solid #ff0000;
+            padding: 20px 40px;
+            background: rgba(255, 0, 0, 0.2);
+            box-shadow: 
+                0 0 30px rgba(255, 0, 0, 0.5),
+                inset 0 0 20px rgba(255, 0, 0, 0.2);
+            font-weight: bold;
+        }
+
+        @keyframes warning {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow: 
+                    0 0 10px #00ffff,
+                    0 0 20px #00ffff,
+                    0 0 30px #00ffff,
+                    0 0 40px #ff00ff,
+                    0 0 70px #ff00ff,
+                    0 0 80px #ff00ff,
+                    0 0 100px #ff00ff;
+            }
+            20%, 24%, 55% {
+                text-shadow: 
+                    0 0 5px #00ffff,
+                    0 0 10px #00ffff;
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .scan-line {
+            position: fixed;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to bottom, transparent, #00ffff 50%, transparent);
+            top: 0;
+            left: 0;
+            z-index: 3;
+            animation: scan 4s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+            100% {
+                top: 100%;
+            }
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, transparent 24%, rgba(0, 255, 255, 0.05) 25%, rgba(0, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.05) 75%, rgba(0, 255, 255, 0.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0, 255, 255, 0.05) 25%, rgba(0, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.05) 75%, rgba(0, 255, 255, 0.05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .corner-frame {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    <div class="grid-overlay"></div>
+    <div class="scan-line"></div>
+    
+    <div class="corner-frame top-left"></div>
+    <div class="corner-frame top-right"></div>
+    <div class="corner-frame bottom-left"></div>
+    <div class="corner-frame bottom-right"></div>
+
+    <div class="content">
+        <h1>THANK YOU EVERYONE</h1>
+        <div class="subtitle">WE TRIED.</div>
+        <div class="shutdown-notice">SHUTDOWN AT 1600 26/01/26 BY RELEVANT AUTHORITIES</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Three.js Scene Setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Create wireframe sphere
+        const sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
+        const sphereMaterial = new THREE.MeshBasicMaterial({
+            color: 0x00ffff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        scene.add(sphere);
+
+        // Create wireframe torus
+        const torusGeometry = new THREE.TorusGeometry(8, 1, 16, 100);
+        const torusMaterial = new THREE.MeshBasicMaterial({
+            color: 0xff00ff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.2
+        });
+        const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+        scene.add(torus);
+
+        // Create shooting stars
+        const shootingStars = [];
+        const shootingStarCount = 15;
+
+        for(let i = 0; i < shootingStarCount; i++) {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(50 * 3);
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            const material = new THREE.LineBasicMaterial({
+                color: Math.random() > 0.5 ? 0x00ffff : 0xff00ff,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const star = new THREE.Line(geometry, material);
+            
+            star.userData = {
+                velocity: new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.3,
+                    (Math.random() - 0.8) * 0.3,
+                    (Math.random() - 0.5) * 0.3
+                ),
+                position: new THREE.Vector3(
+                    (Math.random() - 0.5) * 40,
+                    Math.random() * 20 + 10,
+                    (Math.random() - 0.5) * 40
+                ),
+                trail: []
+            };
+            
+            shootingStars.push(star);
+            scene.add(star);
+        }
+
+        camera.position.z = 15;
+
+        // Animation
+        let time = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+
+            sphere.rotation.x += 0.003;
+            sphere.rotation.y += 0.005;
+
+            torus.rotation.x += 0.002;
+            torus.rotation.y += 0.003;
+
+            // Update shooting stars
+            shootingStars.forEach(star => {
+                star.userData.position.add(star.userData.velocity);
+                
+                // Reset position if out of bounds
+                if(star.userData.position.y < -20 || 
+                   Math.abs(star.userData.position.x) > 40 || 
+                   Math.abs(star.userData.position.z) > 40) {
+                    star.userData.position.set(
+                        (Math.random() - 0.5) * 40,
+                        Math.random() * 20 + 10,
+                        (Math.random() - 0.5) * 40
+                    );
+                    star.userData.trail = [];
+                }
+                
+                // Update trail
+                star.userData.trail.unshift(star.userData.position.clone());
+                if(star.userData.trail.length > 50) {
+                    star.userData.trail.pop();
+                }
+                
+                // Update geometry
+                const positions = star.geometry.attributes.position.array;
+                for(let i = 0; i < star.userData.trail.length; i++) {
+                    positions[i * 3] = star.userData.trail[i].x;
+                    positions[i * 3 + 1] = star.userData.trail[i].y;
+                    positions[i * 3 + 2] = star.userData.trail[i].z;
+                }
+                star.geometry.attributes.position.needsUpdate = true;
+            });
+
+            // Pulsating effect
+            sphere.scale.set(
+                1 + Math.sin(time) * 0.1,
+                1 + Math.sin(time) * 0.1,
+                1 + Math.sin(time) * 0.1
+            );
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

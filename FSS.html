@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FSS — Female Feedback Templates</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117; --surface:#161b22; --surface2:#1c2330; --border:#30363d;
+    --teal:#00c9a7; --teal-dim:#00c9a718;
+    --female:#f778ba; --female-dim:#f778ba18;
+    --text:#e6edf3; --muted:#7d8590; --danger:#f85149; --success:#3fb950;
+    --orange:#ff8c42;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { background:var(--bg); color:var(--text); font-family:'Sora',sans-serif; min-height:100vh; padding:28px 18px 80px; }
+  body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px); background-size:40px 40px; opacity:0.2; z-index:0; pointer-events:none; }
+  .wrap { position:relative; z-index:1; max-width:680px; margin:0 auto; }
+
+  .header { text-align:center; margin-bottom:28px; }
+  .badge { display:inline-block; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.18em; color:var(--female); border:1px solid var(--female); border-radius:20px; padding:3px 14px; margin-bottom:12px; background:var(--female-dim); }
+  h1 { font-size:26px; font-weight:800; background:linear-gradient(135deg,#fff 20%,var(--female) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px; }
+  .subtitle { color:var(--muted); font-size:13px; line-height:1.6; }
+
+  .info-box { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--teal); border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:12px; color:var(--muted); line-height:1.7; }
+  .info-box strong { color:var(--teal); }
+  .placeholder-ref { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .ph-tag { background:var(--surface2); border:1px solid var(--border); border-radius:6px; font-family:'DM Mono',monospace; font-size:11px; color:var(--orange); padding:3px 8px; }
+
+  .section-label { font-size:11px; font-family:'DM Mono',monospace; letter-spacing:0.12em; color:var(--muted); text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .feedback-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; margin-bottom:12px; overflow:hidden; transition:border-color 0.2s; }
+  .feedback-card:focus-within { border-color:var(--female); }
+  .card-top { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--border); background:var(--surface2); }
+  .card-num { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); }
+  .card-actions { display:flex; gap:6px; align-items:center; }
+  .word-count { font-family:'DM Mono',monospace; font-size:10px; padding:3px 8px; border-radius:10px; border:1px solid var(--border); color:var(--muted); background:var(--bg); }
+  .word-count.ok { color:var(--success); border-color:var(--success); background:#3fb95012; }
+  .word-count.over { color:var(--orange); border-color:var(--orange); background:#ff8c4212; }
+  .del-btn { background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:6px; font-size:12px; padding:3px 8px; cursor:pointer; font-family:'DM Mono',monospace; }
+  .del-btn:active { border-color:var(--danger); color:var(--danger); }
+  .card-textarea { width:100%; background:var(--surface); border:none; color:var(--text); font-family:'DM Mono',monospace; font-size:12px; padding:12px 14px; resize:none; outline:none; line-height:1.75; min-height:110px; }
+
+  .add-section { background:var(--surface); border:1px dashed var(--border); border-radius:12px; padding:16px; margin-bottom:16px; }
+  .add-section-label { font-size:12px; font-weight:700; color:var(--teal); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+  .add-textarea { width:100%; background:#0a0e14; border:1px solid var(--border); border-radius:10px; color:var(--text); font-family:'DM Mono',monospace; font-size:12px; padding:12px 14px; resize:none; outline:none; line-height:1.75; min-height:110px; transition:border-color 0.2s; }
+  .add-textarea:focus { border-color:var(--female); }
+  .add-textarea::placeholder { color:#2a3040; }
+  .add-footer { display:flex; align-items:center; justify-content:space-between; margin-top:10px; gap:10px; }
+  .new-word-count { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); }
+  .add-btn { background:linear-gradient(135deg,var(--female),#d45a9a); color:#fff; border:none; border-radius:8px; font-family:'Sora',sans-serif; font-weight:700; font-size:13px; padding:10px 20px; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; }
+  .add-btn:active { opacity:0.8; }
+
+  .save-bar { position:fixed; bottom:0; left:0; right:0; background:var(--surface); border-top:1px solid var(--border); padding:12px 18px; display:flex; gap:10px; align-items:center; z-index:50; }
+  .save-btn { flex:1; background:linear-gradient(135deg,var(--female),#d45a9a); color:#fff; border:none; border-radius:10px; font-family:'Sora',sans-serif; font-weight:700; font-size:14px; padding:13px; cursor:pointer; transition:opacity 0.15s; }
+  .save-btn:active { opacity:0.8; }
+  .save-status { font-family:'DM Mono',monospace; font-size:11px; color:var(--success); flex-shrink:0; display:none; }
+  .save-status.show { display:block; }
+
+  .toast { position:fixed; bottom:72px; left:50%; transform:translateX(-50%) translateY(10px); background:#161b22ee; border:1px solid var(--success); color:var(--success); font-family:'DM Mono',monospace; font-size:12px; padding:9px 18px; border-radius:20px; opacity:0; transition:opacity 0.2s,transform 0.2s; pointer-events:none; z-index:100; white-space:nowrap; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="badge">👩 FEMALE — FSS / LSS</div>
+    <h1>Female Feedback Templates</h1>
+    <p class="subtitle">Pre-loaded and custom feedback for female cabin crew (FSS/LSS). Used by e-CCPR Autofill when Online mode is selected.</p>
+  </div>
+
+  <div class="info-box">
+    <strong>Placeholders you can use:</strong>
+    <div class="placeholder-ref">
+      <span class="ph-tag">[NAME]</span>
+      <span class="ph-tag">[FULLNAME]</span>
+      <span class="ph-tag">[RANK]</span>
+    </div>
+    <div style="margin-top:8px;">
+      <strong>[NAME]</strong> = first name only &nbsp;·&nbsp;
+      <strong>[FULLNAME]</strong> = full name &nbsp;·&nbsp;
+      <strong>[RANK]</strong> = rank from roster (FSS/LSS for female, FS/LS for male)
+    </div>
+  </div>
+
+  <div class="section-label">Pre-loaded Templates</div>
+  <div id="feedback-list"></div>
+
+  <div class="section-label" style="margin-top:8px;">Add New Template</div>
+  <div class="add-section">
+    <div class="add-section-label">✚ New Feedback</div>
+    <textarea class="add-textarea" id="new-feedback" placeholder="Write your feedback here. Use [NAME], [FULLNAME], [RANK] as placeholders.&#10;&#10;Example: [RANK] [FULLNAME] delivered an exceptional standard of service throughout the flight..."></textarea>
+    <div class="add-footer">
+      <span class="new-word-count" id="new-word-count">0 words</span>
+      <button class="add-btn" onclick="addFeedback()">+ Add to Pool</button>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <button class="save-btn" onclick="saveAll()">💾 Save All Changes</button>
+  <span class="save-status" id="save-status">✓ Saved</span>
+</div>
+
+<div class="toast" id="toast"></div>
+<script id="json-output" type="application/json"></script>
+
+<script>
+const STORAGE_KEY = 'eccpr_fss_feedback';
+
+const PRELOADED = [
+  "[RANK] [FULLNAME] delivered an exceptional standard of service throughout the flight. Her warm and approachable manner instantly put passengers at ease, and her communication skills — both with guests and fellow crew — were outstanding. She demonstrated excellent knowledge of the service procedures and handled all tasks with confidence and poise. [NAME]'s grooming was immaculate, and her cheerful yet professional demeanour throughout the flight reflected tremendous credit on both herself and the airline. A truly impressive performance.",
+  "It was a genuine pleasure to observe [RANK] [FULLNAME] at work during today's flight. She showed a natural ability to connect with passengers, responding to their needs with empathy and efficiency. Her teamwork was exemplary — she proactively assisted colleagues during peak service periods without being asked, displaying the kind of selfless crew spirit that elevates the entire cabin environment. [NAME]'s attention to detail, from her presentation to her service delivery, was consistently of the highest standard.",
+  "[RANK] [FULLNAME] demonstrated commendable professionalism and composure throughout the flight. Her time management during the service was impressive, and she ensured all passengers in her zone received timely and courteous attention. She handled a minor passenger concern with great sensitivity and problem-solving ability, resolving the situation calmly and effectively. [NAME]'s grooming and uniform presentation were flawless, and her positive energy was clearly felt across the cabin. She is undoubtedly a strong representative of our crew standards.",
+  "Throughout this flight, [RANK] [FULLNAME] exemplified the qualities of an outstanding cabin crew member. Her situational awareness and proactive approach to passenger care were particularly noteworthy — she anticipated needs and acted upon them before passengers needed to ask. Her knowledge of SOPs was thorough and evident in her precise execution of both service and safety duties. [NAME] engaged respectfully with all colleagues and contributed a calm, uplifting presence to the team. Her dedication is sincerely commendable.",
+  "[RANK] [FULLNAME] performed with great distinction on this flight, consistently going above and beyond the requirements of her role. Her leadership qualities were evident as she guided junior crew with patience and clear communication during the service sequence. She remained composed and focused throughout, managing the cabin with a quiet confidence that passengers clearly responded to positively. [NAME]'s impeccable grooming, cheerful attitude and thorough knowledge of procedures make her an excellent role model within the cabin crew team.",
+  "[RANK] [FULLNAME] showed an impressive blend of warmth and professionalism from boarding through to arrival. Her passenger interactions were genuine and attentive, and she took personal ownership of ensuring every guest in her zone felt valued and well cared for. She coordinated seamlessly with fellow crew members, contributing to a highly efficient and pleasant cabin environment. [NAME]'s neat appearance and positive conduct throughout the entire flight were a credit to her personal standards and to the airline as a whole."
+];
+
+let userTemplates = [];
+let toastTimer;
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function countWords(str) {
+  return str.trim().split(/\s+/).filter(w => w.length > 0).length;
+}
+
+function renderList() {
+  const list = document.getElementById('feedback-list');
+  list.innerHTML = '';
+  const all = [...PRELOADED, ...userTemplates];
+  all.forEach((text, i) => {
+    const isPreload = i < PRELOADED.length;
+    const card = document.createElement('div');
+    card.className = 'feedback-card';
+    const wc = countWords(text);
+    const wcClass = wc >= 60 && wc <= 100 ? 'ok' : wc > 100 ? 'over' : '';
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="card-num">#${i+1} ${isPreload ? '· Pre-loaded' : '· Custom'}</span>
+        <div class="card-actions">
+          <span class="word-count ${wcClass}" id="wc-${i}">${wc} words</span>
+          ${!isPreload ? `<button class="del-btn" onclick="deleteTemplate(${i - PRELOADED.length})">✕ Delete</button>` : ''}
+        </div>
+      </div>
+      <textarea class="card-textarea" data-index="${i}" ${isPreload ? 'readonly' : ''}
+        oninput="onEditTemplate(this)">${text}</textarea>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function onEditTemplate(ta) {
+  const i = parseInt(ta.dataset.index);
+  const userIdx = i - PRELOADED.length;
+  if (userIdx >= 0) {
+    userTemplates[userIdx] = ta.value;
+    const wcEl = document.getElementById('wc-' + i);
+    if (wcEl) {
+      const wc = countWords(ta.value);
+      wcEl.textContent = wc + ' words';
+      wcEl.className = 'word-count' + (wc >= 60 && wc <= 100 ? ' ok' : wc > 100 ? ' over' : '');
+    }
+  }
+}
+
+function deleteTemplate(userIdx) {
+  if (confirm('Delete this feedback template?')) {
+    userTemplates.splice(userIdx, 1);
+    renderList();
+    showToast('Template deleted. Tap Save to confirm.');
+  }
+}
+
+function addFeedback() {
+  const ta = document.getElementById('new-feedback');
+  const text = ta.value.trim();
+  if (!text) { showToast('Please write a feedback template first.'); return; }
+  if (countWords(text) < 20) { showToast('Template seems too short. Aim for ~75 words.'); return; }
+  userTemplates.push(text);
+  ta.value = '';
+  document.getElementById('new-word-count').textContent = '0 words';
+  renderList();
+  showToast('✓ Added! Tap Save to keep it.');
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.feedback-card');
+    if (cards.length) cards[cards.length-1].scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 100);
+}
+
+function saveAll() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(userTemplates));
+    updateJSONOutput();
+    const s = document.getElementById('save-status');
+    s.classList.add('show');
+    showToast('✓ All changes saved.');
+    setTimeout(() => s.classList.remove('show'), 3000);
+  } catch(e) {
+    showToast('Save failed — storage may be full.');
+  }
+}
+
+function updateJSONOutput() {
+  const all = [...PRELOADED, ...userTemplates];
+  document.getElementById('json-output').textContent = JSON.stringify(all);
+}
+
+function loadSaved() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) userTemplates = JSON.parse(saved);
+  } catch(e) { userTemplates = []; }
+}
+
+document.getElementById('new-feedback').addEventListener('input', function() {
+  const wc = countWords(this.value);
+  const el = document.getElementById('new-word-count');
+  el.textContent = wc + ' words';
+  el.style.color = wc >= 60 && wc <= 100 ? 'var(--success)' : wc > 100 ? 'var(--orange)' : 'var(--muted)';
+});
+
+loadSaved();
+renderList();
+updateJSONOutput();
+</script>
+</body>
+</html>

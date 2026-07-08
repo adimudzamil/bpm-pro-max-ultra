@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>2100551 · Boarding Pass Verifier</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚥</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚥</text></svg>">
+<!-- jsQR: QR code reader -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<!-- ZXing-wasm: PDF417 + Code128 decoder for all platforms including iOS -->
+<script src="https://cdn.jsdelivr.net/npm/zxing-wasm@1.2.13/dist/full/zxing_full.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ════════════════════════════════════
+   TOKENS — MH Official Palette
+════════════════════════════════════ */
+:root {
+  --mh-blue:       #003b8e;
+  --mh-blue-mid:   #0057b8;
+  --mh-blue-light: #1a6fce;
+  --mh-blue-pale:  #e8f0fb;
+  --mh-blue-faint: #f0f5fc;
+  --mh-red:        #cc0000;
+  --white:         #ffffff;
+  --grey-50:       #f5f7fa;
+  --grey-100:      #ebeef3;
+  --grey-200:      #d4dae4;
+  --grey-400:      #8c96a8;
+  --grey-600:      #4a5568;
+  --grey-800:      #1a2332;
+  --green:         #0a7c45;
+  --green-light:   #0e9e59;
+  --green-pale:    #e6f7ef;
+  --red-pale:      #fdf0f0;
+  --text:          #1a2332;
+  --text-muted:    #5a6a80;
+  --border:        #d4dae4;
+  --border-light:  #ebeef3;
+  --shadow-sm:     0 1px 4px rgba(0,59,142,0.07);
+  --shadow-md:     0 4px 16px rgba(0,59,142,0.10);
+  --shadow-lg:     0 8px 32px rgba(0,59,142,0.13);
+  --radius:        12px;
+  --radius-sm:     8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--grey-50);
+  color: var(--text);
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 400;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ════════════════════════════════════
+   BATIK SVG BACKGROUND (tasteful)
+════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--grey-50);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3Cstyle%3E.b%7Bfill:none;stroke:%23003b8e;stroke-opacity:0.045;%7D%3C/style%3E%3C/defs%3E%3C!-- Petal cluster --%3E%3Ccircle class='b' cx='60' cy='60' r='28' stroke-width='1'/%3E%3Ccircle class='b' cx='60' cy='60' r='18' stroke-width='0.8'/%3E%3Ccircle class='b' cx='60' cy='60' r='8' stroke-width='0.8'/%3E%3Cellipse class='b' cx='60' cy='38' rx='6' ry='14' stroke-width='0.8'/%3E%3Cellipse class='b' cx='60' cy='82' rx='6' ry='14' stroke-width='0.8'/%3E%3Cellipse class='b' cx='38' cy='60' rx='14' ry='6' stroke-width='0.8'/%3E%3Cellipse class='b' cx='82' cy='60' rx='14' ry='6' stroke-width='0.8'/%3E%3Cellipse class='b' cx='42' cy='42' rx='6' ry='12' transform='rotate(45 42 42)' stroke-width='0.8'/%3E%3Cellipse class='b' cx='78' cy='42' rx='6' ry='12' transform='rotate(-45 78 42)' stroke-width='0.8'/%3E%3Cellipse class='b' cx='42' cy='78' rx='6' ry='12' transform='rotate(-45 42 78)' stroke-width='0.8'/%3E%3Cellipse class='b' cx='78' cy='78' rx='6' ry='12' transform='rotate(45 78 78)' stroke-width='0.8'/%3E%3Ccircle class='b' cx='0' cy='0' r='14' stroke-width='0.8'/%3E%3Ccircle class='b' cx='120' cy='0' r='14' stroke-width='0.8'/%3E%3Ccircle class='b' cx='0' cy='120' r='14' stroke-width='0.8'/%3E%3Ccircle class='b' cx='120' cy='120' r='14' stroke-width='0.8'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════
+   TOP NAV BAR (MH style)
+════════════════════════════════════ */
+.top-nav {
+  position: relative; z-index: 10;
+  width: 100%;
+  background: var(--mh-blue);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  box-shadow: 0 2px 8px rgba(0,59,142,0.25);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-logo svg { flex-shrink: 0; }
+
+.nav-brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-brand-main {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.3px;
+  line-height: 1.1;
+}
+
+.nav-brand-sub {
+  font-size: 9px;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+}
+
+.nav-badge {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.9);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* Blue accent stripe below nav */
+.nav-stripe {
+  position: relative; z-index: 9;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--mh-blue) 0%, var(--mh-blue-light) 50%, #e31837 100%);
+}
+
+/* ════════════════════════════════════
+   PAGE LAYOUT
+════════════════════════════════════ */
+.page {
+  position: relative; z-index: 1;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 16px 60px;
+}
+
+/* ════════════════════════════════════
+   MAIN CARD
+════════════════════════════════════ */
+.main-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: cardIn 0.5s ease both;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Card header band */
+.card-header {
+  background: linear-gradient(135deg, var(--mh-blue) 0%, var(--mh-blue-mid) 100%);
+  padding: 20px 24px 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Batik watermark in card header */
+.card-header::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 160px; height: 160px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cdefs%3E%3Cstyle%3E.b%7Bfill:none;stroke:white;stroke-opacity:0.07;%7D%3C/style%3E%3C/defs%3E%3Ccircle class='b' cx='80' cy='80' r='60' stroke-width='1.5'/%3E%3Ccircle class='b' cx='80' cy='80' r='45' stroke-width='1'/%3E%3Ccircle class='b' cx='80' cy='80' r='28' stroke-width='1'/%3E%3Cellipse class='b' cx='80' cy='30' rx='10' ry='24' stroke-width='1'/%3E%3Cellipse class='b' cx='80' cy='130' rx='10' ry='24' stroke-width='1'/%3E%3Cellipse class='b' cx='30' cy='80' rx='24' ry='10' stroke-width='1'/%3E%3Cellipse class='b' cx='130' cy='80' rx='24' ry='10' stroke-width='1'/%3E%3Cellipse class='b' cx='45' cy='45' rx='10' ry='22' transform='rotate(45 45 45)' stroke-width='1'/%3E%3Cellipse class='b' cx='115' cy='45' rx='10' ry='22' transform='rotate(-45 115 45)' stroke-width='1'/%3E%3Cellipse class='b' cx='45' cy='115' rx='10' ry='22' transform='rotate(-45 45 115)' stroke-width='1'/%3E%3Cellipse class='b' cx='115' cy='115' rx='10' ry='22' transform='rotate(45 115 115)' stroke-width='1'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 1;
+}
+
+.card-header-inner {
+  position: relative; z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-icon {
+  width: 44px; height: 44px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.header-text h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+}
+
+.header-text p {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* ════════════════════════════════════
+   CARD BODY
+════════════════════════════════════ */
+.card-body {
+  padding: 24px;
+}
+
+/* ── Step label ── */
+.step-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.step-num {
+  width: 22px; height: 22px;
+  background: var(--mh-blue);
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mh-blue);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+}
+
+.step-line { flex: 1; height: 1px; background: var(--border-light); }
+
+/* ── Input section ── */
+.input-section {
+  background: var(--grey-50);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  margin-bottom: 24px;
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+
+.field label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.field input {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.field input::placeholder { color: var(--grey-200); font-size: 13px; letter-spacing: 1px; }
+.field input[type="date"] { color-scheme: light; cursor: pointer; font-size: 13px; letter-spacing: 1px; }
+
+.field input:focus {
+  border-color: var(--mh-blue-mid);
+  box-shadow: 0 0 0 3px rgba(0,87,184,0.1);
+}
+
+.field input:disabled {
+  background: var(--grey-50);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Flight preview pill */
+.flight-pill {
+  background: var(--mh-blue-pale);
+  border: 1.5px solid rgba(0,87,184,0.15);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pill-item { display: flex; flex-direction: column; gap: 2px; }
+
+.pill-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--mh-blue-mid);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.pill-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--mh-blue);
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.pill-val.empty { color: var(--grey-200); font-size: 16px; font-weight: 400; }
+
+.pill-plane {
+  flex: 1;
+  text-align: center;
+  color: var(--mh-blue-mid);
+  opacity: 0.3;
+  font-size: 20px;
+}
+
+/* ── Scanner section ── */
+.scanner-section { margin-bottom: 0; }
+
+.scanner-block {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.scanner-viewport {
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  background: #0a0e1a;
+  overflow: hidden;
+}
+
+#video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Idle state */
+.idle-screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px;
+  background: #0c1628;
+  z-index: 5;
+}
+
+.idle-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 44px;
+}
+
+.idle-bars span {
+  display: block;
+  width: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  animation: idleBar 1.6s ease-in-out infinite;
+}
+.idle-bars span:nth-child(1)  { height: 55%; }
+.idle-bars span:nth-child(2)  { height: 100%; width: 6px; animation-delay:.1s; }
+.idle-bars span:nth-child(3)  { height: 40%; animation-delay:.05s; }
+.idle-bars span:nth-child(4)  { height: 80%; animation-delay:.2s; }
+.idle-bars span:nth-child(5)  { height: 60%; animation-delay:.15s; }
+.idle-bars span:nth-child(6)  { height: 100%; width: 6px; animation-delay:.08s; }
+.idle-bars span:nth-child(7)  { height: 45%; animation-delay:.18s; }
+.idle-bars span:nth-child(8)  { height: 75%; animation-delay:.12s; }
+.idle-bars span:nth-child(9)  { height: 50%; animation-delay:.22s; }
+.idle-bars span:nth-child(10) { height: 100%; width: 6px; animation-delay:.06s; }
+.idle-bars span:nth-child(11) { height: 35%; animation-delay:.25s; }
+.idle-bars span:nth-child(12) { height: 65%; animation-delay:.1s; }
+
+@keyframes idleBar {
+  0%,100% { opacity: 0.15; transform: scaleY(1); }
+  50%      { opacity: 0.35; transform: scaleY(0.88); }
+}
+
+.idle-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* Scan overlay (active) */
+.scan-guide { position: absolute; inset: 0; pointer-events: none; z-index: 3; display: none; }
+.scan-guide.active { display: block; }
+
+.scan-guide::before {
+  content: '';
+  position: absolute; inset: 0;
+  box-shadow: inset 0 0 50px rgba(10,14,26,0.5);
+}
+
+.scan-target {
+  position: absolute;
+  top: 50%; left: 10%; right: 10%;
+  transform: translateY(-50%);
+  height: 36%;
+  border: 1.5px solid rgba(0,87,184,0.7);
+  border-radius: 6px;
+}
+
+.sc { position: absolute; width: 16px; height: 16px; border-color: var(--mh-blue-light); border-style: solid; border-width: 0; }
+.sc.tl { top: -1px; left: -1px;   border-top-width: 2.5px; border-left-width: 2.5px; }
+.sc.tr { top: -1px; right: -1px;  border-top-width: 2.5px; border-right-width: 2.5px; }
+.sc.bl { bottom: -1px; left: -1px;  border-bottom-width: 2.5px; border-left-width: 2.5px; }
+.sc.br { bottom: -1px; right: -1px; border-bottom-width: 2.5px; border-right-width: 2.5px; }
+
+.scan-beam {
+  position: absolute; left: 0; right: 0; top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--mh-blue-light) 30%, #5bb3ff 50%, var(--mh-blue-light) 70%, transparent);
+  box-shadow: 0 0 10px rgba(0,111,255,0.8), 0 0 20px rgba(0,111,255,0.3);
+  animation: scanBeam 1.8s ease-in-out infinite;
+}
+
+@keyframes scanBeam {
+  0%   { top: 0%; }
+  100% { top: 100%; }
+}
+
+.scan-hint {
+  position: absolute; bottom: 12px; left: 0; right: 0;
+  text-align: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(91,179,255,0.7);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  z-index: 4;
+  display: none;
+}
+.scan-hint.active { display: block; }
+
+/* ════════════════════════════════════
+   RESULT OVERLAY
+════════════════════════════════════ */
+.result-overlay {
+  position: absolute; inset: 0;
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.result-overlay.show { display: flex; }
+
+.result-overlay.approved { background: #fff; }
+.result-overlay.rejected { background: #fff; }
+
+/* Result top band */
+.res-band {
+  padding: 14px 16px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideDown 0.3s ease both;
+}
+
+.approved .res-band { background: var(--green); }
+.rejected .res-band { background: var(--mh-red); }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.res-icon-wrap {
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,0.18);
+  border: 2px solid rgba(255,255,255,0.35);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  color: #fff;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.res-icon-wrap::after {
+  content: '';
+  position: absolute; inset: -7px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  animation: ringOut 1.8s ease-out infinite;
+}
+
+@keyframes ringOut {
+  0%   { transform: scale(0.85); opacity: 0.6; }
+  100% { transform: scale(1.5);  opacity: 0; }
+}
+
+.res-heading { flex: 1; }
+
+.res-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+.res-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* Result body */
+.res-body {
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: slideDown 0.3s 0.05s ease both;
+  opacity: 0;
+  animation-fill-mode: both;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid transparent;
+}
+
+.check-row.pass {
+  background: var(--green-pale);
+  border-color: rgba(10,124,69,0.2);
+}
+
+.check-row.fail {
+  background: var(--red-pale);
+  border-color: rgba(204,0,0,0.15);
+}
+
+.check-icon-wrap {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.check-row.pass .check-icon-wrap { background: var(--green); color: #fff; }
+.check-row.fail .check-icon-wrap { background: var(--mh-red); color: #fff; }
+
+.check-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.check-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 1.5px;
+}
+
+/* Counter strip */
+.counter-strip {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--mh-blue-faint);
+  border: 1.5px solid rgba(0,59,142,0.1);
+  border-radius: var(--radius-sm);
+  gap: 4px;
+}
+
+.counter-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.counter-nums { display: flex; gap: 16px; }
+
+.c-item { display: flex; align-items: baseline; gap: 4px; }
+.c-num  { font-size: 18px; font-weight: 700; line-height: 1; }
+.c-lbl  { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 1.5px; color: var(--text-muted); text-transform: uppercase; }
+.c-item.ok  .c-num { color: var(--green); }
+.c-item.bad .c-num { color: var(--mh-red); }
+.c-item.tot .c-num { color: var(--mh-blue); }
+
+/* Countdown bar */
+.countdown-wrap {
+  padding: 0 16px 10px;
+  animation: slideDown 0.3s 0.1s ease both;
+  opacity: 0;
+  animation-fill-mode: both;
+}
+
+.countdown-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.countdown-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.countdown-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--mh-blue-mid);
+}
+
+.countdown-track {
+  height: 4px;
+  background: var(--grey-100);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.countdown-fill {
+  height: 100%;
+  border-radius: 2px;
+  transform-origin: left;
+  background: var(--mh-blue-mid);
+  transition: transform linear;
+}
+
+.approved ~ .countdown-wrap .countdown-fill { background: var(--green-light); }
+
+/* Action buttons */
+.res-actions {
+  padding: 0 16px 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  animation: slideDown 0.3s 0.12s ease both;
+  opacity: 0;
+  animation-fill-mode: both;
+}
+
+.btn-instant {
+  padding: 11px 10px;
+  border-radius: var(--radius-sm);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.18s;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+.btn-scan-now {
+  background: var(--mh-blue);
+  color: #fff;
+}
+.btn-scan-now:hover { background: var(--mh-blue-mid); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-scan-now:active { transform: none; }
+
+.btn-stop-session {
+  background: var(--white);
+  color: var(--text-muted);
+  border: 1.5px solid var(--border) !important;
+}
+.btn-stop-session:hover { border-color: var(--grey-400) !important; color: var(--text); }
+
+/* ════════════════════════════════════
+   CONTROLS + STATUS
+════════════════════════════════════ */
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+.btn-activate {
+  padding: 14px 10px;
+  background: var(--mh-blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.18s;
+  letter-spacing: 0.3px;
+}
+.btn-activate:hover { background: var(--mh-blue-mid); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-activate:active { transform: none; }
+.btn-activate:disabled { background: var(--grey-200); color: var(--grey-400); cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-stop {
+  padding: 14px 10px;
+  background: var(--white);
+  color: var(--text-muted);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.3px;
+}
+.btn-stop:hover { border-color: var(--grey-400); color: var(--text); }
+.btn-stop:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.status-bar {
+  padding: 11px 20px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--grey-50);
+}
+
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--grey-200);
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+.dot.live { background: var(--mh-blue-mid); box-shadow: 0 0 8px rgba(0,87,184,0.5); animation: dotPulse 1.4s infinite; }
+.dot.ok   { background: var(--green-light); box-shadow: 0 0 8px rgba(14,158,89,0.6); }
+.dot.fail { background: var(--mh-red); box-shadow: 0 0 8px rgba(204,0,0,0.5); }
+
+@keyframes dotPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.status-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+/* ════════════════════════════════════
+   FOOTER
+════════════════════════════════════ */
+footer {
+  margin-top: 28px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  color: var(--grey-400);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ════════════════════════════════════
+   GHOST TAP ZONE
+════════════════════════════════════ */
+.ghost-tap-zone {
+  flex: 1;                        /* fills ALL remaining blank space */
+  min-height: 80px;
+  cursor: pointer;
+  display: none;                  /* hidden by default */
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: rgba(0,87,184,0.06);
+  transition: background 0.15s;
+  position: relative;
+}
+
+/* Only show during countdown (when result is visible) */
+.result-overlay.show .ghost-tap-zone {
+  display: flex;
+}
+
+.ghost-tap-zone:active {
+  background: rgba(0,87,184,0.05);
+}
+
+.ghost-tap-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--grey-200);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  pointer-events: none;
+  animation: ghostPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes ghostPulse {
+  0%, 100% { opacity: 0.4; transform: translateY(0); }
+  50%       { opacity: 0.7; transform: translateY(3px); }
+}
+
+/* ════════════════════════════════════
+   ANIMATIONS / RESPONSIVE
+════════════════════════════════════ */
+@keyframes shake {
+  0%,100% { transform:translateX(0) }
+  20%     { transform:translateX(-7px) }
+  40%     { transform:translateX(7px) }
+  60%     { transform:translateX(-4px) }
+  80%     { transform:translateX(4px) }
+}
+
+@media (max-width: 400px) {
+  .input-row { grid-template-columns: 1fr; }
+  .controls  { grid-template-columns: 1fr; }
+  .res-actions { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top navigation -->
+<nav class="top-nav">
+  <div class="nav-logo">
+    <!-- MH Wau kite emblem -->
+    <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+      <path d="M20 4 L36 20 L20 36 L4 20 Z" stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.08)"/>
+      <path d="M20 4 L20 36M4 20 L36 20" stroke="white" stroke-width="0.8" opacity="0.4"/>
+      <path d="M20 4 L36 20 L20 20Z" fill="rgba(255,255,255,0.1)"/>
+      <circle cx="20" cy="20" r="4" fill="white" opacity="0.9"/>
+    </svg>
+    <div class="nav-brand">
+      <span class="nav-brand-main">2100551</span>
+      <span class="nav-brand-sub">SCAN</span>
+    </div>
+  </div>
+  <div class="nav-badge">Test Build</div>
+</nav>
+<div class="nav-stripe"></div>
+
+<div class="page">
+  <div class="main-card">
+
+    <!-- Card Header -->
+    <div class="card-header">
+      <div class="card-header-inner">
+        <div class="header-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round">
+            <rect x="3" y="3" width="18" height="14" rx="2"/>
+            <path d="M3 8h18M8 8v11M7 21h10"/>
+            <circle cx="17" cy="16" r="3" fill="white" stroke="none" opacity="0.7"/>
+          </svg>
+        </div>
+        <div class="header-text">
+          <h1>Boarding Pass Verifier</h1>
+          <p>Scan &amp; Verify · Flight Boarding System</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+
+      <!-- STEP 1 -->
+      <div class="step-label">
+        <div class="step-num">1</div>
+        <div class="step-title">Flight Details</div>
+        <div class="step-line"></div>
+      </div>
+
+      <div class="input-section">
+        <div class="input-row">
+          <div class="field">
+            <label>Flight No.</label>
+            <input type="text" id="flightInput" placeholder="MH0000" maxlength="10" oninput="onInputChange()">
+          </div>
+          <div class="field">
+            <label>Departure Date</label>
+            <input type="date" id="dateInput" oninput="onInputChange()">
+          </div>
+        </div>
+
+        <div class="flight-pill">
+          <div class="pill-item">
+            <div class="pill-lbl">Flight</div>
+            <div class="pill-val empty" id="prevFlight">—</div>
+          </div>
+          <div class="pill-plane">✈</div>
+          <div class="pill-item" style="text-align:right">
+            <div class="pill-lbl">Date</div>
+            <div class="pill-val empty" id="prevDate">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-label">
+        <div class="step-num">2</div>
+        <div class="step-title">Scan Barcode</div>
+        <div class="step-line"></div>
+      </div>
+
+      <div class="scanner-section">
+        <div class="scanner-block">
+
+          <div class="scanner-viewport" id="viewport">
+            <video id="video" autoplay playsinline muted></video>
+
+            <!-- Idle -->
+            <div class="idle-screen" id="idleScreen">
+              <div class="idle-bars">
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <div class="idle-text">Enter flight details<br>then activate scanner</div>
+            </div>
+
+            <!-- Scan guide -->
+            <div class="scan-guide" id="scanGuide">
+              <div class="scan-target">
+                <div class="sc tl"></div><div class="sc tr"></div>
+                <div class="sc bl"></div><div class="sc br"></div>
+                <div class="scan-beam"></div>
+              </div>
+            </div>
+            <div class="scan-hint" id="scanHint">Align barcode within frame</div>
+
+            <!-- Result overlay -->
+            <div class="result-overlay" id="resultOverlay">
+
+              <div class="res-band" id="resBand">
+                <div class="res-icon-wrap" id="resIcon"></div>
+                <div class="res-heading">
+                  <div class="res-title" id="resTitle"></div>
+                  <div class="res-sub"   id="resSub"></div>
+                </div>
+              </div>
+
+              <div class="res-body" id="resBody">
+                <div id="resChecks"></div>
+                <div class="counter-strip">
+                  <div class="counter-label">Session</div>
+                  <div class="counter-nums">
+                    <div class="c-item ok">
+                      <span class="c-num" id="countPass">0</span>
+                      <span class="c-lbl">Pass</span>
+                    </div>
+                    <div class="c-item bad">
+                      <span class="c-num" id="countFail">0</span>
+                      <span class="c-lbl">Fail</span>
+                    </div>
+                    <div class="c-item tot">
+                      <span class="c-num" id="countTotal">0</span>
+                      <span class="c-lbl">Total</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="countdown-wrap" id="countdownWrap">
+                <div class="countdown-top">
+                  <span class="countdown-lbl">Next scan in</span>
+                  <span class="countdown-num" id="cdNum">3s</span>
+                </div>
+                <div class="countdown-track">
+                  <div class="countdown-fill" id="cdFill"></div>
+                </div>
+              </div>
+
+              <div class="res-actions">
+                <button class="btn-instant btn-scan-now"     onclick="resetScanNow()">⚡ Scan Now</button>
+                <button class="btn-instant btn-stop-session" onclick="stopScan()">▪ End Session</button>
+              </div>
+
+              <!-- Ghost tap zone — large thumb-friendly area, only active during countdown -->
+              <div class="ghost-tap-zone" id="ghostTapZone" onclick="resetScanNow()">
+                <div class="ghost-tap-hint" id="ghostTapHint">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                  tap anywhere here to scan next
+                </div>
+              </div>
+
+            </div><!-- /result-overlay -->
+          </div><!-- /viewport -->
+
+          <!-- Controls -->
+          <div class="controls">
+            <button class="btn-activate" id="startBtn" onclick="startScan()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
+              Activate Scanner
+            </button>
+            <button class="btn-stop" id="stopBtn" onclick="stopScan()" disabled>▪ Stop</button>
+          </div>
+
+          <div class="status-bar">
+            <div class="dot" id="dot"></div>
+            <span class="status-text" id="statusText">Ready — enter flight details to begin</span>
+          </div>
+
+        </div><!-- /scanner-block -->
+      </div><!-- /scanner-section -->
+
+    </div><!-- /card-body -->
+  </div><!-- /main-card -->
+
+  <footer>2100551 · Boarding Verification System · Version 1.4</footer>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// AUDIO — Web Audio API, works on all platforms
+// ══════════════════════════════════════════════
+var audioCtx = null;
+function getAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+  }
+  return audioCtx;
+}
+function playTone(freq, type, startDelay, dur, vol) {
+  try {
+    var ctx = getAudio(); if (!ctx) return;
+    var osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    var t = ctx.currentTime + startDelay;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + 0.015);
+    gain.gain.linearRampToValueAtTime(0, t + dur);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch(e) {}
+}
+function playApproved() {
+  playTone(880,  'sine',   0,    0.12, 0.28);
+  playTone(1108, 'sine',   0.14, 0.20, 0.30);
+}
+function playDenied() {
+  playTone(440, 'square', 0,    0.14, 0.22);
+  playTone(330, 'square', 0.17, 0.22, 0.25);
+}
+
+// ══════════════════════════════════════════════
+// ZXING-WASM INIT — PDF417 + Code128 for iOS & all browsers
+// ══════════════════════════════════════════════
+var zxingReader = null;
+var zxingReady  = false;
+
+function initZxing() {
+  try {
+    if (typeof ZXing === 'undefined') return;
+    ZXing.then(function(instance) {
+      zxingReader = instance;
+      zxingReady  = true;
+      console.log('ZXing WASM ready');
+    }).catch(function(e) {
+      console.warn('ZXing init failed:', e);
+    });
+  } catch(e) {
+    console.warn('ZXing unavailable:', e);
+  }
+}
+
+// Try to init ZXing as soon as possible
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initZxing);
+} else {
+  setTimeout(initZxing, 100);
+}
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+var scanning   = false;
+var streamRef  = null;
+var rafId      = null;
+var detected   = false;
+var cdInterval = null;
+var passCount  = 0;
+var failCount  = 0;
+var zxingFrameCounter = 0; // throttle ZXing calls (heavier than jsQR)
+
+// Off-screen canvas for frame analysis
+var offCanvas = document.createElement('canvas');
+var offCtx    = offCanvas.getContext('2d', { willReadFrequently: true });
+
+// DOM refs
+var idleScreen = document.getElementById('idleScreen');
+var scanGuide  = document.getElementById('scanGuide');
+var scanHint   = document.getElementById('scanHint');
+var startBtn   = document.getElementById('startBtn');
+var stopBtn    = document.getElementById('stopBtn');
+var dot        = document.getElementById('dot');
+var statusEl   = document.getElementById('statusText');
+var videoEl    = document.getElementById('video');
+
+// ══════════════════════════════════════════════
+// INPUT PREVIEW
+// ══════════════════════════════════════════════
+function onInputChange() {
+  var f  = getFlightNum();
+  var d  = document.getElementById('dateInput').value;
+  var pf = document.getElementById('prevFlight');
+  var pd = document.getElementById('prevDate');
+  if (f) { pf.textContent = f; pf.classList.remove('empty'); }
+  else   { pf.textContent = '—'; pf.classList.add('empty'); }
+  if (d) {
+    var dt = new Date(d + 'T00:00:00');
+    pd.textContent = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
+    pd.classList.remove('empty');
+  } else { pd.textContent = '—'; pd.classList.add('empty'); }
+}
+function getFlightNum() { return document.getElementById('flightInput').value.trim().toUpperCase(); }
+function getDateISO()   { return document.getElementById('dateInput').value; }
+function lockInputs()   { document.getElementById('flightInput').disabled = true;  document.getElementById('dateInput').disabled = true;  }
+function unlockInputs() { document.getElementById('flightInput').disabled = false; document.getElementById('dateInput').disabled = false; }
+
+// ══════════════════════════════════════════════
+// CAMERA — pure getUserMedia, no Quagga
+// ══════════════════════════════════════════════
+async function startScan() {
+  var flight = getFlightNum(), date = getDateISO();
+  if (!flight || !date) {
+    setStatus('fail', 'Please enter flight number and date first');
+    shakeEl(document.querySelector('.input-section'));
+    return;
+  }
+  // Wake AudioContext on user gesture
+  try { var ac = getAudio(); if (ac && ac.state === 'suspended') ac.resume(); } catch(e) {}
+
+  setStatus('live', 'Starting camera…');
+
+  try {
+    // Request rear camera explicitly
+    streamRef = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: 'environment' },
+        width:  { ideal: 1280 },
+        height: { ideal: 720 }
+      },
+      audio: false
+    });
+
+    videoEl.srcObject = streamRef;
+    videoEl.setAttribute('playsinline', '');  // critical for iOS
+    videoEl.setAttribute('muted', '');
+    await videoEl.play();
+
+    detected = false;
+    scanning = true;
+    lockInputs();
+    idleScreen.style.display = 'none';
+    scanGuide.classList.add('active');
+    scanHint.classList.add('active');
+    startBtn.disabled = true;
+    stopBtn.disabled  = false;
+    setStatus('live', 'Scanning — align barcode within frame');
+    rafId = requestAnimationFrame(scanLoop);
+
+  } catch(e) {
+    console.error(e);
+    setStatus('fail', 'Camera error: ' + (e.message || 'Permission denied'));
+  }
+}
+
+// ══════════════════════════════════════════════
+// SCAN LOOP — BarcodeDetector + jsQR dual engine
+// ══════════════════════════════════════════════
+function scanLoop() {
+  if (!scanning || detected) return;
+
+  if (videoEl.readyState >= videoEl.HAVE_ENOUGH_DATA && videoEl.videoWidth > 0) {
+    offCanvas.width  = videoEl.videoWidth;
+    offCanvas.height = videoEl.videoHeight;
+    offCtx.drawImage(videoEl, 0, 0);
+
+    // ── Engine 1: Native BarcodeDetector (Android Chrome, Samsung Internet)
+    // Handles Code128, PDF417, QR natively — fastest option when available
+    if ('BarcodeDetector' in window && !detected) {
+      // Get supported formats dynamically — avoids format name errors across browsers
+      BarcodeDetector.getSupportedFormats().then(function(supported) {
+        var want = ['pdf417','code_128','qr_code','aztec','data_matrix','code_39','ean_13'];
+        var formats = want.filter(function(f){ return supported.includes(f); });
+        if (formats.length === 0) formats = supported; // use all if none matched
+        var bd = new BarcodeDetector({ formats: formats });
+        bd.detect(offCanvas).then(function(codes) {
+          if (codes.length > 0 && !detected) {
+            detected = true;
+            onDetected(codes[0].rawValue);
+          }
+        }).catch(function() {});
+      }).catch(function() {
+        // Fallback: try with no format filter (detect anything)
+        try {
+          var bd2 = new BarcodeDetector();
+          bd2.detect(offCanvas).then(function(codes) {
+            if (codes.length > 0 && !detected) {
+              detected = true;
+              onDetected(codes[0].rawValue);
+            }
+          }).catch(function(){});
+        } catch(e2) {}
+      });
+    }
+
+    // ── Engine 2: jsQR (QR codes on all platforms including iOS)
+    if (!detected && typeof jsQR !== 'undefined') {
+      var imgData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
+      var qr = jsQR(imgData.data, imgData.width, imgData.height, {
+        inversionAttempts: 'attemptBoth'
+      });
+      if (qr && !detected) {
+        detected = true;
+        onDetected(qr.data);
+        return;
+      }
+    }
+
+    // ── Engine 3: ZXing-WASM (PDF417 + Code128 — works on ALL platforms incl iOS)
+    // Throttled to every 3rd frame to avoid blocking the main thread
+    zxingFrameCounter = (zxingFrameCounter || 0) + 1;
+    if (!detected && zxingReady && zxingReader && zxingFrameCounter % 3 === 0) {
+      (function() {
+        var imageData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
+        try {
+          var results = zxingReader.readBarcodesFromImageData(imageData, {
+            formats: ['PDF417', 'Code128', 'Code39', 'QRCode', 'DataMatrix'],
+            tryHarder: true
+          });
+          if (results && results.length > 0 && !detected) {
+            detected = true;
+            onDetected(results[0].text);
+          }
+        } catch(e) {}
+      })();
+    }
+  }
+  rafId = requestAnimationFrame(scanLoop);
+}
+
+// ══════════════════════════════════════════════
+// STOP
+// ══════════════════════════════════════════════
+function stopScan() {
+  clearCountdown();
+  scanning = false; detected = false;
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  if (streamRef) { streamRef.getTracks().forEach(function(t){ t.stop(); }); streamRef = null; }
+  videoEl.srcObject = null;
+  document.getElementById('resultOverlay').className = 'result-overlay';
+  idleScreen.style.display = 'flex';
+  scanGuide.classList.remove('active');
+  scanHint.classList.remove('active');
+  startBtn.disabled = false;
+  stopBtn.disabled  = true;
+  unlockInputs();
+  var total = passCount + failCount;
+  setStatus('', total > 0
+    ? 'Session ended — ' + total + ' scanned · ' + passCount + ' approved · ' + failCount + ' denied'
+    : 'Session ended');
+}
+
+function resetScanNow() { clearCountdown(); doRescan(); }
+
+function doRescan() {
+  document.getElementById('resultOverlay').className = 'result-overlay';
+  detected = false;
+  if (streamRef) {
+    scanning = true;
+    setStatus('live', 'Scanning — align barcode within frame');
+    rafId = requestAnimationFrame(scanLoop);
+  } else {
+    startScan();
+  }
+}
+
+// ══════════════════════════════════════════════
+// DETECTION + VERIFICATION
+// ══════════════════════════════════════════════
+function onDetected(rawText) {
+  if (!rawText) return;
+  detected = true; scanning = false;
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  if (navigator.vibrate) navigator.vibrate([40, 30, 60]);
+
+  var flight = getFlightNum(), date = getDateISO();
+  var flightOk = checkFlight(rawText, flight);
+  var dateOk   = checkDate(rawText, date);
+  var approved = flightOk && dateOk;
+
+  if (approved) { passCount++; playApproved(); }
+  else          { failCount++; playDenied();   }
+
+  document.getElementById('countPass').textContent  = passCount;
+  document.getElementById('countFail').textContent  = failCount;
+  document.getElementById('countTotal').textContent = passCount + failCount;
+
+  showResult(approved, flight, date, flightOk, dateOk);
+  setStatus(approved ? 'ok' : 'fail',
+    approved ? '✓ Approved — ready for next passenger' : '✗ Denied — boarding pass mismatch');
+  startCountdown(approved ? 2000 : 4000);
+}
+
+function checkFlight(raw, expected) {
+  var r = raw.toUpperCase().replace(/\s+/g, '');
+  var e = expected.replace(/\s+/g, '');
+  if (r.includes(e)) return true;
+  var stripped = e.replace(/^([A-Z]{2,3})0+/, '$1');
+  if (r.includes(stripped)) return true;
+  if (raw.toUpperCase().includes(e.slice(0,2) + ' ' + e.slice(2))) return true;
+  var numOnly = e.replace(/^[A-Z]+0*/, '');
+  if (numOnly.length >= 2 && r.includes(numOnly)) return true;
+  return false;
+}
+
+function checkDate(raw, isoDate) {
+  if (!isoDate) return false;
+  var dt   = new Date(isoDate + 'T00:00:00');
+  var jan1 = new Date(dt.getFullYear(), 0, 1);
+  var julian = Math.round((dt - jan1) / 86400000) + 1;
+  if (raw.includes(String(julian).padStart(3, '0'))) return true;
+  var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  var day = String(dt.getDate()).padStart(2,'0'), mon = months[dt.getMonth()];
+  var variants = [isoDate, isoDate.replace(/-/g,''),
+    day+mon+dt.getFullYear(), day+mon, mon+day, day+' '+mon,
+    dt.toLocaleDateString('en-GB').replace(/\//g,'')];
+  var ru = raw.toUpperCase();
+  return variants.some(function(v){ return ru.includes(v.toUpperCase()); });
+}
+
+// ══════════════════════════════════════════════
+// RESULT DISPLAY
+// ══════════════════════════════════════════════
+function showResult(approved, flight, isoDate, flightOk, dateOk) {
+  var overlay = document.getElementById('resultOverlay');
+  overlay.className = 'result-overlay show ' + (approved ? 'approved' : 'rejected');
+  document.getElementById('resIcon').textContent  = approved ? '✓' : '✕';
+  document.getElementById('resTitle').textContent = approved ? 'Boarding Approved' : 'Access Denied';
+  document.getElementById('resSub').textContent   = approved ? 'Passenger may board' : 'Does not match record';
+  var dt = new Date(isoDate + 'T00:00:00');
+  var ds = dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
+  document.getElementById('resChecks').innerHTML =
+    makeCheckRow(flightOk, 'Flight', flight) +
+    makeCheckRow(dateOk,   'Date',   ds);
+}
+function makeCheckRow(pass, label, val) {
+  return '<div class="check-row '+(pass?'pass':'fail')+'" style="margin-bottom:8px">' +
+    '<div class="check-icon-wrap">'+(pass?'✓':'✗')+'</div>' +
+    '<div class="check-label">'+label+'</div>' +
+    '<div class="check-val">'+val+'</div></div>';
+}
+
+// ══════════════════════════════════════════════
+// COUNTDOWN
+// ══════════════════════════════════════════════
+function startCountdown(delay) {
+  clearCountdown();
+  var fill = document.getElementById('cdFill'), cdNum = document.getElementById('cdNum');
+  var elapsed = 0, step = 50;
+  fill.style.transition = 'none'; fill.style.transform = 'scaleX(1)';
+  cdInterval = setInterval(function() {
+    elapsed += step;
+    var frac = Math.max(0, 1 - elapsed / delay);
+    fill.style.transition = 'transform '+step+'ms linear';
+    fill.style.transform  = 'scaleX('+frac+')';
+    cdNum.textContent = Math.ceil((delay - elapsed) / 1000) + 's';
+    if (elapsed >= delay) { clearCountdown(); doRescan(); }
+  }, step);
+}
+function clearCountdown() { if (cdInterval) { clearInterval(cdInterval); cdInterval = null; } }
+
+// ══════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════
+function setStatus(type, msg) {
+  dot.className = 'dot' + (type ? ' '+type : '');
+  statusEl.textContent = msg;
+}
+function shakeEl(el) {
+  el.style.animation = 'none'; void el.offsetHeight;
+  el.style.animation = 'shake 0.4s ease';
+  setTimeout(function(){ el.style.animation = ''; }, 500);
+}
+</script>
+
+
+</body>
+</html>

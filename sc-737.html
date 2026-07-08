@@ -41,6 +41,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
             border-bottom: 1px solid #dee2e6;
+            flex-wrap: wrap;
         }
 
         .control-group {
@@ -101,7 +102,7 @@
             text-align: center;
         }
 
-        /* Toggle Switch for Aft View */
+        /* Toggle Switch (common for both aft view and row 4 mode) */
         .toggle-switch {
             position: relative;
             display: inline-block;
@@ -192,6 +193,17 @@
 
         .control-spacer {
             flex: 1;
+        }
+
+        /* Warning message */
+        .warning-message {
+            background: #fff3cd;
+            color: #856404;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 10px;
+            display: inline-block;
         }
 
         /* Adjust body padding to account for control bar */
@@ -556,6 +568,16 @@
                 <span class="toggle-slider"></span>
             </label>
         </div>
+
+        <!-- NEW: Row 4 Toggle (identical styling) -->
+        <div class="control-group">
+            <label for="row4Toggle">4‑Row Mode</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="row4Toggle" checked onchange="toggleRow4Mode()">
+                <span class="toggle-slider"></span>
+            </label>
+            <span style="font-size: 11px; color: #666; margin-left: 5px;">(uncheck to remove row 4 if you are Fahrin)</span>
+        </div>
         
         <div class="control-spacer"></div>
         
@@ -599,16 +621,19 @@
         // Global variables
         let isAftView = false;
         let currentFontSize = 12;
+        let currentRowCount = 4;      // 4 rows by default (737NR)
+        let topChartData = null;       // Store passenger data for top chart
+        let bottomChartData = null;    // Store passenger data for bottom chart
         
-        // Generate seat rows for a specific container
-        function generateSeatRows(containerId) {
+        // Generate seat rows for a specific container with given row count
+        function generateSeatRows(containerId, rowCount) {
             const container = document.getElementById(containerId);
             if (!container) return;
             
             container.innerHTML = '';
             
-            // Create 4 rows for 737 Business Class (A, C, D, F)
-            for (let rowNum = 1; rowNum <= 4; rowNum++) {
+            // Create rows from 1 to rowCount (3 or 4)
+            for (let rowNum = 1; rowNum <= rowCount; rowNum++) {
                 const row = document.createElement('div');
                 row.className = 'row';
                 row.innerHTML = `
@@ -664,218 +689,93 @@
             }
         }
         
-        // Initialize both seat charts
-        function initializeSeatCharts() {
-            generateSeatRows('topSeatContainer');
-            generateSeatRows('bottomSeatContainer');
-        }
-        
-        // Function to parse name into first name and surname
-        function parsePassengerName(fullName) {
-            if (!fullName || !fullName.includes('/')) {
-                return { firstName: '', lastName: '' };
+        // Rebuild both charts from stored data
+        function regenerateAllCharts() {
+            // Recreate empty seat grids with current row count
+            generateSeatRows('topSeatContainer', currentRowCount);
+            generateSeatRows('bottomSeatContainer', currentRowCount);
+            
+            // Repopulate with stored data if any
+            if (topChartData) {
+                populateChart('top', topChartData);
+            }
+            if (bottomChartData) {
+                populateChart('bottom', bottomChartData);
             }
             
-            const parts = fullName.split('/');
-            const lastName = parts[0] || '';
-            const firstName = parts[1] || '';
-            
-            return { firstName, lastName };
-        }
-        
-        // Function to intelligently truncate names
-        function truncateIntelligently(text, maxLength = 25) {
-            if (!text || text.length <= maxLength) return text;
-            
-            const truncated = text.substring(0, maxLength);
-            const lastSpace = truncated.lastIndexOf(' ');
-            
-            if (lastSpace > maxLength * 0.7 && lastSpace > 0) {
-                return text.substring(0, lastSpace);
-            }
-            
-            return truncated + '…';
-        }
-        
-        // Function to get seat number without leading zeros
-        function normalizeSeatNumber(seat) {
-            if (!seat) return '';
-            return seat.replace(/^0+(\d+)/, '$1');
-        }
-        
-        // Function to populate seat data
-        function populateSeatData(passenger, seatBox) {
-            if (!passenger || !seatBox) return;
-            
-            const normalizedSeat = normalizeSeatNumber(passenger.seat);
-            const { firstName, lastName } = parsePassengerName(passenger.name);
-            const title = passenger.title || '';
-            
-            // Update seat number with tier if applicable
-            let seatNumberHTML = normalizedSeat;
-            if (passenger.tier === 'EMER' || passenger.tier === 'PLAT') {
-                seatNumberHTML += ` <span class="tier">*${passenger.tier}*</span>`;
-                
-                if (passenger.tier === 'EMER') {
-                    seatBox.classList.add('tier-emer');
-                    seatBox.classList.remove('empty-seat');
-                } else if (passenger.tier === 'PLAT') {
-                    seatBox.classList.add('tier-plat');
-                    seatBox.classList.remove('empty-seat');
-                }
-            }
-            
-            seatBox.querySelector('.seat-number').innerHTML = seatNumberHTML;
-            
-            // Update name lines
-            seatBox.querySelector('.name-line.title-line').textContent = title.toUpperCase() || '';
-            seatBox.querySelector('.name-line.surname-line').textContent = truncateIntelligently(lastName, 25).toUpperCase() || '';
-            seatBox.querySelector('.name-line.firstname-line').textContent = truncateIntelligently(firstName, 25).toUpperCase() || '';
-            
-            // Update meal field
-            const mealField = seatBox.querySelector('.field-line.meal-line');
-            if (mealField) {
-                if (passenger.meal && passenger.meal.trim()) {
-                    mealField.textContent = passenger.meal.toUpperCase();
-                    mealField.style.backgroundColor = '#f0f0f0';
-                } else {
-                    mealField.textContent = '';
-                    mealField.style.backgroundColor = '';
-                }
-            }
-            
-            // Remove empty-seat class
-            seatBox.classList.remove('empty-seat');
-            
-            // Ensure all text is visible
-            seatBox.querySelectorAll('.name-line, .field-line').forEach(line => {
-                line.style.color = '#000';
-            });
-            
-            // Remove placeholder pseudo-elements
-            const surnameLine = seatBox.querySelector('.name-line.surname-line');
-            const firstNameLine = seatBox.querySelector('.name-line.firstname-line');
-            const mealLine = seatBox.querySelector('.field-line.meal-line');
-            
-            if (surnameLine) surnameLine.style.setProperty('--placeholder-content', 'none');
-            if (firstNameLine) firstNameLine.style.setProperty('--placeholder-content', 'none');
-            if (mealLine) mealLine.style.setProperty('--placeholder-content', 'none');
-        }
-        
-        // Function to mark a seat as empty
-        function markSeatAsEmpty(seatBox) {
-            if (!seatBox) return;
-            
-            seatBox.classList.add('empty-seat');
-            
-            seatBox.querySelectorAll('.name-line, .field-line').forEach(line => {
-                line.style.color = 'transparent';
-            });
-            
-            const surnameLine = seatBox.querySelector('.name-line.surname-line');
-            const firstNameLine = seatBox.querySelector('.name-line.firstname-line');
-            const mealLine = seatBox.querySelector('.field-line.meal-line');
-            
-            if (surnameLine) surnameLine.style.setProperty('--placeholder-content', '"______"');
-            if (firstNameLine) firstNameLine.style.setProperty('--placeholder-content', '"______"');
-            if (mealLine) {
-                mealLine.style.setProperty('--placeholder-content', '"______"');
-                mealLine.style.backgroundColor = '';
+            // Reapply aft view if active
+            if (isAftView) {
+                // Apply aft view transformation to both containers
+                applyAftViewToContainer('topSeatContainer', true);
+                applyAftViewToContainer('bottomSeatContainer', true);
             }
         }
         
-        // Function to populate a chart with data
-        function populateChart(chartPosition, chartData) {
-            const prefix = chartPosition === 'top' ? 'top' : 'bottom';
+        // Toggle row 4 mode (checked = 4 rows, unchecked = 3 rows)
+        function toggleRow4Mode() {
+            const row4Toggle = document.getElementById('row4Toggle');
+            const newRowCount = row4Toggle.checked ? 4 : 3;
             
-            // Update header
-            const flightInfo = chartData.flightInfo;
-            if (flightInfo) {
-                document.getElementById(`${prefix}HeaderTitle`).textContent = 
-                    `${flightInfo.flightNumber} | ${flightInfo.sector} | ${flightInfo.date} ${flightInfo.stdLocal} | ${flightInfo.aircraft}`;
+            if (newRowCount === currentRowCount) return;
+            
+            currentRowCount = newRowCount;
+            regenerateAllCharts();
+            
+            // Check for passengers that would be hidden in row 4
+            let hiddenPassengersTop = 0;
+            let hiddenPassengersBottom = 0;
+            
+            if (topChartData && topChartData.passengers) {
+                hiddenPassengersTop = topChartData.passengers.filter(p => {
+                    const rowNum = parseInt(p.seat.match(/\d+/)[0]);
+                    return rowNum === 4;
+                }).length;
+            }
+            if (bottomChartData && bottomChartData.passengers) {
+                hiddenPassengersBottom = bottomChartData.passengers.filter(p => {
+                    const rowNum = parseInt(p.seat.match(/\d+/)[0]);
+                    return rowNum === 4;
+                }).length;
             }
             
-            // Update zone summary
-            const zoneSummary = chartData.zoneSummary;
-            if (zoneSummary) {
-                let summaryText = `Business Class: ${zoneSummary.totalPassengers} passengers`;
-                if (zoneSummary.specialMeals > 0) {
-                    summaryText += ` | Special Meals: ${zoneSummary.specialMeals}`;
+            if ((hiddenPassengersTop > 0 || hiddenPassengersBottom > 0) && currentRowCount === 3) {
+                // Show a warning in zone summaries
+                const warningMsg = `⚠️ ${hiddenPassengersTop + hiddenPassengersBottom} passenger(s) in row 4 not shown (3-row mode active)`;
+                if (topChartData && document.getElementById('topZoneSummary')) {
+                    let oldText = document.getElementById('topZoneSummary').innerHTML;
+                    document.getElementById('topZoneSummary').innerHTML = oldText + `<span class="warning-message">${warningMsg}</span>`;
                 }
-                if (zoneSummary.emerPlat > 0) {
-                    summaryText += ` | EMER/PLAT: ${zoneSummary.emerPlat}`;
+                if (bottomChartData && document.getElementById('bottomZoneSummary')) {
+                    let oldText = document.getElementById('bottomZoneSummary').innerHTML;
+                    document.getElementById('bottomZoneSummary').innerHTML = oldText + `<span class="warning-message">${warningMsg}</span>`;
                 }
-                if (zoneSummary.mealBreakdown) {
-                    summaryText += ` | ${zoneSummary.mealBreakdown}`;
-                }
-                if (zoneSummary.bbml > 0) {
-                    summaryText += ` | BBML: ${zoneSummary.bbml}`;
-                }
-                document.getElementById(`${prefix}ZoneSummary`).textContent = summaryText;
+                setTimeout(() => {
+                    if (document.getElementById('topZoneSummary')) {
+                        document.getElementById('topZoneSummary').innerHTML = document.getElementById('topZoneSummary').innerHTML.replace(`<span class="warning-message">${warningMsg}</span>`, '');
+                    }
+                    if (document.getElementById('bottomZoneSummary')) {
+                        document.getElementById('bottomZoneSummary').innerHTML = document.getElementById('bottomZoneSummary').innerHTML.replace(`<span class="warning-message">${warningMsg}</span>`, '');
+                    }
+                }, 5000);
             }
-            
-            // Populate seats
-            const passengers = chartData.passengers || [];
-            const occupiedSeats = new Set();
-            const container = document.getElementById(`${prefix}SeatContainer`);
-            
-            passengers.forEach(passenger => {
-                if (!passenger.seat) return;
-                
-                const normalizedSeat = normalizeSeatNumber(passenger.seat);
-                const seatBox = container.querySelector(`[data-seat="${normalizedSeat}"]`);
-                
-                if (seatBox) {
-                    populateSeatData(passenger, seatBox);
-                    occupiedSeats.add(normalizedSeat);
-                }
-            });
-            
-            // Mark empty seats
-            const allSeatBoxes = container.querySelectorAll('.seat-box');
-            allSeatBoxes.forEach(seatBox => {
-                const seatNumber = seatBox.getAttribute('data-seat');
-                if (!occupiedSeats.has(seatNumber)) {
-                    markSeatAsEmpty(seatBox);
-                }
-            });
-            
-            console.log(`Loaded ${passengers.length} passengers for ${chartPosition} chart`);
         }
         
-        // FIXED: Function to toggle aft view for both charts - Now reverses both rows and seat order
-        function toggleAftView() {
-            const toggle = document.getElementById('aftViewToggle');
-            isAftView = !isAftView; // Toggle the state
-            
-            // Toggle both charts
-            toggleChartAftView('topSeatContainer');
-            toggleChartAftView('bottomSeatContainer');
-            
-            // Re-apply font size adjustments
-            adjustFontSize(currentFontSize);
-        }
-        
-        // FIXED: Helper function to toggle aft view for a specific chart
-        function toggleChartAftView(containerId) {
+        // Apply or remove aft view transformation to a specific container
+        function applyAftViewToContainer(containerId, apply) {
             const container = document.getElementById(containerId);
             if (!container) return;
             
             const rows = Array.from(container.querySelectorAll('.row'));
             
-            if (isAftView) {
-                // Apply aft view: reverse row order and seat order
-                
-                // 1. Reverse the order of rows in the container
+            if (apply) {
+                // Reverse row order
                 rows.reverse().forEach(row => {
                     container.appendChild(row);
                 });
                 
-                // 2. For each row, reverse the seat order
+                // Reverse seat order inside each row
                 rows.forEach(row => {
                     row.classList.add('aft-view');
-                    
-                    // Get all elements in the row
                     const seatA = row.querySelector(`[data-seat$="A"]`);
                     const seatC = row.querySelector(`[data-seat$="C"]`);
                     const seatD = row.querySelector(`[data-seat$="D"]`);
@@ -883,13 +783,9 @@
                     const gaps = row.querySelectorAll('.gap');
                     const aisles = row.querySelectorAll('.aisle');
                     
-                    // Store original elements
-                    const elements = Array.from(row.children);
+                    if (!seatA || !seatC || !seatD || !seatF) return;
                     
-                    // Clear the row
                     row.innerHTML = '';
-                    
-                    // Rebuild in aft order: F, gap, D, aisle, C, gap, A
                     if (seatF) row.appendChild(seatF);
                     if (gaps[1]) row.appendChild(gaps[1]);
                     if (seatD) row.appendChild(seatD);
@@ -899,9 +795,7 @@
                     if (seatA) row.appendChild(seatA);
                 });
             } else {
-                // Apply forward view: restore original row order and seat order
-                
-                // 1. Sort rows back to original order (1-4)
+                // Restore original row order (1 to currentRowCount)
                 rows.sort((a, b) => {
                     const seatA = a.querySelector('.seat-box');
                     const seatB = b.querySelector('.seat-box');
@@ -912,11 +806,9 @@
                     container.appendChild(row);
                 });
                 
-                // 2. For each row, restore forward seat order
+                // Restore forward seat order
                 rows.forEach(row => {
                     row.classList.remove('aft-view');
-                    
-                    // Get all elements in the row
                     const seatA = row.querySelector(`[data-seat$="A"]`);
                     const seatC = row.querySelector(`[data-seat$="C"]`);
                     const seatD = row.querySelector(`[data-seat$="D"]`);
@@ -924,10 +816,9 @@
                     const gaps = row.querySelectorAll('.gap');
                     const aisles = row.querySelectorAll('.aisle');
                     
-                    // Clear the row
-                    row.innerHTML = '';
+                    if (!seatA || !seatC || !seatD || !seatF) return;
                     
-                    // Rebuild in forward order: A, gap, C, aisle, D, gap, F
+                    row.innerHTML = '';
                     if (seatA) row.appendChild(seatA);
                     if (gaps[0]) row.appendChild(gaps[0]);
                     if (seatC) row.appendChild(seatC);
@@ -939,6 +830,17 @@
             }
         }
         
+        // Toggle aft view for both charts
+        function toggleAftView() {
+            const toggle = document.getElementById('aftViewToggle');
+            isAftView = toggle.checked;
+            
+            applyAftViewToContainer('topSeatContainer', isAftView);
+            applyAftViewToContainer('bottomSeatContainer', isAftView);
+            
+            adjustFontSize(currentFontSize);
+        }
+        
         // Function to adjust font sizes for both charts
         function adjustFontSize(fontSize) {
             currentFontSize = fontSize;
@@ -947,7 +849,6 @@
             
             const scale = fontSize / 12;
             
-            // Adjust all seat boxes in both charts
             document.querySelectorAll('.seat-box').forEach(box => {
                 box.style.minHeight = (55 * scale) + 'px';
                 
@@ -979,25 +880,168 @@
                 }
             });
             
-            // Adjust row spacing
             document.querySelectorAll('.row').forEach(row => {
                 row.style.marginBottom = (4 * scale) + 'px';
             });
+        }
+        
+        // Helper functions for name parsing and truncation
+        function parsePassengerName(fullName) {
+            if (!fullName || !fullName.includes('/')) {
+                return { firstName: '', lastName: '' };
+            }
+            const parts = fullName.split('/');
+            const lastName = parts[0] || '';
+            const firstName = parts[1] || '';
+            return { firstName, lastName };
+        }
+        
+        function truncateIntelligently(text, maxLength = 25) {
+            if (!text || text.length <= maxLength) return text;
+            const truncated = text.substring(0, maxLength);
+            const lastSpace = truncated.lastIndexOf(' ');
+            if (lastSpace > maxLength * 0.7 && lastSpace > 0) {
+                return text.substring(0, lastSpace);
+            }
+            return truncated + '…';
+        }
+        
+        function normalizeSeatNumber(seat) {
+            if (!seat) return '';
+            return seat.replace(/^0+(\d+)/, '$1');
+        }
+        
+        function populateSeatData(passenger, seatBox) {
+            if (!passenger || !seatBox) return;
+            
+            const normalizedSeat = normalizeSeatNumber(passenger.seat);
+            const { firstName, lastName } = parsePassengerName(passenger.name);
+            const title = passenger.title || '';
+            
+            let seatNumberHTML = normalizedSeat;
+            if (passenger.tier === 'EMER' || passenger.tier === 'PLAT') {
+                seatNumberHTML += ` <span class="tier">*${passenger.tier}*</span>`;
+                seatBox.classList.add(passenger.tier === 'EMER' ? 'tier-emer' : 'tier-plat');
+                seatBox.classList.remove('empty-seat');
+            }
+            
+            const seatNumberContainer = seatBox.querySelector('.seat-number');
+            if (seatNumberContainer) seatNumberContainer.innerHTML = seatNumberHTML;
+            
+            const titleLine = seatBox.querySelector('.name-line.title-line');
+            if (titleLine) titleLine.textContent = title.toUpperCase() || '';
+            
+            const surnameLine = seatBox.querySelector('.name-line.surname-line');
+            if (surnameLine) surnameLine.textContent = truncateIntelligently(lastName, 25).toUpperCase() || '';
+            
+            const firstNameLine = seatBox.querySelector('.name-line.firstname-line');
+            if (firstNameLine) firstNameLine.textContent = truncateIntelligently(firstName, 25).toUpperCase() || '';
+            
+            const mealField = seatBox.querySelector('.field-line.meal-line');
+            if (mealField) {
+                if (passenger.meal && passenger.meal.trim()) {
+                    mealField.textContent = passenger.meal.toUpperCase();
+                    mealField.style.backgroundColor = '#f0f0f0';
+                } else {
+                    mealField.textContent = '';
+                    mealField.style.backgroundColor = '';
+                }
+            }
+            
+            seatBox.classList.remove('empty-seat');
+            seatBox.querySelectorAll('.name-line, .field-line').forEach(line => {
+                line.style.color = '#000';
+            });
+            
+            // Remove placeholder pseudo-element content if any
+            if (surnameLine) surnameLine.style.setProperty('--placeholder-content', 'none');
+            if (firstNameLine) firstNameLine.style.setProperty('--placeholder-content', 'none');
+            if (mealField) mealField.style.setProperty('--placeholder-content', 'none');
+        }
+        
+        function markSeatAsEmpty(seatBox) {
+            if (!seatBox) return;
+            seatBox.classList.add('empty-seat');
+            seatBox.querySelectorAll('.name-line, .field-line').forEach(line => {
+                line.style.color = 'transparent';
+            });
+            const surnameLine = seatBox.querySelector('.name-line.surname-line');
+            const firstNameLine = seatBox.querySelector('.name-line.firstname-line');
+            const mealLine = seatBox.querySelector('.field-line.meal-line');
+            if (surnameLine) surnameLine.style.setProperty('--placeholder-content', '"______"');
+            if (firstNameLine) firstNameLine.style.setProperty('--placeholder-content', '"______"');
+            if (mealLine) {
+                mealLine.style.setProperty('--placeholder-content', '"______"');
+                mealLine.style.backgroundColor = '';
+            }
+        }
+        
+        // Populate a chart with data and store it globally
+        function populateChart(chartPosition, chartData) {
+            const prefix = chartPosition === 'top' ? 'top' : 'bottom';
+            
+            // Store data for regeneration
+            if (chartPosition === 'top') {
+                topChartData = chartData;
+            } else {
+                bottomChartData = chartData;
+            }
+            
+            // Update header
+            const flightInfo = chartData.flightInfo;
+            if (flightInfo) {
+                document.getElementById(`${prefix}HeaderTitle`).textContent = 
+                    `${flightInfo.flightNumber} | ${flightInfo.sector} | ${flightInfo.date} ${flightInfo.stdLocal} | ${flightInfo.aircraft}`;
+            }
+            
+            // Update zone summary
+            const zoneSummary = chartData.zoneSummary;
+            if (zoneSummary) {
+                let summaryText = `Business Class: ${zoneSummary.totalPassengers} passengers`;
+                if (zoneSummary.specialMeals > 0) summaryText += ` | Special Meals: ${zoneSummary.specialMeals}`;
+                if (zoneSummary.emerPlat > 0) summaryText += ` | EMER/PLAT: ${zoneSummary.emerPlat}`;
+                if (zoneSummary.mealBreakdown) summaryText += ` | ${zoneSummary.mealBreakdown}`;
+                if (zoneSummary.bbml > 0) summaryText += ` | BBML: ${zoneSummary.bbml}`;
+                document.getElementById(`${prefix}ZoneSummary`).textContent = summaryText;
+            }
+            
+            // Populate seats
+            const passengers = chartData.passengers || [];
+            const occupiedSeats = new Set();
+            const container = document.getElementById(`${prefix}SeatContainer`);
+            
+            passengers.forEach(passenger => {
+                if (!passenger.seat) return;
+                const normalizedSeat = normalizeSeatNumber(passenger.seat);
+                const seatBox = container.querySelector(`[data-seat="${normalizedSeat}"]`);
+                if (seatBox) {
+                    populateSeatData(passenger, seatBox);
+                    occupiedSeats.add(normalizedSeat);
+                }
+            });
+            
+            // Mark empty seats
+            const allSeatBoxes = container.querySelectorAll('.seat-box');
+            allSeatBoxes.forEach(seatBox => {
+                const seatNumber = seatBox.getAttribute('data-seat');
+                if (!occupiedSeats.has(seatNumber)) {
+                    markSeatAsEmpty(seatBox);
+                }
+            });
+            
+            console.log(`Loaded ${passengers.length} passengers for ${chartPosition} chart`);
         }
         
         // Handle printing
         function handlePrint() {
             const orientationSelect = document.getElementById('orientationSelect');
             const isLandscape = orientationSelect.value === 'landscape';
-            
             if (isLandscape) {
                 document.body.classList.add('landscape-print');
             } else {
                 document.body.classList.remove('landscape-print');
             }
-            
             document.documentElement.style.setProperty('--print-font-size', currentFontSize + 'px');
-            
             setTimeout(() => {
                 window.print();
                 setTimeout(() => {
@@ -1025,7 +1069,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             const dataKey = urlParams.get('data');
             const chartType = urlParams.get('chart') || 'top';
-            
             if (dataKey && chartType === 'top') {
                 const chartData = JSON.parse(localStorage.getItem(dataKey));
                 if (chartData) {
@@ -1035,30 +1078,23 @@
             }
         }
         
-        // Initialize when page loads
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize seat charts
-            initializeSeatCharts();
+            // Set initial row count based on toggle state (default checked = 4 rows)
+            currentRowCount = 4;
+            generateSeatRows('topSeatContainer', currentRowCount);
+            generateSeatRows('bottomSeatContainer', currentRowCount);
             
             // Set up font size slider
             const fontSizeSlider = document.getElementById('fontSizeSlider');
-            const fontSizeValue = document.getElementById('fontSizeValue');
-            
-            if (fontSizeSlider && fontSizeValue) {
-                fontSizeSlider.addEventListener('input', function(e) {
-                    const fontSize = parseInt(e.target.value);
-                    adjustFontSize(fontSize);
-                });
-                
-                const initialFontSize = parseInt(fontSizeSlider.value);
-                adjustFontSize(initialFontSize);
-            }
+            fontSizeSlider.addEventListener('input', function(e) {
+                adjustFontSize(parseInt(e.target.value));
+            });
+            adjustFontSize(parseInt(fontSizeSlider.value));
             
             // Set up aft view toggle
             const aftViewToggle = document.getElementById('aftViewToggle');
-            if (aftViewToggle) {
-                aftViewToggle.checked = isAftView;
-            }
+            aftViewToggle.checked = isAftView;
             
             // Load initial top chart data
             loadInitialData();
