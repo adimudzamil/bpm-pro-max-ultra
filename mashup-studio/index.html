@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mashup Studio — Dance Mashup Editor</title>
+<meta name="theme-color" content="#0b0e14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💃</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💃</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">MASHUP<span>STUDIO</span> 💃</div>
+
+  <div class="transport">
+    <button id="btn-rewind" title="Back to start">⏮</button>
+    <button id="btn-play" class="primary" title="Play / Pause">▶</button>
+    <button id="btn-stop" title="Stop">⏹</button>
+    <span id="time-display" class="time">00:00.000</span>
+  </div>
+
+  <div class="tools">
+    <label class="file-btn">Import audio
+      <input id="file-input" type="file" multiple hidden
+             accept="audio/*,video/mp4,.mp3,.mp4,.m4a,.wav,.ogg,.oga,.flac,.aac,.opus,.webm">
+    </label>
+    <button id="btn-split" title="Split at playhead">Split</button>
+    <button id="btn-duplicate" title="Duplicate">Dup</button>
+    <button id="btn-delete" title="Delete">Del</button>
+    <button id="btn-silence" title="Insert silence at playhead">+ Silence</button>
+    <button id="btn-bpm" title="Adjust clip BPM (needs internet)">BPM</button>
+    <button id="btn-undo" title="Undo">↶</button>
+    <button id="btn-redo" title="Redo">↷</button>
+    <button id="btn-save" title="Save project (needs internet)">Save</button>
+    <label class="file-btn" title="Open project">Open
+      <input id="file-open" type="file" accept=".mashup,application/zip" hidden>
+    </label>
+    <button id="btn-export" class="primary" title="Render mixdown">Export</button>
+  </div>
+</header>
+
+<div class="subbar">
+  <label>Zoom <input id="zoom" type="range" min="20" max="400" step="1" value="80"></label>
+  <label><input id="snap" type="checkbox" checked> Snap</label>
+  <label>BPM <input id="bpm-input" type="number" min="40" max="220" step="1" placeholder="auto"></label>
+  <label>Crossfade
+    <select id="xfade-curve">
+      <option value="equal" selected>Equal power</option>
+      <option value="linear">Linear</option>
+    </select>
+  </label>
+  <label>Export
+    <select id="export-format">
+      <option value="wav">WAV</option>
+      <option value="mp3">MP3</option>
+    </select>
+  </label>
+</div>
+
+<main class="workspace">
+  <aside id="track-headers" class="track-headers"></aside>
+  <section id="timeline" class="timeline">
+    <div id="ruler" class="ruler"><canvas id="ruler-canvas"></canvas></div>
+    <div id="lanes" class="lanes"></div>
+    <div id="playhead" class="playhead"></div>
+  </section>
+</main>
+
+<footer id="status" class="status">Import an MP3, MP4, WAV or OGG file to begin.</footer>
+<div id="toast" class="toast"></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
